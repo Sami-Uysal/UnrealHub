@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Engine } from '../types';
+import { useTranslation } from 'react-i18next';
 
 
 
 export const EnginesPage: React.FC = () => {
+    const { t } = useTranslation();
     const [engines, setEngines] = useState<Engine[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -21,19 +23,19 @@ export const EnginesPage: React.FC = () => {
 
 
 
-    if (loading) return <div className="text-slate-400">Motorlar taranıyor...</div>;
+    if (loading) return <div className="text-slate-400">{t('engines.scanning')}</div>;
 
     return (
         <div>
             <div className="flex items-center space-x-4 mb-6">
-                <h2 className="text-xl font-bold text-slate-200 tracking-wide">MOTOR SÜRÜMLERİ</h2>
+                <h2 className="text-xl font-bold text-slate-200 tracking-wide">{t('engines.title')}</h2>
                 <div className="h-px bg-slate-700 flex-1 ml-4"></div>
             </div>
 
             {engines.length === 0 ? (
                 <div className="text-slate-500 border border-dashed border-slate-800 rounded-2xl p-12 text-center bg-slate-900/50">
-                    <h3 className="text-lg font-medium text-slate-300">Motor Bulunamadı</h3>
-                    <p className="mt-2 text-sm">Ayarlar sayfasından motor kurulu klasörleri ekleyebilirsiniz.</p>
+                    <h3 className="text-lg font-medium text-slate-300">{t('engines.noEngines')}</h3>
+                    <p className="mt-2 text-sm">{t('engines.noEnginesDesc')}</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -59,7 +61,7 @@ export const EnginesPage: React.FC = () => {
                                     onClick={() => window.unreal.launchEngine(engine.path)}
                                     className="bg-amber-500 hover:bg-amber-400 text-black font-semibold px-4 py-2 rounded flex items-center justify-center hover:scale-105 transition-transform text-sm whitespace-nowrap"
                                 >
-                                    <span>Başlat</span>
+                                    <span>{t('engines.launch')}</span>
                                 </button>
                             </div>
                         </div>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Play, MoreVertical, Image as ImageIcon, X, Plus, FolderPlus, GitBranch } from 'lucide-react';
 import { Project } from '../types';
 
@@ -7,6 +8,7 @@ interface ProjectsPageProps {
 }
 
 export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
+    const { t } = useTranslation();
     const [projects, setProjects] = useState<Project[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [editingProject, setEditingProject] = useState<Project | null>(null);
@@ -121,7 +123,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
                             <X size={20} />
                         </button>
 
-                        <h3 className="text-xl font-bold text-white mb-6 text-center">Proje Ekle</h3>
+                        <h3 className="text-xl font-bold text-white mb-6 text-center">{t('projects.addProject')}</h3>
 
                         <div
                             className={`
@@ -141,17 +143,17 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
                             </div>
 
                             <p className="text-lg font-medium text-slate-200 mb-2">
-                                Dosyayı buraya sürükleyin
+                                {t('projects.dragDrop')}
                             </p>
 
                             <div className="flex items-center space-x-2 w-full px-12 mb-2">
                                 <div className="h-px bg-slate-700 flex-1"></div>
-                                <span className="text-xs text-slate-500 font-bold uppercase">veya</span>
+                                <span className="text-xs text-slate-500 font-bold uppercase">{t('projects.or')}</span>
                                 <div className="h-px bg-slate-700 flex-1"></div>
                             </div>
 
                             <button className="text-blue-400 hover:text-blue-300 font-medium">
-                                Dosya Seç (.uproject)
+                                {t('projects.addProject')}
                             </button>
                         </div>
                     </div>
@@ -162,13 +164,13 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
                     <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 w-96 shadow-2xl">
                         <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-xl font-bold text-white">Projeyi Düzenle</h3>
+                            <h3 className="text-xl font-bold text-white">{t('projects.editProjectTitle')}</h3>
                             <button onClick={() => setEditingProject(null)} className="text-slate-500 hover:text-white"><X size={20} /></button>
                         </div>
 
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-xs text-slate-400 mb-1">Proje Adı (Sadece burada değişir)</label>
+                                <label className="block text-xs text-slate-400 mb-1">{t('projects.editProjectNameLabel')}</label>
                                 <input
                                     type="text"
                                     value={editName}
@@ -178,7 +180,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
                             </div>
 
                             <div>
-                                <label className="block text-xs text-slate-400 mb-1">Proje Resmi</label>
+                                <label className="block text-xs text-slate-400 mb-1">{t('projects.editProjectImageLabel')}</label>
                                 <div
                                     onClick={handleSelectImage}
                                     className="h-32 bg-slate-800 border border-dashed border-slate-600 rounded flex items-center justify-center cursor-pointer hover:bg-slate-700 transition-colors relative overflow-hidden"
@@ -188,7 +190,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
                                     ) : (
                                         <div className="flex flex-col items-center text-slate-500">
                                             <ImageIcon size={24} />
-                                            <span className="text-xs mt-2">Resim Seç</span>
+                                            <span className="text-xs mt-2">{t('projects.selectImage')}</span>
                                         </div>
                                     )}
                                 </div>
@@ -196,27 +198,27 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
                         </div>
 
                         <div className="flex justify-end space-x-3 mt-6">
-                            <button onClick={() => setEditingProject(null)} className="px-4 py-2 text-sm text-slate-400 hover:text-white">İptal</button>
-                            <button onClick={handleSaveEdit} className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 text-white rounded">Kaydet</button>
+                            <button onClick={() => setEditingProject(null)} className="px-4 py-2 text-sm text-slate-400 hover:text-white">{t('projects.remove')}</button>
+                            <button onClick={handleSaveEdit} className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-500 text-white rounded">{t('projects.edit')}</button>
                         </div>
                     </div>
                 </div>
             )}
 
             <div className="flex items-center space-x-4 mb-6">
-                <h2 className="text-xl font-bold text-slate-200 tracking-wide">PROJELERİM</h2>
+                <h2 className="text-xl font-bold text-slate-200 tracking-wide">{t('projects.title').toUpperCase()}</h2>
                 <div className="h-px bg-slate-700 flex-1 ml-4 mr-4"></div>
                 <div className="relative flex items-center space-x-2">
                     <input
                         type="text"
-                        placeholder="Projeleri Ara"
+                        placeholder={t('projects.search')}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="bg-slate-800 text-sm text-white px-4 py-2 rounded border border-slate-700 focus:outline-none focus:border-amber-500 w-64"
                     />
                     <button
                         onClick={() => setIsAddModalOpen(true)}
-                        title="Proje Ekle"
+                        title={t('projects.addProject')}
                         className="bg-blue-600 hover:bg-blue-500 text-white p-2 rounded transition-colors"
                     >
                         <Plus size={20} />
@@ -228,8 +230,8 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
 
             {filteredProjects.length === 0 ? (
                 <div className="text-slate-500 border border-dashed border-slate-800 rounded-2xl p-12 text-center bg-slate-900/50">
-                    <h3 className="text-lg font-medium text-slate-300">Proje Bulunamadı</h3>
-                    <p className="mt-2 text-sm"> + ile ".uproject" dosyası seçerek veya Ayarlar'dan projelerin bulunduğu ana klasörü ekleyerek başlayın.</p>
+                    <h3 className="text-lg font-medium text-slate-300">{t('projects.noProjects')}</h3>
+                    <p className="mt-2 text-sm"> {t('projects.dragDrop')}</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -280,7 +282,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
                                                 onOpenGit(project);
                                             }}
                                             className="text-slate-500 hover:text-white p-2 rounded-lg hover:bg-slate-800 transition-colors"
-                                            title="Git History"
+                                            title={t('projects.gitHistory')}
                                         >
                                             <GitBranch size={16} />
                                         </button>

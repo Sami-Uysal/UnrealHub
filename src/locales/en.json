@@ -1,0 +1,63 @@
+{
+  "sidebar": {
+    "projects": "Projects",
+    "engines": "Engines",
+    "settings": "Settings",
+    "projectManager": "Project Manager"
+  },
+  "projects": {
+    "title": "Projects",
+    "addProject": "Add Project (.uproject)",
+    "dragDrop": "Drag and drop here",
+    "search": "Search projects...",
+    "version": "Version:",
+    "open": "Open",
+    "gitHistory": "Git History",
+    "noProjects": "No projects found.",
+    "edit": "Edit",
+    "remove": "Remove",
+    "or": "OR",
+    "editProjectTitle": "Edit Project",
+    "editProjectNameLabel": "Project Name (Only changes here)",
+    "editProjectImageLabel": "Project Image",
+    "selectImage": "Select Image"
+  },
+  "settings": {
+    "title": "Settings",
+    "enginePaths": "Engine Search Paths",
+    "projectPaths": "Project Search Paths",
+    "addFolder": "Add Folder",
+    "noFolders": "No folders added yet.",
+    "engineDesc": "Unreal Engine installations in these folders are automatically scanned.",
+    "projectDesc": "Projects (.uproject) in these folders are automatically scanned.",
+    "extraSettings": "Extra Settings",
+    "gitIntegration": "Git Integration",
+    "gitIntegrationDesc": "Shows Git history button on project cards. (Git must be installed)",
+    "appearance": "Appearance",
+    "language": "Language",
+    "selectLanguage": "Select Language"
+  },
+  "engines": {
+    "title": "ENGINE VERSIONS",
+    "scanning": "Scanning engines...",
+    "noEngines": "No Engines Found",
+    "noEnginesDesc": "You can add engine installation folders from the Settings page.",
+    "launch": "Launch"
+  },
+  "git": {
+    "title": "Git History",
+    "head": "HEAD",
+    "local": "Local",
+    "remote": "Remote",
+    "branchTag": "BRANCH / TAG",
+    "graph": "GRAPH",
+    "commitMessage": "COMMIT MESSAGE",
+    "detached": "Detached HEAD",
+    "noLocal": "No local branches",
+    "noRemote": "No remote branches",
+    "loading": "Loading...",
+    "error": "Failed to load Git history.",
+    "notRepo": "This project is not a valid Git repository.",
+    "current": "Current"
+  }
+}

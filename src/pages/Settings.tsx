@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Folder, Trash2, Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Folder, Trash2, Plus, Globe } from 'lucide-react';
 
 interface ConfigPaths {
     enginePaths: string[];
@@ -7,6 +8,7 @@ interface ConfigPaths {
 }
 
 export const SettingsPage: React.FC = () => {
+    const { t, i18n } = useTranslation();
     const [paths, setPaths] = useState<ConfigPaths>({ enginePaths: [], projectPaths: [] });
     const [loading, setLoading] = useState(true);
 
@@ -40,7 +42,12 @@ export const SettingsPage: React.FC = () => {
         await loadPaths();
     };
 
-    if (loading) return <div className="text-slate-400">Ayarlar yükleniyor...</div>;
+    const changeLanguage = (lng: string) => {
+        i18n.changeLanguage(lng);
+        localStorage.setItem('i18nextLng', lng);
+    };
+
+    if (loading) return <div className="text-slate-400">{t('git.loading')}</div>;
 
     const PathSection = ({ title, type, items, onAdd, onRemove }: { title: string, type: 'engine' | 'project', items: string[], onAdd: () => void, onRemove: (t: any, p: string) => void }) => (
         <div className="mb-10">
@@ -51,14 +58,14 @@ export const SettingsPage: React.FC = () => {
                     className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-md text-sm transition-colors"
                 >
                     <Plus size={16} />
-                    <span>Klasör Ekle</span>
+                    <span>{t('settings.addFolder')}</span>
                 </button>
             </div>
 
             <div className="bg-slate-900 border border-slate-800 rounded-lg overflow-hidden">
                 {items.length === 0 ? (
                     <div className="p-6 text-center text-slate-500 text-sm">
-                        Henüz eklenmiş bir klasör yok.
+                        {t('settings.noFolders')}
                     </div>
                 ) : (
                     <div className="divide-y divide-slate-800">
@@ -81,18 +88,45 @@ export const SettingsPage: React.FC = () => {
             </div>
             <p className="mt-2 text-xs text-slate-500">
                 {type === 'engine'
-                    ? "Bu klasörlerdeki Unreal Engine kurulumları otomatik taranır."
-                    : "Bu klasörlerdeki projeler (.uproject) otomatik taranır."}
+                    ? t('settings.engineDesc')
+                    : t('settings.projectDesc')}
             </p>
         </div>
     );
 
     return (
         <div className="max-w-3xl">
-            <h2 className="text-2xl font-bold text-white mb-8">Ayarlar</h2>
+            <h2 className="text-2xl font-bold text-white mb-8">{t('settings.title')}</h2>
+
+            <div className="mb-10">
+                <h3 className="text-lg font-semibold text-slate-200 mb-4">{t('settings.appearance')}</h3>
+                <div className="flex items-center justify-between p-4 bg-slate-900 border border-slate-800 rounded-lg">
+                    <div className="flex items-center gap-3">
+                        <Globe className="text-slate-400" size={20} />
+                        <div>
+                            <h4 className="text-slate-200 font-medium">{t('settings.language')}</h4>
+                            <p className="text-xs text-slate-500 mt-1">{t('settings.selectLanguage')}</p>
+                        </div>
+                    </div>
+                    <div className="flex bg-slate-800 p-1 rounded-md">
+                        <button
+                            onClick={() => changeLanguage('tr')}
+                            className={`px-3 py-1 rounded text-sm font-medium transition-colors ${i18n.language === 'tr' ? 'bg-blue-600 text-white shadow' : 'text-slate-400 hover:text-slate-200'}`}
+                        >
+                            Türkçe
+                        </button>
+                        <button
+                            onClick={() => changeLanguage('en')}
+                            className={`px-3 py-1 rounded text-sm font-medium transition-colors ${i18n.language === 'en' ? 'bg-blue-600 text-white shadow' : 'text-slate-400 hover:text-slate-200'}`}
+                        >
+                            English
+                        </button>
+                    </div>
+                </div>
+            </div>
 
             <PathSection
-                title="Motor Arama Klasörleri"
+                title={t('settings.enginePaths')}
                 type="engine"
                 items={paths.enginePaths}
                 onAdd={handleAddEnginePath}
@@ -100,7 +134,7 @@ export const SettingsPage: React.FC = () => {
             />
 
             <PathSection
-                title="Proje Arama Klasörleri"
+                title={t('settings.projectPaths')}
                 type="project"
                 items={paths.projectPaths}
                 onAdd={handleAddProjectPath}
@@ -108,12 +142,12 @@ export const SettingsPage: React.FC = () => {
             />
 
             <div className="mb-10 pt-6 border-t border-slate-800">
-                <h3 className="text-lg font-semibold text-slate-200 mb-4">Ekstra Ayarlar</h3>
+                <h3 className="text-lg font-semibold text-slate-200 mb-4">{t('settings.extraSettings')}</h3>
                 <div className="flex items-center justify-between p-4 bg-slate-900 border border-slate-800 rounded-lg">
                     <div>
-                        <h4 className="text-slate-200 font-medium">Git Entegrasyonu</h4>
+                        <h4 className="text-slate-200 font-medium">{t('settings.gitIntegration')}</h4>
                         <p className="text-xs text-slate-500 mt-1">
-                            Proje kartlarında Git geçmişi butonunu gösterir. (Node.js ve Git kurulu olmalıdır)
+                            {t('settings.gitIntegrationDesc')}
                         </p>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">

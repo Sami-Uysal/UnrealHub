@@ -1,0 +1,63 @@
+{
+  "sidebar": {
+    "projects": "Projeler",
+    "engines": "Motorlar",
+    "settings": "Ayarlar",
+    "projectManager": "Proje Yöneticisi"
+  },
+  "projects": {
+    "title": "Projeler",
+    "addProject": "Proje Ekle (.uproject)",
+    "dragDrop": "Buraya sürükle bırak",
+    "search": "Proje ara...",
+    "version": "Versiyon:",
+    "open": "Aç",
+    "gitHistory": "Git Geçmişi",
+    "noProjects": "Proje bulunamadı.",
+    "edit": "Düzenle",
+    "remove": "Kaldır",
+    "or": "VEYA",
+    "editProjectTitle": "Projeyi Düzenle",
+    "editProjectNameLabel": "Proje Adı (Sadece burada değişir)",
+    "editProjectImageLabel": "Proje Resmi",
+    "selectImage": "Resim Seç"
+  },
+  "settings": {
+    "title": "Ayarlar",
+    "enginePaths": "Motor Arama Klasörleri",
+    "projectPaths": "Proje Arama Klasörleri",
+    "addFolder": "Klasör Ekle",
+    "noFolders": "Henüz eklenmiş bir klasör yok.",
+    "engineDesc": "Bu klasörlerdeki Unreal Engine kurulumları otomatik taranır.",
+    "projectDesc": "Bu klasörlerdeki projeler (.uproject) otomatik taranır.",
+    "extraSettings": "Ekstra Ayarlar",
+    "gitIntegration": "Git Entegrasyonu",
+    "gitIntegrationDesc": "Proje kartlarında Git geçmişi butonunu gösterir. (Git kurulu olmalıdır)",
+    "appearance": "Görünüm",
+    "language": "Dil",
+    "selectLanguage": "Dil Seçin"
+  },
+  "engines": {
+    "title": "MOTOR SÜRÜMLERİ",
+    "scanning": "Motorlar taranıyor...",
+    "noEngines": "Motor Bulunamadı",
+    "noEnginesDesc": "Ayarlar sayfasından motor kurulu klasörleri ekleyebilirsiniz.",
+    "launch": "Başlat"
+  },
+  "git": {
+    "title": "Git Geçmişi",
+    "head": "HEAD",
+    "local": "Local",
+    "remote": "Remote",
+    "branchTag": "BRANCH / TAG",
+    "graph": "GRAFİK",
+    "commitMessage": "COMMIT MESAJI",
+    "detached": "Detached HEAD",
+    "noLocal": "Local branch yok",
+    "noRemote": "Remote branch yok",
+    "loading": "Yükleniyor...",
+    "error": "Git geçmişi yüklenemedi.",
+    "notRepo": "Bu proje geçerli bir Git deposu değil.",
+    "current": "Mevcut"
+  }
+}

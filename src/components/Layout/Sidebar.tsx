@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { LayoutGrid, Settings } from 'lucide-react';
 
 const UnrealIcon = ({ size = 20, className = "" }: { size?: number, className?: string }) => (
@@ -22,6 +23,8 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) => {
+    const { t } = useTranslation();
+
     const NavItem = ({ view, icon: Icon, label }: { view: View; icon: any; label: string }) => (
         <button
             onClick={() => onViewChange(view)}
@@ -46,13 +49,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) =
                     <span className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
                         UnrealHub
                     </span>
-                    <span className="text-xs text-slate-500 font-medium">Proje Yöneticisi</span>
+                    <span className="text-xs text-slate-500 font-medium">{t('sidebar.projectManager')}</span>
                 </div>
             </div>
 
             <nav className="flex-1 space-y-2">
-                <NavItem view="projects" icon={LayoutGrid} label="Projeler" />
-                <NavItem view="engines" icon={UnrealIcon} label="Motorlar" />
+                <NavItem view="projects" icon={LayoutGrid} label={t('sidebar.projects')} />
+                <NavItem view="engines" icon={UnrealIcon} label={t('sidebar.engines')} />
             </nav>
 
             <div className="pt-4 border-t border-slate-800">
@@ -61,7 +64,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) =
                     className="w-full flex items-center space-x-3 px-4 py-3 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors group no-drag"
                 >
                     <Settings size={20} className="group-hover:rotate-90 transition-transform duration-300" />
-                    <span className="font-medium">Ayarlar</span>
+                    <span className="font-medium">{t('sidebar.settings')}</span>
                 </button>
             </div>
         </div>

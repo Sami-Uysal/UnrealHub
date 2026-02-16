@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, GitCommit as GitIcon, AlertCircle, Monitor, Cloud, Tag, Check } from 'lucide-react';
 import { GitCommit } from '../types';
 
@@ -25,6 +26,7 @@ interface GraphLink {
 }
 
 export const GitHistoryPage: React.FC<GitHistoryPageProps> = ({ projectPath, projectName, onBack }) => {
+    const { t } = useTranslation();
     const [commits, setCommits] = useState<GitCommit[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -42,7 +44,7 @@ export const GitHistoryPage: React.FC<GitHistoryPageProps> = ({ projectPath, pro
             const isRepo = await window.unreal.checkGitRepo(projectPath);
 
             if (!isRepo) {
-                setError("This project is not a valid Git repository.");
+                setError(t('git.notRepo'));
                 setLoading(false);
                 return;
             }
@@ -58,7 +60,7 @@ export const GitHistoryPage: React.FC<GitHistoryPageProps> = ({ projectPath, pro
             setStatus(gitStatus);
         } catch (err) {
             console.error("Error loading history:", err);
-            setError("Failed to load Git history.");
+            setError(t('git.error'));
         } finally {
             setLoading(false);
         }
@@ -94,7 +96,7 @@ export const GitHistoryPage: React.FC<GitHistoryPageProps> = ({ projectPath, pro
             for (let i = 0; i < lanes.length; i++) {
                 if (lanes[i] === commit.hash && i !== lane) {
                     lanes[i] = null;
-                    laneLabels[i] = null; 
+                    laneLabels[i] = null;
                 }
             }
 
@@ -180,7 +182,7 @@ export const GitHistoryPage: React.FC<GitHistoryPageProps> = ({ projectPath, pro
                 <div>
                     <h2 className="text-xl font-bold flex items-center gap-2">
                         <GitIcon className="text-orange-500" />
-                        Git History
+                        {t('git.title')}
                     </h2>
                     <p className="text-xs text-slate-500">{projectName}</p>
                 </div>
@@ -190,33 +192,33 @@ export const GitHistoryPage: React.FC<GitHistoryPageProps> = ({ projectPath, pro
                 <div className="w-64 bg-slate-900 border-r border-slate-800 flex flex-col overflow-y-auto shrink-0 select-none">
                     <div className="p-4 space-y-6">
                         <div>
-                            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 px-2">HEAD</div>
+                            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 px-2">{t('git.head')}</div>
                             {status?.current ? (
                                 <div className="flex items-center gap-2 px-2 py-1.5 bg-blue-500/10 text-blue-400 rounded-md border border-blue-500/20">
                                     <GitIcon size={14} />
                                     <span className="text-sm font-medium truncate" title={status.current}>{status.current}</span>
                                 </div>
                             ) : (
-                                <div className="px-2 text-sm text-slate-600 italic">Detached HEAD</div>
+                                <div className="px-2 text-sm text-slate-600 italic">{t('git.detached')}</div>
                             )}
                         </div>
 
                         <div>
-                            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 px-2">Local</div>
+                            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 px-2">{t('git.local')}</div>
                             <div className="space-y-0.5">
-                                {status?.branches.length === 0 && <div className="px-2 text-sm text-slate-600 italic">No local branches</div>}
+                                {status?.branches.length === 0 && <div className="px-2 text-sm text-slate-600 italic">{t('git.noLocal')}</div>}
                                 {status?.branches.map(branch => (
                                     <div key={branch} className={`flex items-center gap-2 px-2 py-1.5 rounded-md ${branch === status.current ? 'text-blue-400 font-medium' : 'text-slate-300'}`}>
                                         <GitIcon size={14} className={branch === status.current ? 'opacity-100' : 'opacity-50'} />
                                         <span className="text-sm truncate" title={branch}>{branch}</span>
-                                        {branch === status.current && <span className="ml-auto text-[10px] bg-blue-500/20 text-blue-300 px-1.5 rounded">Current</span>}
+                                        {branch === status.current && <span className="ml-auto text-[10px] bg-blue-500/20 text-blue-300 px-1.5 rounded">{t('git.current')}</span>}
                                     </div>
                                 ))}
                             </div>
                         </div>
 
                         <div>
-                            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 px-2">Remote</div>
+                            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 px-2">{t('git.remote')}</div>
                             <div className="space-y-0.5">
                                 {Object.entries(groupedRemotes).map(([remote, branches]) => (
                                     <div key={remote} className="mb-2">
@@ -231,7 +233,7 @@ export const GitHistoryPage: React.FC<GitHistoryPageProps> = ({ projectPath, pro
                                         ))}
                                     </div>
                                 ))}
-                                {(!status?.remotes || status.remotes.length === 0) && <div className="px-2 text-sm text-slate-600 italic">No remote branches</div>}
+                                {(!status?.remotes || status.remotes.length === 0) && <div className="px-2 text-sm text-slate-600 italic">{t('git.noRemote')}</div>}
                             </div>
                         </div>
                     </div>
@@ -254,9 +256,9 @@ export const GitHistoryPage: React.FC<GitHistoryPageProps> = ({ projectPath, pro
                     {!loading && !error && commits.length > 0 && (
                         <div className="flex flex-col h-full w-full">
                             <div className="flex bg-slate-900 border-b border-slate-800 text-xs font-semibold text-slate-400 z-20 relative shrink-0">
-                                <div style={{ width: BRANCH_COL_WIDTH }} className="p-3 border-r border-slate-800 pl-4">BRANCH / TAG</div>
-                                <div style={{ width: Math.max(100, graphData.width) }} className="p-3 border-r border-slate-800 text-center">GRAPH</div>
-                                <div className="p-3 flex-1">COMMIT MESSAGE</div>
+                                <div style={{ width: BRANCH_COL_WIDTH }} className="p-3 border-r border-slate-800 pl-4">{t('git.branchTag')}</div>
+                                <div style={{ width: Math.max(100, graphData.width) }} className="p-3 border-r border-slate-800 text-center">{t('git.graph')}</div>
+                                <div className="p-3 flex-1">{t('git.commitMessage')}</div>
                             </div>
 
                             <div className="flex-1 overflow-auto relative custom-scrollbar">
@@ -370,7 +372,7 @@ export const GitHistoryPage: React.FC<GitHistoryPageProps> = ({ projectPath, pro
                                                 </div>
                                             </div>
                                             <div style={{ width: Math.max(100, graphData.width) }} className="relative border-r border-slate-800 shrink-0 z-0">
-                                            </div>  
+                                            </div>
                                             <div className="flex-1 p-3 min-w-0 flex flex-col justify-center relative z-10">
 
 
