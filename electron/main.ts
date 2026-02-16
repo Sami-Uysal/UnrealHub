@@ -17,12 +17,7 @@ let win: BrowserWindow | null
 function createWindow() {
   win = new BrowserWindow({
     frame: false,
-    titleBarStyle: 'hidden',
-    titleBarOverlay: {
-      color: '#020617',
-      symbolColor: '#ffffff',
-      height: 30
-    },
+    backgroundColor: 'rgba(52, 52, 52, 0.8)',
     icon: path.join(process.env.VITE_PUBLIC, 'u.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.mjs'),
@@ -461,3 +456,19 @@ ipcMain.handle('get-git-history', async (_, projectPath: string) => {
 });
 
 app.whenReady().then(createWindow)
+
+ipcMain.handle('window-minimize', () => {
+  win?.minimize();
+});
+
+ipcMain.handle('window-maximize', () => {
+  if (win?.isMaximized()) {
+    win.unmaximize();
+  } else {
+    win?.maximize();
+  }
+});
+
+ipcMain.handle('window-close', () => {
+  win?.close();
+});

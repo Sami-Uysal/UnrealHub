@@ -28,28 +28,31 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) =
     const NavItem = ({ view, icon: Icon, label }: { view: View; icon: any; label: string }) => (
         <button
             onClick={() => onViewChange(view)}
-            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group no-drag ${currentView === view
+            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 group no-drag relative overflow-hidden ${currentView === view
                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20'
-                : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                : 'text-slate-400 hover:bg-slate-700 hover:text-white'
                 }`}
         >
-            <Icon size={20} className={`transition-transform duration-200 ${currentView === view ? 'scale-110' : 'group-hover:scale-110'
+            <Icon size={20} className={`transition-all duration-300 ${currentView === view
+                ? 'scale-110'
+                : 'group-hover:scale-110 group-hover:text-slate-200'
                 }`} />
-            <span className="font-medium">{label}</span>
+            <span className={`font-semibold transition-colors duration-300 ${currentView === view ? 'text-white' : 'group-hover:text-slate-200'
+                }`}>{label}</span>
         </button>
     );
 
     return (
-        <div className="w-64 h-screen bg-slate-900 border-r border-slate-800 flex flex-col p-4 select-none drag-region">
-            <div className="mb-8 px-4 flex items-center space-x-3">
-                <div className="w-10 h-10 shrink-0 flex items-center justify-center">
-                    <img src="u.png" alt="Logo" className="w-full h-full object-contain" />
+        <div className="w-64 h-full bg-[#0f172a] border-r border-white/5 flex flex-col px-3 py-6 select-none pt-2">
+            <div className="mb-10 px-0 flex items-center space-x-3">
+                <div className="w-12 h-12 shrink-0 flex items-center justify-center group transition-all duration-500">
+                    <img src="u.png" alt="Logo" className="w-10 h-10 object-contain transition-transform duration-500 group-hover:scale-110" />
                 </div>
                 <div className="flex flex-col overflow-hidden">
-                    <span className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
+                    <span className="text-xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-white via-white to-slate-500">
                         UnrealHub
                     </span>
-                    <span className="text-xs text-slate-500 font-medium">{t('sidebar.projectManager')}</span>
+                    <span className="text-[10px] tracking-widest text-slate-500 font-bold">{t('sidebar.projectManager')}</span>
                 </div>
             </div>
 
@@ -58,13 +61,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) =
                 <NavItem view="engines" icon={UnrealIcon} label={t('sidebar.engines')} />
             </nav>
 
-            <div className="pt-4 border-t border-slate-800">
+            <div className="pt-6 border-t border-white/5">
                 <button
                     onClick={() => onViewChange('settings')}
-                    className="w-full flex items-center space-x-3 px-4 py-3 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors group no-drag"
+                    className="w-full flex items-center space-x-3 px-4 py-3 text-slate-400 hover:text-white rounded-xl hover:bg-white/5 transition-all duration-300 group no-drag"
                 >
-                    <Settings size={20} className="group-hover:rotate-90 transition-transform duration-300" />
-                    <span className="font-medium">{t('sidebar.settings')}</span>
+                    <Settings size={20} className="group-hover:rotate-45 transition-transform duration-500" />
+                    <span className="font-semibold">{t('sidebar.settings')}</span>
                 </button>
             </div>
         </div>

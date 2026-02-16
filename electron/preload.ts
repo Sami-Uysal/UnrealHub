@@ -19,4 +19,7 @@ contextBridge.exposeInMainWorld('unreal', {
   checkGitRepo: (path: string) => ipcRenderer.invoke('check-git-repo', path),
   getGitHistory: (path: string) => ipcRenderer.invoke('get-git-history', path),
   getGitStatus: (path: string) => ipcRenderer.invoke('get-git-status', path),
+  minimize: () => ipcRenderer.invoke('window-minimize'),
+  maximize: () => ipcRenderer.invoke('window-maximize'),
+  close: () => ipcRenderer.invoke('window-close'),
 })

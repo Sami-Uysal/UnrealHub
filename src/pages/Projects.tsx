@@ -105,7 +105,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
     );
 
     return (
-        <div className="relative min-h-[calc(100vh-2rem)]">
+        <div className="relative">
             {/* Project Modal */}
             {isAddModalOpen && (
                 <div

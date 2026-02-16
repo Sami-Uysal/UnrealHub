@@ -34,6 +34,9 @@ declare global {
             checkGitRepo: (path: string) => Promise<boolean>;
             getGitHistory: (path: string) => Promise<GitCommit[]>;
             getGitStatus: (path: string) => Promise<{ current: string; branches: string[]; remotes: string[] }>;
+            minimize: () => Promise<void>;
+            maximize: () => Promise<void>;
+            close: () => Promise<void>;
         };
     }
 }
