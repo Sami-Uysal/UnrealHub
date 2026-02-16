@@ -1,5 +1,8 @@
 # UnrealHub
 
+**TR** | [EN](README_EN.md)
+
+
 Unreal Engine motorlarını ve projelerini tek bir yerde toplayan masaüstü uygulaması.  
 Kişisel kullanım için geliştirilmiştir.
 
@@ -11,6 +14,7 @@ Kişisel kullanım için geliştirilmiştir.
 - **Motorlar**: Yüklü Unreal Engine sürümlerini listeleyin
 - **Kolay Ekleme**: Sürükle-bırak veya dosya seçici ile proje ekleyin
 - **Özelleştirme**: Proje isimlerini ve kapak resimlerini değiştirin
+- **Git Entegrasyonu**: Projelerinizin commit geçmişini ve dallarını görselleştirin (Ayarlardan açılabilir)
 
 ## Kurulum
 
