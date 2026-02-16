@@ -1,6 +1,5 @@
 import { ipcRenderer, contextBridge } from 'electron'
 
-// --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld('unreal', {
   getProjects: () => ipcRenderer.invoke('get-projects'),
   saveProject: (project: any) => ipcRenderer.invoke('save-project', project),
@@ -17,4 +16,7 @@ contextBridge.exposeInMainWorld('unreal', {
   selectImage: () => ipcRenderer.invoke('select-image'),
   addProjectFile: () => ipcRenderer.invoke('add-project-file'),
   addDroppedProject: (path: string) => ipcRenderer.invoke('add-dropped-project', path),
+  checkGitRepo: (path: string) => ipcRenderer.invoke('check-git-repo', path),
+  getGitHistory: (path: string) => ipcRenderer.invoke('get-git-history', path),
+  getGitStatus: (path: string) => ipcRenderer.invoke('get-git-status', path),
 })

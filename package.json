@@ -32,9 +32,14 @@
     }
   },
   "dependencies": {
+    "@gitgraph/react": "^1.6.0",
+    "i18next": "^25.8.10",
+    "i18next-browser-languagedetector": "^8.2.1",
     "lucide-react": "^0.563.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-i18next": "^16.5.4",
+    "simple-git": "^3.31.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.64",

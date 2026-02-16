@@ -31,6 +31,20 @@ declare global {
             selectImage: () => Promise<string | null>;
             addProjectFile: () => Promise<boolean>;
             addDroppedProject: (path: string) => Promise<boolean>;
-        }
+            checkGitRepo: (path: string) => Promise<boolean>;
+            getGitHistory: (path: string) => Promise<GitCommit[]>;
+            getGitStatus: (path: string) => Promise<{ current: string; branches: string[]; remotes: string[] }>;
+        };
     }
+}
+
+export interface GitCommit {
+    hash: string;
+    date: string;
+    message: string;
+    refs: string;
+    body: string;
+    author_name: string;
+    author_email: string;
+    parents: string;
 }

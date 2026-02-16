@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Play, MoreVertical, Image as ImageIcon, X, Plus, FolderPlus } from 'lucide-react';
+import { Play, MoreVertical, Image as ImageIcon, X, Plus, FolderPlus, GitBranch } from 'lucide-react';
 import { Project } from '../types';
 
-export const ProjectsPage: React.FC = () => {
+interface ProjectsPageProps {
+    onOpenGit?: (project: Project) => void;
+}
+
+export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
     const [projects, setProjects] = useState<Project[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [editingProject, setEditingProject] = useState<Project | null>(null);
@@ -10,6 +14,14 @@ export const ProjectsPage: React.FC = () => {
     const [editThumb, setEditThumb] = useState<string | undefined>(undefined);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isDragOverModal, setIsDragOverModal] = useState(false);
+    const [showGit, setShowGit] = useState(true);
+
+    useEffect(() => {
+        const checkGit = localStorage.getItem('showGitIntegration');
+        if (checkGit !== null) {
+            setShowGit(checkGit === 'true');
+        }
+    }, []);
 
     const handleDragOver = (e: React.DragEvent) => {
         e.preventDefault();
@@ -260,12 +272,26 @@ export const ProjectsPage: React.FC = () => {
                                     <p className="text-xs text-slate-500 truncate mt-1">{project.path}</p>
                                 </div>
 
-                                <button
-                                    onClick={(e) => handleEditClick(project, e)}
-                                    className="text-slate-500 hover:text-white p-2 rounded-lg hover:bg-slate-800 transition-colors"
-                                >
-                                    <MoreVertical size={16} />
-                                </button>
+                                <div className="flex items-center space-x-1">
+                                    {showGit && onOpenGit && (
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onOpenGit(project);
+                                            }}
+                                            className="text-slate-500 hover:text-white p-2 rounded-lg hover:bg-slate-800 transition-colors"
+                                            title="Git History"
+                                        >
+                                            <GitBranch size={16} />
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={(e) => handleEditClick(project, e)}
+                                        className="text-slate-500 hover:text-white p-2 rounded-lg hover:bg-slate-800 transition-colors"
+                                    >
+                                        <MoreVertical size={16} />
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ))}
