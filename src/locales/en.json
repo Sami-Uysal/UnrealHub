@@ -84,8 +84,11 @@
     "cloneProjectError": "Error cloning project.",
     "configEditorTitle": "Quick Config",
     "tagsTitle": "Tag Management",
+    "tagManagerTitle": "Tag Management",
+    "tagNamePlaceholder": "Enter tag name...",
     "addTag": "Add Tag",
-    "noTags": "No tags found."
+    "noTags": "No tags found.",
+    "suggestedTags": "Tags"
   },
   "config": {
     "rayTracing": "Ray Tracing",

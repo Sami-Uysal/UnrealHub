@@ -84,8 +84,11 @@
     "cloneProjectError": "Proje kopyalanırken hata oluştu.",
     "configEditorTitle": "Hızlı Yapılandırma",
     "tagsTitle": "Etiket Yönetimi",
+    "tagManagerTitle": "Etiket Yönetimi",
+    "tagNamePlaceholder": "Etiket adı girin...",
     "addTag": "Etiket Ekle",
-    "noTags": "Etiket bulunamadı."
+    "noTags": "Etiket bulunamadı.",
+    "suggestedTags": "Etiketler"
   },
   "config": {
     "rayTracing": "Ray Tracing (Işın İzleme)",
