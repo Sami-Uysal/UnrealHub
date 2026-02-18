@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { LayoutGrid, Settings } from 'lucide-react';
 
+
 const UnrealIcon = ({ size = 20, className = "" }: { size?: number, className?: string }) => (
     <svg
         width={size}
@@ -29,7 +30,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) =
         <button
             onClick={() => onViewChange(view)}
             className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 group no-drag relative overflow-hidden ${currentView === view
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20'
+                ? `bg-primary shadow-lg shadow-[var(--accent-color)]/20 text-white`
                 : 'text-slate-400 hover:bg-slate-700 hover:text-white'
                 }`}
         >
@@ -43,7 +44,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) =
     );
 
     return (
-        <div className="w-64 h-full bg-[#0f172a] border-r border-white/5 flex flex-col px-3 py-6 select-none pt-2">
+        <div className="w-64 h-full bg-[#0f172a] border-r border-white/5 flex flex-col px-3 py-6 select-none pt-8">
             <div className="mb-10 px-0 flex items-center space-x-3">
                 <div className="w-12 h-12 shrink-0 flex items-center justify-center group transition-all duration-500">
                     <img src="u.png" alt="Logo" className="w-10 h-10 object-contain transition-transform duration-500 group-hover:scale-110" />

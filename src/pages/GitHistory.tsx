@@ -194,7 +194,7 @@ export const GitHistoryPage: React.FC<GitHistoryPageProps> = ({ projectPath, pro
                         <div>
                             <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 px-2">{t('git.head')}</div>
                             {status?.current ? (
-                                <div className="flex items-center gap-2 px-2 py-1.5 bg-blue-500/10 text-blue-400 rounded-md border border-blue-500/20">
+                                <div className="flex items-center gap-2 px-2 py-1.5 bg-primary/10 text-primary rounded-md border border-primary/20">
                                     <GitIcon size={14} />
                                     <span className="text-sm font-medium truncate" title={status.current}>{status.current}</span>
                                 </div>
@@ -208,10 +208,10 @@ export const GitHistoryPage: React.FC<GitHistoryPageProps> = ({ projectPath, pro
                             <div className="space-y-0.5">
                                 {status?.branches.length === 0 && <div className="px-2 text-sm text-slate-600 italic">{t('git.noLocal')}</div>}
                                 {status?.branches.map(branch => (
-                                    <div key={branch} className={`flex items-center gap-2 px-2 py-1.5 rounded-md ${branch === status.current ? 'text-blue-400 font-medium' : 'text-slate-300'}`}>
+                                    <div key={branch} className={`flex items-center gap-2 px-2 py-1.5 rounded-md ${branch === status.current ? 'text-primary font-medium' : 'text-slate-300'}`}>
                                         <GitIcon size={14} className={branch === status.current ? 'opacity-100' : 'opacity-50'} />
                                         <span className="text-sm truncate" title={branch}>{branch}</span>
-                                        {branch === status.current && <span className="ml-auto text-[10px] bg-blue-500/20 text-blue-300 px-1.5 rounded">{t('git.current')}</span>}
+                                        {branch === status.current && <span className="ml-auto text-[10px] bg-primary/20 text-primary px-1.5 rounded">{t('git.current')}</span>}
                                     </div>
                                 ))}
                             </div>
@@ -378,7 +378,7 @@ export const GitHistoryPage: React.FC<GitHistoryPageProps> = ({ projectPath, pro
 
                                                 <div className="flex items-center justify-between gap-4 relative z-10">
                                                     <div className="min-w-0 flex-1">
-                                                        <div className="text-sm font-medium text-slate-200 truncate group-hover:text-blue-400 transition-colors relative z-10">
+                                                        <div className="text-sm font-medium text-slate-200 truncate group-hover:text-primary transition-colors relative z-10">
                                                             {commit.message}
                                                         </div>
                                                         <div className="flex items-center gap-3 mt-1 text-xs text-slate-500 relative z-10">

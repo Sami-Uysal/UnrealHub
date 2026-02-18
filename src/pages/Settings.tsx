@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Folder, Trash2, Plus, Globe, Play, FolderOpen, FileText, Code, Eraser, Copy, Settings as SettingsIcon, Tag } from 'lucide-react';
+import { useAppearance } from '../context/AppearanceContext';
+import { Folder, Trash2, Plus, Globe, Play, FolderOpen, FileText, Code, Eraser, Copy, Settings as SettingsIcon, Tag, LayoutGrid } from 'lucide-react';
 
 interface ConfigPaths {
     enginePaths: string[];
@@ -33,7 +34,7 @@ const defaultMenuConfig: ContextMenuConfig = {
 
 const menuItems: { key: keyof ContextMenuConfig; icon: React.ElementType; color: string }[] = [
     { key: 'launch', icon: Play, color: 'text-green-400' },
-    { key: 'showInExplorer', icon: FolderOpen, color: 'text-blue-400' },
+    { key: 'showInExplorer', icon: FolderOpen, color: 'text-primary' },
     { key: 'generateProjectFiles', icon: Code, color: 'text-purple-400' },
     { key: 'showLogs', icon: FileText, color: 'text-slate-400' },
     { key: 'editConfig', icon: SettingsIcon, color: 'text-slate-400' },
@@ -45,6 +46,7 @@ const menuItems: { key: keyof ContextMenuConfig; icon: React.ElementType; color:
 
 export const SettingsPage: React.FC = () => {
     const { t, i18n } = useTranslation();
+    const { accentColor, setAccentColor, compactMode, setCompactMode, bgEffect, setBgEffect, reduceAnimations, setReduceAnimations, fontSize, setFontSize } = useAppearance();
     const [paths, setPaths] = useState<ConfigPaths>({ enginePaths: [], projectPaths: [] });
     const [loading, setLoading] = useState(true);
     const [menuConfig, setMenuConfig] = useState<ContextMenuConfig>(defaultMenuConfig);
@@ -103,7 +105,7 @@ export const SettingsPage: React.FC = () => {
                 <h3 className="text-lg font-semibold text-slate-200">{title}</h3>
                 <button
                     onClick={onAdd}
-                    className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-md text-sm transition-colors"
+                    className="flex items-center space-x-2 bg-primary hover:bg-primary/80 text-white px-3 py-1.5 rounded-md text-sm transition-colors"
                 >
                     <Plus size={16} />
                     <span>{t('settings.addFolder')}</span>
@@ -143,32 +145,126 @@ export const SettingsPage: React.FC = () => {
     );
 
     return (
-        <div className="max-w-3xl">
+        <div className="w-full">
             <h2 className="text-2xl font-bold text-white mb-8">{t('settings.title')}</h2>
 
             <div className="mb-10">
                 <h3 className="text-lg font-semibold text-slate-200 mb-4">{t('settings.appearance')}</h3>
-                <div className="flex items-center justify-between p-4 bg-slate-900 border border-slate-800 rounded-lg">
-                    <div className="flex items-center gap-3">
-                        <Globe className="text-slate-400" size={20} />
-                        <div>
-                            <h4 className="text-slate-200 font-medium">{t('settings.language')}</h4>
-                            <p className="text-xs text-slate-500 mt-1">{t('settings.selectLanguage')}</p>
+                <div className="space-y-3">
+                    {/* Language */}
+                    <div className="flex items-center justify-between p-4 bg-slate-900 border border-slate-800 rounded-lg">
+                        <div className="flex items-center gap-3">
+                            <Globe className="text-slate-400" size={20} />
+                            <div>
+                                <h4 className="text-slate-200 font-medium">{t('settings.language')}</h4>
+                                <p className="text-xs text-slate-500 mt-1">{t('settings.selectLanguage')}</p>
+                            </div>
+                        </div>
+                        <div className="flex bg-slate-800 p-1 rounded-md">
+                            <button
+                                onClick={() => changeLanguage('tr')}
+                                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${i18n.language === 'tr' ? 'bg-[var(--accent-color)] text-white shadow' : 'text-slate-400 hover:text-slate-200'}`}
+                            >
+                                Türkçe
+                            </button>
+                            <button
+                                onClick={() => changeLanguage('en')}
+                                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${i18n.language === 'en' ? 'bg-[var(--accent-color)] text-white shadow' : 'text-slate-400 hover:text-slate-200'}`}
+                            >
+                                English
+                            </button>
                         </div>
                     </div>
-                    <div className="flex bg-slate-800 p-1 rounded-md">
-                        <button
-                            onClick={() => changeLanguage('tr')}
-                            className={`px-3 py-1 rounded text-sm font-medium transition-colors ${i18n.language === 'tr' ? 'bg-blue-600 text-white shadow' : 'text-slate-400 hover:text-slate-200'}`}
-                        >
-                            Türkçe
-                        </button>
-                        <button
-                            onClick={() => changeLanguage('en')}
-                            className={`px-3 py-1 rounded text-sm font-medium transition-colors ${i18n.language === 'en' ? 'bg-blue-600 text-white shadow' : 'text-slate-400 hover:text-slate-200'}`}
-                        >
-                            English
-                        </button>
+
+                    {/* Accent Color */}
+                    <div className="flex items-center justify-between p-4 bg-slate-900 border border-slate-800 rounded-lg">
+                        <div className="flex items-center gap-3">
+                            <div className="w-5 h-5 rounded-full bg-[var(--accent-color)] shadow-[0_0_10px_var(--accent-color)]" />
+                            <div>
+                                <h4 className="text-slate-200 font-medium">{t('settings.accentColor')}</h4>
+                            </div>
+                        </div>
+                        <div className="flex gap-2">
+                            {(['blue', 'green', 'purple', 'orange', 'cyan', 'red'] as const).map(color => (
+                                <button
+                                    key={color}
+                                    onClick={() => setAccentColor(color)}
+                                    className={`w-6 h-6 rounded-full transition-all duration-300 ${accentColor === color ? 'scale-125 ring-2 ring-white ring-offset-2 ring-offset-slate-900' : 'hover:scale-110 opacity-70 hover:opacity-100'}`}
+                                    style={{ backgroundColor: `var(--${color}-500)` }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Compact Mode */}
+                    <div className="flex items-center justify-between p-4 bg-slate-900 border border-slate-800 rounded-lg">
+                        <div className="flex items-center gap-3">
+                            <LayoutGrid className="text-slate-400" size={20} />
+                            <div>
+                                <h4 className="text-slate-200 font-medium">{t('settings.compactMode')}</h4>
+                            </div>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                                type="checkbox"
+                                className="sr-only peer"
+                                checked={compactMode}
+                                onChange={(e) => setCompactMode(e.target.checked)}
+                            />
+                            <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--accent-color)]"></div>
+                        </label>
+                    </div>
+
+                    {/* Background Effect */}
+                    <div className="flex items-center justify-between p-4 bg-slate-900 border border-slate-800 rounded-lg">
+                        <div>
+                            <h4 className="text-slate-200 font-medium">{t('settings.bgEffect')}</h4>
+                        </div>
+                        <div className="flex bg-slate-800 p-1 rounded-md">
+                            {(['gradient', 'flat', 'glass'] as const).map(effect => (
+                                <button
+                                    key={effect}
+                                    onClick={() => setBgEffect(effect)}
+                                    className={`px-3 py-1 rounded text-sm font-medium transition-colors ${bgEffect === effect ? 'bg-[var(--accent-color)] text-white shadow' : 'text-slate-400 hover:text-slate-200'}`}
+                                >
+                                    {t(`settings.effects.${effect}`)}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Reduce Animations */}
+                    <div className="flex items-center justify-between p-4 bg-slate-900 border border-slate-800 rounded-lg">
+                        <div>
+                            <h4 className="text-slate-200 font-medium">{t('settings.reduceAnimations')}</h4>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                                type="checkbox"
+                                className="sr-only peer"
+                                checked={reduceAnimations}
+                                onChange={(e) => setReduceAnimations(e.target.checked)}
+                            />
+                            <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--accent-color)]"></div>
+                        </label>
+                    </div>
+
+                    {/* Font Size */}
+                    <div className="flex items-center justify-between p-4 bg-slate-900 border border-slate-800 rounded-lg">
+                        <div>
+                            <h4 className="text-slate-200 font-medium">{t('settings.fontSize')}</h4>
+                        </div>
+                        <div className="flex bg-slate-800 p-1 rounded-md">
+                            {(['normal', 'large', 'xlarge'] as const).map(size => (
+                                <button
+                                    key={size}
+                                    onClick={() => setFontSize(size)}
+                                    className={`px-3 py-1 rounded text-sm font-medium transition-colors ${fontSize === size ? 'bg-[var(--accent-color)] text-white shadow' : 'text-slate-400 hover:text-slate-200'}`}
+                                >
+                                    {t(`settings.sizes.${size}`)}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -203,7 +299,7 @@ export const SettingsPage: React.FC = () => {
                                     className={`
                                         group relative overflow-hidden rounded-lg p-3 text-left transition-all duration-200 text-slate-200 border
                                         ${isActive
-                                            ? 'bg-slate-800 border-blue-500/50 shadow-[0_0_15px_-3px_rgba(59,130,246,0.15)]'
+                                            ? 'bg-slate-800 border-primary/50 shadow-[0_0_15px_-3px_var(--accent-color)]'
                                             : 'bg-slate-900 border-slate-800 hover:border-slate-700 hover:bg-slate-800/50 opacity-60 hover:opacity-100'}
                                     `}
                                 >
@@ -213,7 +309,7 @@ export const SettingsPage: React.FC = () => {
                                         </div>
                                         <div className={`
                                             w-8 h-4 rounded-full relative transition-colors duration-200
-                                            ${isActive ? 'bg-blue-600' : 'bg-slate-700'}
+                                            ${isActive ? 'bg-primary' : 'bg-slate-700'}
                                         `}>
                                             <div className={`
                                                 absolute top-0.5 left-0.5 w-3 h-3 rounded-full bg-white transition-transform duration-200
@@ -251,7 +347,7 @@ export const SettingsPage: React.FC = () => {
                                 window.location.reload();
                             }}
                         />
-                        <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                     </label>
                 </div>
             </div>

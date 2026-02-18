@@ -33,7 +33,6 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
             if (stored) {
                 setMenuConfig(JSON.parse(stored));
             } else {
-                // Default to all true if not set
                 setMenuConfig({
                     launch: true, showInExplorer: true, showLogs: true,
                     generateProjectFiles: true, cleanCache: true, clone: true,
@@ -95,7 +94,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
 
                 {isVisible('showInExplorer') && (
                     <button onClick={onShowInExplorer} className="w-full text-left px-3 py-2 hover:bg-slate-800/80 rounded-md flex items-center gap-3 transition-all group">
-                        <FolderOpen size={15} className="text-blue-400 group-hover:scale-110 transition-transform" />
+                        <FolderOpen size={15} className="text-primary group-hover:scale-110 transition-transform" />
                         <span className="font-medium">{t('contextMenu.showInExplorer')}</span>
                     </button>
                 )}

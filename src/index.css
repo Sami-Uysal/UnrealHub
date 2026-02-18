@@ -23,6 +23,14 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Theme Colors */
+  --blue-500: #3b82f6;
+  --green-500: #22c55e;
+  --purple-500: #a855f7;
+  --orange-500: #f97316;
+  --cyan-500: #06b6d4;
+  --red-500: #ef4444;
 }
 
 body {

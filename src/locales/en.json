@@ -12,6 +12,7 @@
     "search": "Search projects...",
     "version": "Version:",
     "open": "Open",
+    "launch": "Launch",
     "gitHistory": "Git History",
     "noProjects": "No projects found.",
     "edit": "Edit",
@@ -20,7 +21,10 @@
     "editProjectTitle": "Edit Project",
     "editProjectNameLabel": "Project Name (Only changes here)",
     "editProjectImageLabel": "Project Image",
-    "selectImage": "Select Image"
+    "selectImage": "Select Image",
+    "filter": "Filter",
+    "filters": "Filters",
+    "clearAll": "Clear All"
   },
   "settings": {
     "title": "Settings",
@@ -35,7 +39,29 @@
     "gitIntegrationDesc": "Shows Git history button on project cards. (Git must be installed)",
     "appearance": "Appearance",
     "language": "Language",
-    "selectLanguage": "Select Language",
+    "accentColor": "Accent Color",
+    "compactMode": "Compact Mode",
+    "bgEffect": "Background Effect",
+    "reduceAnimations": "Reduce Animations",
+    "fontSize": "Font Size",
+    "colors": {
+      "blue": "Blue",
+      "green": "Green",
+      "purple": "Purple",
+      "orange": "Orange",
+      "cyan": "Cyan",
+      "red": "Red"
+    },
+    "effects": {
+      "gradient": "Gradient",
+      "flat": "Flat",
+      "glass": "Glass"
+    },
+    "sizes": {
+      "normal": "Normal",
+      "large": "Large",
+      "xlarge": "Extra Large"
+    },
     "contextMenu": "Context Menu",
     "contextMenuDesc": "Select items you want to see in the menu."
   },

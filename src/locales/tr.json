@@ -12,6 +12,7 @@
     "search": "Proje ara...",
     "version": "Versiyon:",
     "open": "Aç",
+    "launch": "Başlat",
     "gitHistory": "Git Geçmişi",
     "noProjects": "Proje bulunamadı.",
     "edit": "Düzenle",
@@ -20,7 +21,10 @@
     "editProjectTitle": "Projeyi Düzenle",
     "editProjectNameLabel": "Proje Adı (Sadece burada değişir)",
     "editProjectImageLabel": "Proje Resmi",
-    "selectImage": "Resim Seç"
+    "selectImage": "Resim Seç",
+    "filter": "Filtrele",
+    "filters": "Filtreler",
+    "clearAll": "Hepsini Temizle"
   },
   "settings": {
     "title": "Ayarlar",
@@ -35,7 +39,29 @@
     "gitIntegrationDesc": "Proje kartlarında Git geçmişi butonunu gösterir. (Git kurulu olmalıdır)",
     "appearance": "Görünüm",
     "language": "Dil",
-    "selectLanguage": "Dil Seçin",
+    "accentColor": "Tema Rengi",
+    "compactMode": "Sıkışık Görünüm",
+    "bgEffect": "Arka Plan Efekti",
+    "reduceAnimations": "Animasyonları Azalt",
+    "fontSize": "Yazı Boyutu",
+    "colors": {
+      "blue": "Mavi",
+      "green": "Yeşil",
+      "purple": "Mor",
+      "orange": "Turuncu",
+      "cyan": "Camgöbeği",
+      "red": "Kırmızı"
+    },
+    "effects": {
+      "gradient": "Gradyan",
+      "flat": "Düz Renk",
+      "glass": "Bulanık (Glass)"
+    },
+    "sizes": {
+      "normal": "Normal",
+      "large": "Büyük",
+      "xlarge": "Çok Büyük"
+    },
     "contextMenu": "Sağ Tık Menüsü",
     "contextMenuDesc": "Menüde görmek istediğiniz öğeleri seçin."
   },

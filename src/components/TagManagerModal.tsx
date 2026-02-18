@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X, Tag, Plus, Trash2 } from 'lucide-react';
+import { getTagColor } from '../utils/tagUtils';
 
 interface TagManagerModalProps {
     projectPath: string;
@@ -105,7 +106,8 @@ export const TagManagerModal: React.FC<TagManagerModalProps> = ({ projectPath, a
                                             window.unreal.saveProjectTags(newAllTags);
                                             setNewTag('');
                                         }}
-                                        className="text-[10px] bg-slate-800/50 hover:bg-orange-900/20 text-slate-400 hover:text-orange-400 border border-slate-700 hover:border-orange-500/50 px-2.5 py-1 rounded-full transition-all flex items-center gap-1 group"
+                                        style={{ backgroundColor: getTagColor(tag) }}
+                                        className="text-[10px] text-white border border-white/10 px-2.5 py-1 rounded-full transition-all flex items-center gap-1 group shadow-sm hover:scale-105"
                                     >
                                         <Plus size={10} className="opacity-0 group-hover:opacity-100 transition-opacity w-0 group-hover:w-auto overflow-hidden" />
                                         {tag}
@@ -121,14 +123,18 @@ export const TagManagerModal: React.FC<TagManagerModalProps> = ({ projectPath, a
                         <p className="text-slate-500 text-sm italic text-center py-4">{t('dialogs.noTags')}</p>
                     ) : (
                         currentTags.map(tag => (
-                            <div key={tag} className="flex justify-between items-center bg-slate-800/50 p-2 rounded-lg border border-slate-700/50 group hover:border-slate-600 hover:bg-slate-800 transition-all">
-                                <span className="text-slate-200 text-sm font-medium flex items-center gap-2">
-                                    <Tag size={14} className="text-slate-500 group-hover:text-orange-400 transition-colors" />
+                            <div
+                                key={tag}
+                                style={{ backgroundColor: getTagColor(tag) }}
+                                className="flex justify-between items-center p-2 rounded-lg border border-white/10 group transition-all shadow-sm"
+                            >
+                                <span className="text-white text-sm font-bold flex items-center gap-2">
+                                    <Tag size={14} className="text-white/70" />
                                     {tag}
                                 </span>
                                 <button
                                     onClick={() => handleRemoveTag(tag)}
-                                    className="text-slate-500 hover:text-red-400 p-1 rounded-md hover:bg-slate-700/50 opacity-0 group-hover:opacity-100 transition-all transform scale-90 group-hover:scale-100"
+                                    className="text-white/70 hover:text-white p-1 rounded-md hover:bg-black/20 opacity-0 group-hover:opacity-100 transition-all transform scale-90 group-hover:scale-100"
                                 >
                                     <Trash2 size={16} />
                                 </button>
