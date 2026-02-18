@@ -13,7 +13,11 @@ Developed for personal use.
 - **Engines**: List installed Unreal Engine versions
 - **Easy Addition**: Add projects via drag-and-drop or file picker
 - **Customization**: Change project names and cover images
-- **Git Integration**: Visualize commit history and branches for your projects (can be enabled in Settings)
+- **Tag System**: Add tags to projects and filter by tags
+- **Git Integration**: Visualize commit history and branches (can be enabled in Settings)
+- **Localization**: Turkish and English interface support
+- **Context Menu**: Customizable right-click menu (configurable in Settings)
+- **Config Editor**: Edit `.uproject` files directly from the app
 
 ## Installation
 
