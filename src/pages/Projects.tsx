@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Play, MoreVertical, Image as ImageIcon, X, Plus, FolderPlus, GitBranch } from 'lucide-react';
+import { Play, Image as ImageIcon, X, Plus, FolderPlus, GitBranch, Pencil } from 'lucide-react';
 import { Project } from '../types';
+import { ContextMenu } from '../components/ContextMenu';
+import { ConfigEditorModal } from '../components/ConfigEditorModal';
 
 interface ProjectsPageProps {
     onOpenGit?: (project: Project) => void;
@@ -17,6 +19,10 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isDragOverModal, setIsDragOverModal] = useState(false);
     const [showGit, setShowGit] = useState(true);
+
+    const [ctxMenu, setCtxMenu] = useState<{ x: number, y: number, project: Project } | null>(null);
+
+    const [configProject, setConfigProject] = useState<Project | null>(null);
 
     useEffect(() => {
         const checkGit = localStorage.getItem('showGitIntegration');
@@ -40,7 +46,6 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
         setIsDragOverModal(false);
 
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-
             const path = e.dataTransfer.files[0].path;
             if (path) {
                 const success = await window.unreal.addDroppedProject(path);
@@ -78,8 +83,8 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
         await window.unreal.launchProject(path);
     };
 
-    const handleEditClick = (project: Project, e: React.MouseEvent) => {
-        e.stopPropagation();
+    const handleEditClick = (project: Project, e?: React.MouseEvent) => {
+        if (e) e.stopPropagation();
         setEditingProject(project);
         setEditName(project.name);
         setEditThumb(project.thumbnail);
@@ -104,8 +109,68 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
         p.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const handleContextMenu = (e: React.MouseEvent, project: Project) => {
+        e.preventDefault();
+        setCtxMenu({ x: e.clientX, y: e.clientY, project });
+    };
+
+    const closeContextMenu = () => setCtxMenu(null);
+
+    const handleAction = async (action: () => Promise<void>) => {
+        closeContextMenu();
+        await action();
+        loadProjects();
+    };
+
     return (
-        <div className="relative">
+        <div className="relative" onClick={closeContextMenu}>
+            {ctxMenu && (
+                <ContextMenu
+                    x={ctxMenu.x}
+                    y={ctxMenu.y}
+                    onClose={closeContextMenu}
+                    onLaunch={() => handleAction(async () => window.unreal.launchProject(ctxMenu.project.path))}
+                    onShowInExplorer={() => handleAction(async () => window.unreal.launchProject(ctxMenu.project.path.replace(/[\\\/][^\\\/]+$/, '')))}
+                    onShowLogs={() => handleAction(async () => window.unreal.openProjectLog(ctxMenu.project.path))}
+                    onGenerateFiles={() => handleAction(async () => {
+                        alert(t('dialogs.generateFilesSuccess'));
+                        await window.unreal.generateProjectFiles(ctxMenu.project.path);
+                    })}
+                    onCleanCache={() => handleAction(async () => {
+                        if (confirm(t('dialogs.cleanCacheMessage'))) {
+                            await window.unreal.cleanProjectCache(ctxMenu.project.path);
+                            alert(t('dialogs.cleanCacheSuccess'));
+                        }
+                    })}
+                    onClone={() => {
+                        const newName = prompt(t('dialogs.cloneProjectMessage'));
+                        if (newName) {
+                            handleAction(async () => {
+                                try {
+                                    await window.unreal.cloneProject(ctxMenu.project.path, newName);
+                                    alert(t('dialogs.cloneProjectSuccess'));
+                                } catch {
+                                    alert(t('dialogs.cloneProjectError'));
+                                }
+                            });
+                        }
+                    }}
+                    onEditConfig={() => handleAction(async () => setConfigProject(ctxMenu.project))}
+                    onManageTags={() => alert("Tag Manager Coming Soon")}
+                    onRemove={() => handleAction(async () => {
+
+                    })}
+                />
+            )}
+
+            {/* Quick Config Modal */}
+            {configProject && (
+                <ConfigEditorModal
+                    projectPath={configProject.path}
+                    onClose={() => setConfigProject(null)}
+                />
+            )}
+
             {/* Project Modal */}
             {isAddModalOpen && (
                 <div
@@ -236,7 +301,12 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {filteredProjects.map((project) => (
-                        <div key={project.id} className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden group hover:shadow-2xl hover:shadow-blue-900/20 transition-all duration-300 hover:scale-[1.02] hover:border-slate-700 relative">
+                        <div
+                            key={project.id}
+                            onContextMenu={(e) => handleContextMenu(e, project)}
+                            onClick={() => handleLaunch(project.path)}
+                            className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden group hover:shadow-2xl hover:shadow-blue-900/20 transition-all duration-300 hover:scale-[1.02] hover:border-slate-700 relative cursor-pointer"
+                        >
                             <div className="h-48 relative bg-slate-800 overflow-hidden">
                                 {project.thumbnail ? (
                                     <img
@@ -260,7 +330,10 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
 
                                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200 backdrop-blur-sm">
                                     <button
-                                        onClick={() => handleLaunch(project.path)}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleLaunch(project.path);
+                                        }}
                                         className="bg-amber-500 hover:bg-amber-400 text-black rounded-full p-4 transform scale-75 group-hover:scale-100 transition-all duration-300 shadow-xl"
                                     >
                                         <Play fill="currentColor" size={24} />
@@ -291,7 +364,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
                                         onClick={(e) => handleEditClick(project, e)}
                                         className="text-slate-500 hover:text-white p-2 rounded-lg hover:bg-slate-800 transition-colors"
                                     >
-                                        <MoreVertical size={16} />
+                                        <Pencil size={16} />
                                     </button>
                                 </div>
                             </div>

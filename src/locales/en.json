@@ -59,5 +59,40 @@
     "error": "Failed to load Git history.",
     "notRepo": "This project is not a valid Git repository.",
     "current": "Current"
+  },
+  "contextMenu": {
+    "launch": "Launch Project",
+    "showInExplorer": "Show in Explorer",
+    "showLogs": "Show Logs",
+    "generateProjectFiles": "Generate Project Files",
+    "cleanCache": "Clean Cache",
+    "clone": "Clone Project",
+    "editConfig": "Quick Config",
+    "manageTags": "Manage Tags",
+    "removeProject": "Remove from List"
+  },
+  "dialogs": {
+    "cleanCacheTitle": "Clean Cache",
+    "cleanCacheMessage": "This will delete 'Intermediate' and 'DerivedDataCache' folders. Temporary files will be removed but your 'Saved' data will be preserved. Do you want to continue?",
+    "cleanCacheSuccess": "Cache cleaned successfully.",
+    "cleanCacheError": "Error cleaning cache.",
+    "generateFilesSuccess": "Project files generation started.",
+    "generateFilesError": "Error generating project files.",
+    "cloneProjectTitle": "Clone Project",
+    "cloneProjectMessage": "New project name:",
+    "cloneProjectSuccess": "Project cloned successfully.",
+    "cloneProjectError": "Error cloning project.",
+    "configEditorTitle": "Quick Config",
+    "tagsTitle": "Tag Management",
+    "addTag": "Add Tag",
+    "noTags": "No tags found."
+  },
+  "config": {
+    "rayTracing": "Ray Tracing",
+    "dx12": "DirectX 12",
+    "rhi": "Graphics API (RHI)",
+    "save": "Save",
+    "cancel": "Cancel",
+    "success": "Settings saved."
   }
 }

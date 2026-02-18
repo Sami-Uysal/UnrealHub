@@ -34,6 +34,14 @@ declare global {
             checkGitRepo: (path: string) => Promise<boolean>;
             getGitHistory: (path: string) => Promise<GitCommit[]>;
             getGitStatus: (path: string) => Promise<{ current: string; branches: string[]; remotes: string[] }>;
+            openProjectLog: (path: string) => Promise<void>;
+            generateProjectFiles: (path: string) => Promise<void>;
+            cleanProjectCache: (path: string) => Promise<void>;
+            cloneProject: (path: string, newName: string) => Promise<void>;
+            readIniFile: (path: string) => Promise<Record<string, any>>;
+            writeIniFile: (path: string, data: Record<string, any>) => Promise<void>;
+            getProjectTags: () => Promise<Record<string, string[]>>;
+            saveProjectTags: (tags: Record<string, string[]>) => Promise<void>;
             minimize: () => Promise<void>;
             maximize: () => Promise<void>;
             close: () => Promise<void>;

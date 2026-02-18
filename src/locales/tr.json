@@ -59,5 +59,40 @@
     "error": "Git geçmişi yüklenemedi.",
     "notRepo": "Bu proje geçerli bir Git deposu değil.",
     "current": "Mevcut"
+  },
+  "contextMenu": {
+    "launch": "Projeyi Başlat",
+    "showInExplorer": "Dosya Gezgininde Göster",
+    "showLogs": "Log Dosyalarını Göster",
+    "generateProjectFiles": "Proje Dosyalarını Oluştur",
+    "cleanCache": "Önbelleği Temizle",
+    "clone": "Projeyi Kopyala",
+    "editConfig": "Hızlı Yapılandırma",
+    "manageTags": "Etiketleri Yönet",
+    "removeProject": "Listeden Kaldır"
+  },
+  "dialogs": {
+    "cleanCacheTitle": "Önbelleği Temizle",
+    "cleanCacheMessage": "Bu işlem 'Intermediate' ve 'DerivedDataCache' klasörlerini silecek. Proje geçici dosyaları temizlenecek ancak kayıtlı verileriniz (Saved) korunacak. Devam etmek istiyor musunuz?",
+    "cleanCacheSuccess": "Önbellek başarıyla temizlendi.",
+    "cleanCacheError": "Önbellek temizlenirken hata oluştu.",
+    "generateFilesSuccess": "Proje dosyaları oluşturma işlemi başlatıldı.",
+    "generateFilesError": "Proje dosyaları oluşturulurken hata oluştu.",
+    "cloneProjectTitle": "Projeyi Kopyala",
+    "cloneProjectMessage": "Yeni proje adı:",
+    "cloneProjectSuccess": "Proje başarıyla kopyalandı.",
+    "cloneProjectError": "Proje kopyalanırken hata oluştu.",
+    "configEditorTitle": "Hızlı Yapılandırma",
+    "tagsTitle": "Etiket Yönetimi",
+    "addTag": "Etiket Ekle",
+    "noTags": "Etiket bulunamadı."
+  },
+  "config": {
+    "rayTracing": "Ray Tracing (Işın İzleme)",
+    "dx12": "DirectX 12",
+    "rhi": "Grafik API (RHI)",
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "success": "Ayarlar kaydedildi."
   }
 }

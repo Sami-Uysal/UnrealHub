@@ -188,8 +188,8 @@ export const GitHistoryPage: React.FC<GitHistoryPageProps> = ({ projectPath, pro
                 </div>
             </div>
 
-            <div className="flex-1 flex min-h-0">
-                <div className="w-64 bg-slate-900 border-r border-slate-800 flex flex-col overflow-y-auto shrink-0 select-none">
+            <div className="flex-1 flex min-h-0 p-4 gap-4">
+                <div className="hidden md:flex w-64 bg-slate-900 border border-slate-800 flex-col overflow-y-auto shrink-0 select-none rounded-xl">
                     <div className="p-4 space-y-6">
                         <div>
                             <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 px-2">{t('git.head')}</div>
@@ -239,7 +239,7 @@ export const GitHistoryPage: React.FC<GitHistoryPageProps> = ({ projectPath, pro
                     </div>
                 </div>
 
-                <div className="flex-1 overflow-hidden bg-slate-900/50 flex flex-col relative w-full">
+                <div className="flex-1 overflow-hidden bg-slate-900/50 flex flex-col relative w-full rounded-xl border border-slate-800">
                     {loading && (
                         <div className="absolute inset-0 flex items-center justify-center z-50 bg-slate-900/80">
                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>

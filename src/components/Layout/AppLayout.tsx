@@ -29,7 +29,7 @@ export const AppLayout: React.FC = () => {
             <div className="flex flex-1 overflow-hidden h-full w-full">
                 <Sidebar currentView={view === 'git' ? 'projects' : view} onViewChange={setView} />
                 <main className="flex-1 overflow-auto bg-transparent">
-                    <div className="p-8 w-full min-h-full flex flex-col">
+                    <div className={`${view === 'git' ? 'p-0' : 'p-8'} w-full min-h-full flex flex-col transition-all duration-300`}>
                         <header className="flex justify-between items-center mb-0">
                         </header>
 
