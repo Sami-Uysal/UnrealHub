@@ -35,7 +35,9 @@
     "gitIntegrationDesc": "Proje kartlarında Git geçmişi butonunu gösterir. (Git kurulu olmalıdır)",
     "appearance": "Görünüm",
     "language": "Dil",
-    "selectLanguage": "Dil Seçin"
+    "selectLanguage": "Dil Seçin",
+    "contextMenu": "Sağ Tık Menüsü",
+    "contextMenuDesc": "Menüde görmek istediğiniz öğeleri seçin."
   },
   "engines": {
     "title": "MOTOR SÜRÜMLERİ",
@@ -69,7 +71,8 @@
     "clone": "Projeyi Kopyala",
     "editConfig": "Hızlı Yapılandırma",
     "manageTags": "Etiketleri Yönet",
-    "removeProject": "Listeden Kaldır"
+    "removeProject": "Listeden Kaldır",
+    "rightClickMenu": "SAĞ TIK MENÜSÜ"
   },
   "dialogs": {
     "cleanCacheTitle": "Önbelleği Temizle",

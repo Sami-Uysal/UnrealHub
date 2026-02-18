@@ -177,6 +177,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
                 <ContextMenu
                     x={ctxMenu.x}
                     y={ctxMenu.y}
+                    projectName={ctxMenu.project.name}
                     onClose={closeContextMenu}
                     onLaunch={() => handleAction(async () => window.unreal.launchProject(ctxMenu.project.path))}
                     onShowInExplorer={() => handleAction(async () => window.unreal.launchProject(ctxMenu.project.path.replace(/[\\\/][^\\\/]+$/, '')))}

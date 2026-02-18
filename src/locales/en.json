@@ -35,7 +35,9 @@
     "gitIntegrationDesc": "Shows Git history button on project cards. (Git must be installed)",
     "appearance": "Appearance",
     "language": "Language",
-    "selectLanguage": "Select Language"
+    "selectLanguage": "Select Language",
+    "contextMenu": "Context Menu",
+    "contextMenuDesc": "Select items you want to see in the menu."
   },
   "engines": {
     "title": "ENGINE VERSIONS",
@@ -69,7 +71,8 @@
     "clone": "Clone Project",
     "editConfig": "Quick Config",
     "manageTags": "Manage Tags",
-    "removeProject": "Remove from List"
+    "removeProject": "Remove from List",
+    "rightClickMenu": "RIGHT CLICK MENU"
   },
   "dialogs": {
     "cleanCacheTitle": "Clean Cache",
