@@ -3,7 +3,6 @@ import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-
 process.env.APP_ROOT = path.join(__dirname, '..')
 
 export const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
@@ -455,75 +454,26 @@ ipcMain.handle('get-git-history', async (_, projectPath: string) => {
   }
 });
 
-// v1.2 Feature Handlers
-
 ipcMain.handle('open-project-log', async (_, projectPath: string) => {
   const projectDir = path.dirname(projectPath);
   const logDir = path.join(projectDir, 'Saved', 'Logs');
   if (existsSync(logDir)) {
     await shell.openPath(logDir);
   } else {
-    // Fallback to project dir if logs don't exist yet
     await shell.openPath(projectDir);
   }
 });
 
 ipcMain.handle('generate-project-files', async (_, projectPath: string) => {
-  // This usually requires Unreal Version Selector or UBT. 
-  // For now, we will launch the .uproject with -GenerateProjectFiles
-  // Note: This is a simplified approach. A robust one might need registry lookups for UVS.
-  // Finding the associated engine version editor executable would be best, 
-  // but for a generic approach, we might rely on the file association of .uproject
-  // or a known engine path from our config.
-  // For this version, we'll try to use the associated engine's UBT if possible, 
-  // but simpler: use the VersionSelector via shell if installed.
-
-  // Alternative: Just launch with specific arguments if we knew the engine path.
-  // Let's assume the user has file associations set up common for UE devs.
-  // We can try to run: `UnrealVersionSelector.exe /projectfiles "path/to/project.uproject"`
-  // But finding UVS is tricky.
-
-  // Let's try a safer shell execution approach that relies on Windows file associations
-  // "Generate Project Files" is often a context menu item in Windows.
-  // We can try to replicate what `UnrealVersionSelector -projectfiles` does.
-
-  // Implementation Update: We will try to find the engine for this project and run UBT.
-  // However, that's complex. Let's start with a placeholder that opens the folder 
-  // and notifies user, OR if we can, run the command.
-
-  // Simplest functional approach for v1.0+: open shell and try standard command if available.
-  // A better approach for this app:
-
   try {
-    const projectDir = path.dirname(projectPath);
-    // If we can find the GenerateProjectFiles.bat or similar in engine, we run it.
-    // For now, let's just open the folder so user can right click -> Generate.
-    // Automating this robustly across all UE versions is complex without more inputs.
-    // WE WILL ATTEMPT TO RUN UBT if we can determine the engine path.
-
-    // REVISION: Let's stick to opening the folder for this specific action in v1.2 
-    // unless we want to dive deep into UBT invocation. 
-    // User request: "Generate Project Files action".
-    // Let's try to invoke the .uproject with a flag if possible? No, .uproject is JSON.
-
-    // Let's use the standard "UnrealVersionSelector" trick if it's in the path?
-    // Or just open directory for now as a safe fallback?
-    // Let's TRY to find the engine path from our config vs the project's association.
-
-    // SAFE FALLBACK for v1.2 MVP: Open folder and select file.
     shell.showItemInFolder(projectPath);
   } catch (e) {
-    console.error("Error generating files", e);
+    console.error('Error generating files', e);
   }
 });
 
 ipcMain.handle('clean-project-cache', async (_, projectPath: string) => {
   const projectDir = path.dirname(projectPath);
-  // User asked to clean cache. Usually Binaries are also cleaned for a full "clean". 
-  // But let's stick to Intermediate and DDC as per implementation plan description.
-  // Plan said: "clean-project-cache (Intermediate, DerivedDataCache)"
-  // Plan NOTE: "NOT delete ... Binaries". OK.
-
   const targets = ['Intermediate', 'DerivedDataCache'];
 
   for (const folder of targets) {
@@ -543,10 +493,6 @@ ipcMain.handle('clone-project', async (_, projectPath: string, newName: string) 
     throw new Error('Project already exists');
   }
 
-  // Naive file copy. For huge projects, this might take time.
-  // Exclude Intermediate, Saved, DerivedDataCache, Binaries to keep it clean?
-  // Yes, cloning usually implies a clean copy.
-
   await fs.mkdir(newProjectDir);
 
   const entries = await fs.readdir(projectDir, { withFileTypes: true });
@@ -560,12 +506,8 @@ ipcMain.handle('clone-project', async (_, projectPath: string, newName: string) 
       await fs.cp(srcPath, destPath, { recursive: true });
     } else {
       if (entry.name.endsWith('.uproject')) {
-        // Rename .uproject file
         const newUprojectPath = path.join(newProjectDir, `${newName}.uproject`);
         await fs.copyFile(srcPath, newUprojectPath);
-
-        // Update Name in .uproject content? Usually mostly unnecessary for basic clones, 
-        // but modules might rely on it. Let's just copy file for now.
       } else {
         await fs.copyFile(srcPath, destPath);
       }
@@ -574,16 +516,11 @@ ipcMain.handle('clone-project', async (_, projectPath: string, newName: string) 
 });
 
 ipcMain.handle('read-ini-file', async (_, projectPath: string) => {
-  // Target: Config/DefaultEngine.ini
   const iniPath = path.join(path.dirname(projectPath), 'Config', 'DefaultEngine.ini');
   if (!existsSync(iniPath)) return {};
 
   const content = await fs.readFile(iniPath, 'utf-8');
   const config: Record<string, any> = {};
-
-  // Simple parser for specific keys we care about
-  // RayTracing: [/Script/Engine.RendererSettings] -> r.RayTracing=True/False
-  // RHI: [/Script/WindowsTargetPlatform.WindowsTargetSettings] -> DefaultGraphicsRHI=...
 
   const rayTracingMatch = content.match(/r\.RayTracing=(True|False)/i);
   if (rayTracingMatch) config.rayTracing = rayTracingMatch[1].toLowerCase() === 'true';
