@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppearance } from '../context/AppearanceContext';
-import { Folder, Trash2, Plus, Globe, Play, FolderOpen, FileText, Code, Eraser, Copy, Settings as SettingsIcon, Tag, LayoutGrid, StickyNote } from 'lucide-react';
+import { Folder, Trash2, Plus, Play, FolderOpen, FileText, Code, Eraser, Copy, Settings as SettingsIcon, Tag, StickyNote, Palette, Sparkles, ChevronRight } from 'lucide-react';
 
 interface ConfigPaths {
     enginePaths: string[];
@@ -46,6 +46,59 @@ const menuItems: { key: keyof ContextMenuConfig; icon: React.ElementType; color:
     { key: 'cleanCache', icon: Eraser, color: 'text-yellow-400' },
     { key: 'removeProject', icon: Trash2, color: 'text-red-400' },
 ];
+
+const Toggle = ({ checked, onChange }: { checked: boolean; onChange: (val: boolean) => void }) => (
+    <button
+        onClick={() => onChange(!checked)}
+        className={`relative w-12 h-7 rounded-full transition-all duration-300 ${checked ? 'bg-[var(--accent-color)] shadow-[0_0_12px_var(--accent-color)]/30' : 'bg-slate-700'}`}
+    >
+        <div className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-300 ${checked ? 'translate-x-5' : ''}`} />
+    </button>
+);
+
+const SectionCard = ({ icon: Icon, title, description, children }: { icon: React.ElementType; title: string; description?: string; children: React.ReactNode }) => (
+    <div className="bg-slate-900/60 backdrop-blur-sm border border-white/[0.04] rounded-2xl overflow-hidden">
+        <div className="px-6 py-5 border-b border-white/[0.04] flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-white/[0.06] border border-white/[0.06] flex items-center justify-center shrink-0">
+                <Icon size={16} className="text-white" />
+            </div>
+            <div>
+                <h3 className="text-sm font-bold text-white tracking-wide">{title}</h3>
+                {description && <p className="text-[11px] text-slate-500 mt-0.5">{description}</p>}
+            </div>
+        </div>
+        <div className="divide-y divide-white/[0.03]">
+            {children}
+        </div>
+    </div>
+);
+
+const SettingRow = ({ label, description, children }: { label: string; description?: string; children: React.ReactNode }) => (
+    <div className="flex items-center justify-between px-6 py-4 hover:bg-white/[0.02] transition-colors">
+        <div className="min-w-0 mr-4">
+            <span className="text-sm font-medium text-slate-200">{label}</span>
+            {description && <p className="text-[11px] text-slate-500 mt-0.5">{description}</p>}
+        </div>
+        <div className="shrink-0">{children}</div>
+    </div>
+);
+
+const SegmentPicker = ({ options, value, onChange }: { options: { key: string; label: string }[]; value: string; onChange: (val: string) => void }) => (
+    <div className="flex bg-slate-800/60 p-1 rounded-xl border border-white/[0.04]">
+        {options.map(opt => (
+            <button
+                key={opt.key}
+                onClick={() => onChange(opt.key)}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 ${value === opt.key
+                    ? 'bg-[var(--accent-color)] text-white shadow-lg shadow-[var(--accent-color)]/20'
+                    : 'text-slate-400 hover:text-slate-200'
+                    }`}
+            >
+                {opt.label}
+            </button>
+        ))}
+    </div>
+);
 
 export const SettingsPage: React.FC = () => {
     const { t, i18n } = useTranslation();
@@ -102,257 +155,179 @@ export const SettingsPage: React.FC = () => {
 
     if (loading) return <div className="text-slate-400">{t('git.loading')}</div>;
 
-    const PathSection = ({ title, type, items, onAdd, onRemove }: { title: string, type: 'engine' | 'project', items: string[], onAdd: () => void, onRemove: (t: any, p: string) => void }) => (
-        <div className="mb-10">
-            <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-slate-200">{title}</h3>
+    const accentColors = [
+        { key: 'blue', bg: '#3b82f6' },
+        { key: 'green', bg: '#22c55e' },
+        { key: 'purple', bg: '#a855f7' },
+        { key: 'orange', bg: '#f97316' },
+        { key: 'cyan', bg: '#06b6d4' },
+        { key: 'red', bg: '#ef4444' },
+    ] as const;
+
+    const PathList = ({ type, items, onAdd, onRemove }: { type: 'engine' | 'project'; items: string[]; onAdd: () => void; onRemove: (t: any, p: string) => void }) => (
+        <div>
+            {items.length === 0 ? (
+                <div className="px-6 py-8 text-center">
+                    <Folder size={24} className="text-slate-700 mx-auto mb-2" />
+                    <p className="text-sm text-slate-500">{t('settings.noFolders')}</p>
+                </div>
+            ) : (
+                items.map((path) => (
+                    <div key={path} className="flex items-center justify-between px-6 py-3 hover:bg-white/[0.02] transition-colors group">
+                        <div className="flex items-center gap-3 min-w-0">
+                            <Folder size={15} className="text-slate-600 shrink-0" />
+                            <span className="font-mono text-xs text-slate-400 truncate" title={path}>{path}</span>
+                        </div>
+                        <button
+                            onClick={() => onRemove(type, path)}
+                            className="text-slate-600 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10 transition-all opacity-0 group-hover:opacity-100"
+                        >
+                            <Trash2 size={14} />
+                        </button>
+                    </div>
+                ))
+            )}
+            <div className="px-6 py-3 border-t border-white/[0.03]">
                 <button
                     onClick={onAdd}
-                    className="flex items-center space-x-2 bg-primary hover:bg-primary/80 text-white px-3 py-1.5 rounded-md text-sm transition-colors"
+                    className="flex items-center gap-2 text-xs font-semibold text-[var(--accent-color)] hover:text-white transition-colors group"
                 >
-                    <Plus size={16} />
-                    <span>{t('settings.addFolder')}</span>
+                    <Plus size={14} className="group-hover:scale-110 transition-transform" />
+                    {t('settings.addFolder')}
                 </button>
+                <p className="text-[10px] text-slate-600 mt-1.5">
+                    {type === 'engine' ? t('settings.engineDesc') : t('settings.projectDesc')}
+                </p>
             </div>
-
-            <div className="bg-slate-900 border border-slate-800 rounded-lg overflow-hidden">
-                {items.length === 0 ? (
-                    <div className="p-6 text-center text-slate-500 text-sm">
-                        {t('settings.noFolders')}
-                    </div>
-                ) : (
-                    <div className="divide-y divide-slate-800">
-                        {items.map((path) => (
-                            <div key={path} className="flex items-center justify-between p-4 hover:bg-slate-800/50 transition-colors">
-                                <div className="flex items-center space-x-3 text-slate-300">
-                                    <Folder size={18} className="text-slate-500" />
-                                    <span className="font-mono text-sm max-w-[400px] truncate" title={path}>{path}</span>
-                                </div>
-                                <button
-                                    onClick={() => onRemove(type, path)}
-                                    className="text-slate-500 hover:text-red-400 p-2 rounded-md hover:bg-slate-800 transition-colors"
-                                >
-                                    <Trash2 size={18} />
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
-            <p className="mt-2 text-xs text-slate-500">
-                {type === 'engine'
-                    ? t('settings.engineDesc')
-                    : t('settings.projectDesc')}
-            </p>
         </div>
     );
 
     return (
-        <div className="w-full">
-            <h2 className="text-2xl font-bold text-white mb-8">{t('settings.title')}</h2>
-
+        <div className="w-full max-w-3xl mx-auto">
             <div className="mb-10">
-                <h3 className="text-lg font-semibold text-slate-200 mb-4">{t('settings.appearance')}</h3>
-                <div className="space-y-3">
-                    {/* Language */}
-                    <div className="flex items-center justify-between p-4 bg-slate-900 border border-slate-800 rounded-lg">
-                        <div className="flex items-center gap-3">
-                            <Globe className="text-slate-400" size={20} />
-                            <div>
-                                <h4 className="text-slate-200 font-medium">{t('settings.language')}</h4>
-                                <p className="text-xs text-slate-500 mt-1">{t('settings.selectLanguage')}</p>
-                            </div>
-                        </div>
-                        <div className="flex bg-slate-800 p-1 rounded-md">
-                            <button
-                                onClick={() => changeLanguage('tr')}
-                                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${i18n.language === 'tr' ? 'bg-[var(--accent-color)] text-white shadow' : 'text-slate-400 hover:text-slate-200'}`}
-                            >
-                                Türkçe
-                            </button>
-                            <button
-                                onClick={() => changeLanguage('en')}
-                                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${i18n.language === 'en' ? 'bg-[var(--accent-color)] text-white shadow' : 'text-slate-400 hover:text-slate-200'}`}
-                            >
-                                English
-                            </button>
-                        </div>
-                    </div>
+                <h2 className="text-3xl font-black text-white tracking-tight">
+                    {t('settings.title').toUpperCase()}
+                </h2>
+            </div>
 
-                    {/* Accent Color */}
-                    <div className="flex items-center justify-between p-4 bg-slate-900 border border-slate-800 rounded-lg">
-                        <div className="flex items-center gap-3">
-                            <div className="w-5 h-5 rounded-full bg-[var(--accent-color)] shadow-[0_0_10px_var(--accent-color)]" />
-                            <div>
-                                <h4 className="text-slate-200 font-medium">{t('settings.accentColor')}</h4>
-                            </div>
-                        </div>
+            <div className="space-y-6">
+                <SectionCard icon={Palette} title={t('settings.appearance')}>
+                    <SettingRow label={t('settings.language')} description={t('settings.selectLanguage')}>
+                        <SegmentPicker
+                            options={[
+                                { key: 'tr', label: 'Türkçe' },
+                                { key: 'en', label: 'English' },
+                            ]}
+                            value={i18n.language}
+                            onChange={changeLanguage}
+                        />
+                    </SettingRow>
+
+                    <SettingRow label={t('settings.accentColor')}>
                         <div className="flex gap-2">
-                            {(['blue', 'green', 'purple', 'orange', 'cyan', 'red'] as const).map(color => (
+                            {accentColors.map(c => (
                                 <button
-                                    key={color}
-                                    onClick={() => setAccentColor(color)}
-                                    className={`w-6 h-6 rounded-full transition-all duration-300 ${accentColor === color ? 'scale-125 ring-2 ring-white ring-offset-2 ring-offset-slate-900' : 'hover:scale-110 opacity-70 hover:opacity-100'}`}
-                                    style={{ backgroundColor: `var(--${color}-500)` }}
+                                    key={c.key}
+                                    onClick={() => setAccentColor(c.key)}
+                                    className={`w-7 h-7 rounded-full transition-all duration-300 border-2 ${accentColor === c.key
+                                        ? 'scale-125 border-white shadow-lg'
+                                        : 'border-transparent hover:scale-110 opacity-60 hover:opacity-100'
+                                        }`}
+                                    style={{ backgroundColor: c.bg, boxShadow: accentColor === c.key ? `0 0 14px ${c.bg}` : undefined }}
                                 />
                             ))}
                         </div>
-                    </div>
+                    </SettingRow>
 
-                    {/* Compact Mode */}
-                    <div className="flex items-center justify-between p-4 bg-slate-900 border border-slate-800 rounded-lg">
-                        <div className="flex items-center gap-3">
-                            <LayoutGrid className="text-slate-400" size={20} />
-                            <div>
-                                <h4 className="text-slate-200 font-medium">{t('settings.compactMode')}</h4>
-                            </div>
-                        </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                            <input
-                                type="checkbox"
-                                className="sr-only peer"
-                                checked={compactMode}
-                                onChange={(e) => setCompactMode(e.target.checked)}
-                            />
-                            <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--accent-color)]"></div>
-                        </label>
-                    </div>
+                    <SettingRow label={t('settings.bgEffect')}>
+                        <SegmentPicker
+                            options={[
+                                { key: 'gradient', label: t('settings.effects.gradient') },
+                                { key: 'flat', label: t('settings.effects.flat') },
+                                { key: 'glass', label: t('settings.effects.glass') },
+                            ]}
+                            value={bgEffect}
+                            onChange={(v) => setBgEffect(v as any)}
+                        />
+                    </SettingRow>
 
-                    {/* Background Effect */}
-                    <div className="flex items-center justify-between p-4 bg-slate-900 border border-slate-800 rounded-lg">
-                        <div>
-                            <h4 className="text-slate-200 font-medium">{t('settings.bgEffect')}</h4>
-                        </div>
-                        <div className="flex bg-slate-800 p-1 rounded-md">
-                            {(['gradient', 'flat', 'glass'] as const).map(effect => (
-                                <button
-                                    key={effect}
-                                    onClick={() => setBgEffect(effect)}
-                                    className={`px-3 py-1 rounded text-sm font-medium transition-colors ${bgEffect === effect ? 'bg-[var(--accent-color)] text-white shadow' : 'text-slate-400 hover:text-slate-200'}`}
-                                >
-                                    {t(`settings.effects.${effect}`)}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+                    <SettingRow label={t('settings.fontSize')}>
+                        <SegmentPicker
+                            options={[
+                                { key: 'normal', label: t('settings.sizes.normal') },
+                                { key: 'large', label: t('settings.sizes.large') },
+                                { key: 'xlarge', label: t('settings.sizes.xlarge') },
+                            ]}
+                            value={fontSize}
+                            onChange={(v) => setFontSize(v as any)}
+                        />
+                    </SettingRow>
 
-                    {/* Reduce Animations */}
-                    <div className="flex items-center justify-between p-4 bg-slate-900 border border-slate-800 rounded-lg">
-                        <div>
-                            <h4 className="text-slate-200 font-medium">{t('settings.reduceAnimations')}</h4>
-                        </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                            <input
-                                type="checkbox"
-                                className="sr-only peer"
-                                checked={reduceAnimations}
-                                onChange={(e) => setReduceAnimations(e.target.checked)}
-                            />
-                            <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--accent-color)]"></div>
-                        </label>
-                    </div>
+                    <SettingRow label={t('settings.compactMode')}>
+                        <Toggle checked={compactMode} onChange={setCompactMode} />
+                    </SettingRow>
 
-                    {/* Font Size */}
-                    <div className="flex items-center justify-between p-4 bg-slate-900 border border-slate-800 rounded-lg">
-                        <div>
-                            <h4 className="text-slate-200 font-medium">{t('settings.fontSize')}</h4>
-                        </div>
-                        <div className="flex bg-slate-800 p-1 rounded-md">
-                            {(['normal', 'large', 'xlarge'] as const).map(size => (
-                                <button
-                                    key={size}
-                                    onClick={() => setFontSize(size)}
-                                    className={`px-3 py-1 rounded text-sm font-medium transition-colors ${fontSize === size ? 'bg-[var(--accent-color)] text-white shadow' : 'text-slate-400 hover:text-slate-200'}`}
-                                >
-                                    {t(`settings.sizes.${size}`)}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </div>
+                    <SettingRow label={t('settings.reduceAnimations')}>
+                        <Toggle checked={reduceAnimations} onChange={setReduceAnimations} />
+                    </SettingRow>
+                </SectionCard>
 
-            <PathSection
-                title={t('settings.enginePaths')}
-                type="engine"
-                items={paths.enginePaths}
-                onAdd={handleAddEnginePath}
-                onRemove={handleRemovePath}
-            />
+                <SectionCard icon={Folder} title={t('settings.enginePaths')} description={t('settings.engineDesc')}>
+                    <PathList type="engine" items={paths.enginePaths} onAdd={handleAddEnginePath} onRemove={handleRemovePath} />
+                </SectionCard>
 
-            <PathSection
-                title={t('settings.projectPaths')}
-                type="project"
-                items={paths.projectPaths}
-                onAdd={handleAddProjectPath}
-                onRemove={handleRemovePath}
-            />
+                <SectionCard icon={FolderOpen} title={t('settings.projectPaths')} description={t('settings.projectDesc')}>
+                    <PathList type="project" items={paths.projectPaths} onAdd={handleAddProjectPath} onRemove={handleRemovePath} />
+                </SectionCard>
 
-            <div className="mb-10 pt-6 border-t border-slate-800">
-                <h3 className="text-lg font-semibold text-slate-200 mb-4">{t('settings.contextMenu')}</h3>
-                <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6">
-                    <p className="text-sm text-slate-400 mb-6">{t('settings.contextMenuDesc')}</p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                        {menuItems.map(({ key, icon: Icon, color }) => {
-                            const isActive = menuConfig[key];
-                            return (
-                                <button
-                                    key={key}
-                                    onClick={() => toggleContextMenu(key)}
-                                    className={`
-                                        group relative overflow-hidden rounded-lg p-3 text-left transition-all duration-200 text-slate-200 border
-                                        ${isActive
-                                            ? 'bg-slate-800 border-primary/50 shadow-[0_0_15px_-3px_var(--accent-color)]'
-                                            : 'bg-slate-900 border-slate-800 hover:border-slate-700 hover:bg-slate-800/50 opacity-60 hover:opacity-100'}
-                                    `}
-                                >
-                                    <div className="flex items-center justify-between mb-2">
-                                        <div className={`p-2 rounded-md ${isActive ? 'bg-slate-700/50' : 'bg-slate-800'}`}>
-                                            <Icon size={18} className={isActive ? color : 'text-slate-500'} />
+                <SectionCard icon={ChevronRight} title={t('settings.contextMenu')} description={t('settings.contextMenuDesc')}>
+                    <div className="p-5">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
+                            {menuItems.map(({ key, icon: Icon, color }) => {
+                                const isActive = menuConfig[key];
+                                return (
+                                    <button
+                                        key={key}
+                                        onClick={() => toggleContextMenu(key)}
+                                        className={`
+                                            relative rounded-xl p-3 text-left transition-all duration-300 border group
+                                            ${isActive
+                                                ? 'bg-white/[0.04] border-white/10'
+                                                : 'bg-white/[0.01] border-white/[0.04] hover:border-white/10 hover:bg-white/[0.03] opacity-50 hover:opacity-80'
+                                            }
+                                        `}
+                                    >
+                                        <div className="flex items-center justify-between mb-2.5">
+                                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${isActive ? 'bg-white/[0.06]' : 'bg-white/[0.02]'}`}>
+                                                <Icon size={15} className={isActive ? color : 'text-slate-600'} />
+                                            </div>
+                                            <div className={`w-8 h-[18px] rounded-full relative transition-colors duration-300 ${isActive ? 'bg-[var(--accent-color)]' : 'bg-slate-700'}`}>
+                                                <div className={`absolute top-[3px] left-[3px] w-3 h-3 rounded-full bg-white transition-transform duration-300 ${isActive ? 'translate-x-[14px]' : ''}`} />
+                                            </div>
                                         </div>
-                                        <div className={`
-                                            w-8 h-4 rounded-full relative transition-colors duration-200
-                                            ${isActive ? 'bg-primary' : 'bg-slate-700'}
-                                        `}>
-                                            <div className={`
-                                                absolute top-0.5 left-0.5 w-3 h-3 rounded-full bg-white transition-transform duration-200
-                                                ${isActive ? 'translate-x-4' : 'translate-x-0'}
-                                            `} />
-                                        </div>
-                                    </div>
-                                    <span className={`text-xs font-medium ${isActive ? 'text-slate-200' : 'text-slate-500'}`}>
-                                        {t(`contextMenu.${key}`)}
-                                    </span>
-                                </button>
-                            );
-                        })}
+                                        <span className={`text-[11px] font-semibold leading-tight ${isActive ? 'text-slate-200' : 'text-slate-500'}`}>
+                                            {t(`contextMenu.${key}`)}
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </div>
                     </div>
-                </div>
-            </div>
+                </SectionCard>
 
-            <div className="mb-10 pt-6 border-t border-slate-800">
-                <h3 className="text-lg font-semibold text-slate-200 mb-4">{t('settings.extraSettings')}</h3>
-                <div className="flex items-center justify-between p-4 bg-slate-900 border border-slate-800 rounded-lg">
-                    <div>
-                        <h4 className="text-slate-200 font-medium">{t('settings.gitIntegration')}</h4>
-                        <p className="text-xs text-slate-500 mt-1">
-                            {t('settings.gitIntegrationDesc')}
-                        </p>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                            type="checkbox"
-                            className="sr-only peer"
+                <SectionCard icon={Sparkles} title={t('settings.extraSettings')}>
+                    <SettingRow label={t('settings.gitIntegration')} description={t('settings.gitIntegrationDesc')}>
+                        <Toggle
                             checked={localStorage.getItem('showGitIntegration') !== 'false'}
-                            onChange={(e) => {
-                                localStorage.setItem('showGitIntegration', e.target.checked.toString());
+                            onChange={(val) => {
+                                localStorage.setItem('showGitIntegration', val.toString());
                                 window.dispatchEvent(new Event('storage'));
                                 window.location.reload();
                             }}
                         />
-                        <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                    </label>
-                </div>
+                    </SettingRow>
+                </SectionCard>
+
             </div>
         </div>
     );

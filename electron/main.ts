@@ -572,6 +572,7 @@ ipcMain.handle('write-ini-file', async (_, projectPath: string, data: Record<str
 const TAGS_PATH = path.join(app.getPath('userData'), 'project-tags.json');
 const FAVORITES_PATH = path.join(app.getPath('userData'), 'favorites.json');
 const NOTES_PATH = path.join(app.getPath('userData'), 'project-notes.json');
+const SIZES_CACHE_PATH = path.join(app.getPath('userData'), 'project-sizes.json');
 
 ipcMain.handle('get-project-tags', async () => {
   if (!existsSync(TAGS_PATH)) return {};
@@ -624,10 +625,34 @@ async function getDirectorySize(dirPath: string): Promise<number> {
   return totalSize;
 }
 
+async function loadSizesCache(): Promise<Record<string, { size: number; lastModified: number }>> {
+  if (!existsSync(SIZES_CACHE_PATH)) return {};
+  try {
+    return JSON.parse(await fs.readFile(SIZES_CACHE_PATH, 'utf-8'));
+  } catch { return {}; }
+}
+
+async function saveSizesCache(cache: Record<string, { size: number; lastModified: number }>) {
+  await fs.writeFile(SIZES_CACHE_PATH, JSON.stringify(cache, null, 2));
+}
+
 ipcMain.handle('get-project-size', async (_, projectPath: string) => {
   try {
     const projectDir = path.dirname(projectPath);
-    return await getDirectorySize(projectDir);
+    const stat = await fs.stat(projectPath);
+    const currentModified = stat.mtimeMs;
+
+    const cache = await loadSizesCache();
+    const cached = cache[projectPath];
+
+    if (cached && cached.lastModified === currentModified) {
+      return cached.size;
+    }
+
+    const size = await getDirectorySize(projectDir);
+    cache[projectPath] = { size, lastModified: currentModified };
+    saveSizesCache(cache);
+    return size;
   } catch { return 0; }
 });
 

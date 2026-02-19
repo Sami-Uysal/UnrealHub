@@ -1,17 +1,10 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { LayoutGrid, Settings } from 'lucide-react';
-
+import { useAppearance } from '../../context/AppearanceContext';
 
 const UnrealIcon = ({ size = 20, className = "" }: { size?: number, className?: string }) => (
-    <svg
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="currentColor"
-        className={className}
-        xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className} xmlns="http://www.w3.org/2000/svg">
         <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4ZM10.5 7V17H13.5V7H10.5ZM8 9V15H9.5V9H8ZM14.5 9V15H16V9H14.5Z" />
     </svg>
 );
@@ -23,52 +16,96 @@ interface SidebarProps {
     onViewChange: (view: View) => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) => {
-    const { t } = useTranslation();
+interface NavItemProps {
+    view: View;
+    currentView: View;
+    icon: any;
+    label: string;
+    reduceAnimations: boolean;
+    onViewChange: (view: View) => void;
+}
 
-    const NavItem = ({ view, icon: Icon, label }: { view: View; icon: any; label: string }) => (
+const NavItem: React.FC<NavItemProps> = ({ view, currentView, icon: Icon, label, reduceAnimations, onViewChange }) => {
+    const isActive = currentView === view;
+    return (
         <button
             onClick={() => onViewChange(view)}
-            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 group no-drag relative overflow-hidden ${currentView === view
-                ? `bg-primary shadow-lg shadow-[var(--accent-color)]/20 text-white`
-                : 'text-slate-400 hover:bg-slate-700 hover:text-white'
-                }`}
+            className={`
+                w-full flex items-center gap-3 px-4 py-3 rounded-2xl no-drag relative overflow-hidden
+                ${!reduceAnimations ? 'transition-all duration-300' : ''}
+                ${isActive
+                    ? 'text-white'
+                    : 'text-slate-500 hover:text-slate-200 hover:bg-white/[0.04]'
+                }
+            `}
         >
-            <Icon size={20} className={`transition-all duration-300 ${currentView === view
-                ? 'scale-110'
-                : 'group-hover:scale-110 group-hover:text-slate-200'
-                }`} />
-            <span className={`font-semibold transition-colors duration-300 ${currentView === view ? 'text-white' : 'group-hover:text-slate-200'
-                }`}>{label}</span>
+            {isActive && (
+                <div className="absolute inset-0 bg-gradient-to-r from-[var(--accent-color)] to-[var(--accent-color)]/70 rounded-2xl" />
+            )}
+            {isActive && (
+                <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent rounded-2xl" />
+            )}
+
+            <div className={`relative z-10 flex items-center justify-center w-9 h-9 rounded-xl ${!reduceAnimations ? 'transition-all duration-300' : ''} ${isActive ? 'bg-white/15 shadow-inner' : 'bg-white/[0.03]'}`}>
+                <Icon size={18} className={`${!reduceAnimations ? 'transition-transform duration-300' : ''} ${isActive ? 'scale-110' : ''}`} />
+            </div>
+
+            <span className={`relative z-10 font-semibold text-sm tracking-wide ${!reduceAnimations ? 'transition-colors duration-300' : ''}`}>
+                {label}
+            </span>
+
+            {isActive && !reduceAnimations && (
+                <div className="absolute -right-2 top-1/2 -translate-y-1/2 w-5 h-5 bg-[var(--accent-color)] rounded-full blur-xl opacity-60" />
+            )}
         </button>
     );
+};
+
+export const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) => {
+    const { t } = useTranslation();
+    const { reduceAnimations } = useAppearance();
 
     return (
-        <div className="w-64 h-full bg-[#0f172a] border-r border-white/5 flex flex-col px-3 py-6 select-none pt-8">
-            <div className="mb-10 px-0 flex items-center space-x-3">
-                <div className="w-12 h-12 shrink-0 flex items-center justify-center group transition-all duration-500">
-                    <img src="u.png" alt="Logo" className="w-10 h-10 object-contain transition-transform duration-500 group-hover:scale-110" />
+        <div className="w-64 h-full bg-[#080d1a]/90 backdrop-blur-xl border-r border-white/[0.04] flex flex-col select-none">
+            <div className="px-5 pt-10 pb-8 flex items-center gap-3.5">
+                <div className={`w-11 h-11 shrink-0 flex items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--accent-color)]/20 to-[var(--accent-color)]/5 border border-[var(--accent-color)]/20 ${!reduceAnimations ? 'group transition-all duration-500 hover:scale-105 hover:shadow-lg hover:shadow-[var(--accent-color)]/20' : ''}`}>
+                    <img src="u.png" alt="Logo" className={`w-7 h-7 object-contain ${!reduceAnimations ? 'transition-transform duration-500 group-hover:scale-110' : ''}`} />
                 </div>
                 <div className="flex flex-col overflow-hidden">
-                    <span className="text-xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-white via-white to-slate-500">
-                        UnrealHub
-                    </span>
-                    <span className="text-[10px] tracking-widest text-slate-500 font-bold">{t('sidebar.projectManager')}</span>
+                    <span className="text-lg font-black tracking-tight text-white">UnrealHub</span>
+                    <span className="text-[9px] tracking-[0.2em] text-slate-600 font-semibold uppercase">{t('sidebar.projectManager')}</span>
                 </div>
             </div>
 
-            <nav className="flex-1 space-y-2">
-                <NavItem view="projects" icon={LayoutGrid} label={t('sidebar.projects')} />
-                <NavItem view="engines" icon={UnrealIcon} label={t('sidebar.engines')} />
+            <div className="px-5 mb-4">
+                <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+            </div>
+
+            <nav className="flex-1 px-3 space-y-1.5">
+                <NavItem view="projects" currentView={currentView} icon={LayoutGrid} label={t('sidebar.projects')} reduceAnimations={reduceAnimations} onViewChange={onViewChange} />
+                <NavItem view="engines" currentView={currentView} icon={UnrealIcon} label={t('sidebar.engines')} reduceAnimations={reduceAnimations} onViewChange={onViewChange} />
             </nav>
 
-            <div className="pt-6 border-t border-white/5">
+            <div className="px-5 mb-3">
+                <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+            </div>
+
+            <div className="px-3 pb-6">
                 <button
                     onClick={() => onViewChange('settings')}
-                    className="w-full flex items-center space-x-3 px-4 py-3 text-slate-400 hover:text-white rounded-xl hover:bg-white/5 transition-all duration-300 group no-drag"
+                    className={`
+                        w-full flex items-center gap-3 px-4 py-3 rounded-2xl no-drag group
+                        ${!reduceAnimations ? 'transition-all duration-300' : ''}
+                        ${currentView === 'settings'
+                            ? 'bg-white/[0.06] text-white'
+                            : 'text-slate-500 hover:text-slate-300 hover:bg-white/[0.03]'
+                        }
+                    `}
                 >
-                    <Settings size={20} className="group-hover:rotate-45 transition-transform duration-500" />
-                    <span className="font-semibold">{t('sidebar.settings')}</span>
+                    <div className={`flex items-center justify-center w-9 h-9 rounded-xl ${!reduceAnimations ? 'transition-all duration-300' : ''} ${currentView === 'settings' ? 'bg-white/10' : 'bg-white/[0.03]'}`}>
+                        <Settings size={18} className={`${!reduceAnimations ? 'transition-transform duration-500' : ''} ${currentView === 'settings' ? 'rotate-45' : 'group-hover:rotate-45'}`} />
+                    </div>
+                    <span className="font-semibold text-sm tracking-wide">{t('sidebar.settings')}</span>
                 </button>
             </div>
         </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Play, Image as ImageIcon, X, Plus, FolderPlus, GitBranch, Pencil, Filter, Star, ArrowUpDown, HardDrive } from 'lucide-react';
 import { Project } from '../types';
@@ -90,7 +90,10 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
         setFavorites(updated);
     };
 
-    const uniqueTags = Array.from(new Set(Object.values(allTags).flat())).sort();
+    const uniqueTags = useMemo(() =>
+        Array.from(new Set(Object.values(allTags).flat())).sort(),
+        [allTags]
+    );
 
     const handleDragOver = (e: React.DragEvent) => { e.preventDefault(); setIsDragOverModal(true); };
     const handleDragLeave = (e: React.DragEvent) => { e.preventDefault(); setIsDragOverModal(false); };
@@ -159,24 +162,27 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
         setIsSortOpen(false);
     };
 
-    const filteredProjects = projects
-        .filter(p => {
-            const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase());
-            const projectTags = allTags[p.path] || [];
-            const matchesTags = selectedTags.length === 0 || selectedTags.every(tag => projectTags.includes(tag));
-            return matchesSearch && matchesTags;
-        })
-        .sort((a, b) => {
-            const aFav = favorites.includes(a.path) ? -1 : 0;
-            const bFav = favorites.includes(b.path) ? -1 : 0;
-            if (aFav !== bFav) return aFav - bFav;
+    const filteredProjects = useMemo(() =>
+        projects
+            .filter(p => {
+                const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase());
+                const projectTags = allTags[p.path] || [];
+                const matchesTags = selectedTags.length === 0 || selectedTags.every(tag => projectTags.includes(tag));
+                return matchesSearch && matchesTags;
+            })
+            .sort((a, b) => {
+                const aFav = favorites.includes(a.path) ? -1 : 0;
+                const bFav = favorites.includes(b.path) ? -1 : 0;
+                if (aFav !== bFav) return aFav - bFav;
 
-            switch (sortMode) {
-                case 'name': return a.name.localeCompare(b.name);
-                case 'engine': return a.version.localeCompare(b.version);
-                case 'date': default: return b.lastModified - a.lastModified;
-            }
-        });
+                switch (sortMode) {
+                    case 'name': return a.name.localeCompare(b.name);
+                    case 'engine': return a.version.localeCompare(b.version);
+                    case 'date': default: return b.lastModified - a.lastModified;
+                }
+            }),
+        [projects, searchTerm, allTags, selectedTags, favorites, sortMode]
+    );
 
     const handleContextMenu = (e: React.MouseEvent, project: Project) => {
         e.preventDefault();
@@ -191,11 +197,11 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
         loadProjects();
     };
 
-    const sortLabels: Record<SortMode, string> = {
+    const sortLabels: Record<SortMode, string> = useMemo(() => ({
         date: t('projects.sortDate'),
         name: t('projects.sortName'),
         engine: t('projects.sortEngine'),
-    };
+    }), [t]);
 
     return (
         <div className="relative" onClick={closeContextMenu}>
@@ -500,8 +506,8 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
                             <button
                                 onClick={(e) => toggleFavorite(project.path, e)}
                                 className={`p-2 rounded-full backdrop-blur-md border transition-all duration-300 ${favorites.includes(project.path)
-                                        ? 'bg-amber-500/20 border-amber-400/50 text-amber-400'
-                                        : 'bg-slate-950/40 border-white/10 text-slate-400 opacity-0 group-hover:opacity-100'
+                                    ? 'bg-amber-500/20 border-amber-400/50 text-amber-400'
+                                    : 'bg-slate-950/40 border-white/10 text-slate-400 opacity-0 group-hover:opacity-100'
                                     }`}
                                 title={favorites.includes(project.path) ? t('projects.unfavorite') : t('projects.favorite')}
                             >
@@ -534,12 +540,12 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
                                     <h3 className={`font-black text-white truncate pr-2 ${compactMode ? 'text-lg' : 'text-2xl'} group-hover:text-[var(--accent-color)] transition-colors`} style={{ textShadow: '0 0 8px rgba(0,0,0,0.5), 0 0 20px rgba(0,0,0,0.3)' }}>
                                         {project.name}
                                     </h3>
-                                    <div className="flex items-center space-x-2 mt-1">
-                                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-black/50 text-white backdrop-blur-md border border-white/20 group-hover:bg-[var(--accent-color)] group-hover:border-[var(--accent-color)] transition-colors duration-300`}>
+                                    <div className="flex items-center flex-wrap gap-1.5 mt-1">
+                                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-black/50 text-white backdrop-blur-md border border-white/20 group-hover:bg-[var(--accent-color)] group-hover:border-[var(--accent-color)] transition-colors duration-300 whitespace-nowrap`}>
                                             UE {project.version}
                                         </span>
                                         {projectSizes[project.path] > 0 && (
-                                            <span className="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-black/50 text-slate-300 backdrop-blur-md border border-white/10 flex items-center gap-1">
+                                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-black/50 text-slate-300 backdrop-blur-md border border-white/10 items-center gap-1 whitespace-nowrap ${compactMode ? 'hidden sm:flex' : 'flex'}`}>
                                                 <HardDrive size={9} />
                                                 {formatSize(projectSizes[project.path])}
                                             </span>
