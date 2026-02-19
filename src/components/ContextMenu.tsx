@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FolderOpen, FileText, Trash2, Copy, Settings, Tag, Play, Eraser, Code } from 'lucide-react';
+import { FolderOpen, FileText, Trash2, Copy, Settings, Tag, Play, Eraser, Code, StickyNote } from 'lucide-react';
 
 interface ContextMenuProps {
     x: number;
@@ -15,13 +15,14 @@ interface ContextMenuProps {
     onClone: () => void;
     onEditConfig: () => void;
     onManageTags: () => void;
+    onNotes: () => void;
     onRemove: () => void;
 }
 
 export const ContextMenu: React.FC<ContextMenuProps> = ({
     x, y, projectName, onClose,
     onLaunch, onShowInExplorer, onShowLogs, onGenerateFiles,
-    onCleanCache, onClone, onEditConfig, onManageTags, onRemove
+    onCleanCache, onClone, onEditConfig, onManageTags, onNotes, onRemove
 }) => {
     const { t } = useTranslation();
     const menuRef = useRef<HTMLDivElement>(null);
@@ -36,7 +37,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
                 setMenuConfig({
                     launch: true, showInExplorer: true, showLogs: true,
                     generateProjectFiles: true, cleanCache: true, clone: true,
-                    editConfig: true, manageTags: true, removeProject: true
+                    editConfig: true, manageTags: true, notes: true, removeProject: true
                 });
             }
         };
@@ -122,12 +123,19 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
                     </button>
                 )}
 
-                {(isVisible('manageTags') || isVisible('clone') || isVisible('cleanCache')) && <div className="my-1 border-t border-slate-700/30 mx-2" />}
+                {(isVisible('manageTags') || isVisible('notes') || isVisible('clone') || isVisible('cleanCache')) && <div className="my-1 border-t border-slate-700/30 mx-2" />}
 
                 {isVisible('manageTags') && (
                     <button onClick={onManageTags} className="w-full text-left px-3 py-2 hover:bg-slate-800/80 rounded-md flex items-center gap-3 transition-all group">
                         <Tag size={15} className="text-orange-400 group-hover:scale-110 transition-transform" />
                         <span className="font-medium">{t('contextMenu.manageTags')}</span>
+                    </button>
+                )}
+
+                {isVisible('notes') && (
+                    <button onClick={onNotes} className="w-full text-left px-3 py-2 hover:bg-slate-800/80 rounded-md flex items-center gap-3 transition-all group">
+                        <StickyNote size={15} className="text-amber-400 group-hover:scale-110 transition-transform" />
+                        <span className="font-medium">{t('contextMenu.notes')}</span>
                     </button>
                 )}
 

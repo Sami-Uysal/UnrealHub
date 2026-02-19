@@ -570,6 +570,8 @@ ipcMain.handle('write-ini-file', async (_, projectPath: string, data: Record<str
 });
 
 const TAGS_PATH = path.join(app.getPath('userData'), 'project-tags.json');
+const FAVORITES_PATH = path.join(app.getPath('userData'), 'favorites.json');
+const NOTES_PATH = path.join(app.getPath('userData'), 'project-notes.json');
 
 ipcMain.handle('get-project-tags', async () => {
   if (!existsSync(TAGS_PATH)) return {};
@@ -580,6 +582,64 @@ ipcMain.handle('get-project-tags', async () => {
 
 ipcMain.handle('save-project-tags', async (_, tags: Record<string, string[]>) => {
   await fs.writeFile(TAGS_PATH, JSON.stringify(tags, null, 2));
+});
+
+ipcMain.handle('get-favorites', async () => {
+  if (!existsSync(FAVORITES_PATH)) return [];
+  try {
+    return JSON.parse(await fs.readFile(FAVORITES_PATH, 'utf-8'));
+  } catch { return []; }
+});
+
+ipcMain.handle('toggle-favorite', async (_, projectPath: string) => {
+  let favorites: string[] = [];
+  if (existsSync(FAVORITES_PATH)) {
+    try {
+      favorites = JSON.parse(await fs.readFile(FAVORITES_PATH, 'utf-8'));
+    } catch { favorites = []; }
+  }
+  if (favorites.includes(projectPath)) {
+    favorites = favorites.filter(f => f !== projectPath);
+  } else {
+    favorites.push(projectPath);
+  }
+  await fs.writeFile(FAVORITES_PATH, JSON.stringify(favorites, null, 2));
+  return favorites;
+});
+
+async function getDirectorySize(dirPath: string): Promise<number> {
+  let totalSize = 0;
+  try {
+    const entries = await fs.readdir(dirPath, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(dirPath, entry.name);
+      if (entry.isFile()) {
+        const stat = await fs.stat(fullPath);
+        totalSize += stat.size;
+      } else if (entry.isDirectory()) {
+        totalSize += await getDirectorySize(fullPath);
+      }
+    }
+  } catch { }
+  return totalSize;
+}
+
+ipcMain.handle('get-project-size', async (_, projectPath: string) => {
+  try {
+    const projectDir = path.dirname(projectPath);
+    return await getDirectorySize(projectDir);
+  } catch { return 0; }
+});
+
+ipcMain.handle('get-project-notes', async () => {
+  if (!existsSync(NOTES_PATH)) return {};
+  try {
+    return JSON.parse(await fs.readFile(NOTES_PATH, 'utf-8'));
+  } catch { return {}; }
+});
+
+ipcMain.handle('save-project-notes', async (_, notes: Record<string, string>) => {
+  await fs.writeFile(NOTES_PATH, JSON.stringify(notes, null, 2));
 });
 
 app.whenReady().then(createWindow)

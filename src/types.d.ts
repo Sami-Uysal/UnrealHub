@@ -42,6 +42,11 @@ declare global {
             writeIniFile: (path: string, data: Record<string, any>) => Promise<void>;
             getProjectTags: () => Promise<Record<string, string[]>>;
             saveProjectTags: (tags: Record<string, string[]>) => Promise<void>;
+            getFavorites: () => Promise<string[]>;
+            toggleFavorite: (path: string) => Promise<string[]>;
+            getProjectSize: (path: string) => Promise<number>;
+            getProjectNotes: () => Promise<Record<string, string>>;
+            saveProjectNotes: (notes: Record<string, string>) => Promise<void>;
             minimize: () => Promise<void>;
             maximize: () => Promise<void>;
             close: () => Promise<void>;

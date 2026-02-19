@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppearance } from '../context/AppearanceContext';
-import { Folder, Trash2, Plus, Globe, Play, FolderOpen, FileText, Code, Eraser, Copy, Settings as SettingsIcon, Tag, LayoutGrid } from 'lucide-react';
+import { Folder, Trash2, Plus, Globe, Play, FolderOpen, FileText, Code, Eraser, Copy, Settings as SettingsIcon, Tag, LayoutGrid, StickyNote } from 'lucide-react';
 
 interface ConfigPaths {
     enginePaths: string[];
@@ -17,6 +17,7 @@ interface ContextMenuConfig {
     clone: boolean;
     editConfig: boolean;
     manageTags: boolean;
+    notes: boolean;
     removeProject: boolean;
 }
 
@@ -29,6 +30,7 @@ const defaultMenuConfig: ContextMenuConfig = {
     clone: true,
     editConfig: true,
     manageTags: true,
+    notes: true,
     removeProject: true
 };
 
@@ -39,6 +41,7 @@ const menuItems: { key: keyof ContextMenuConfig; icon: React.ElementType; color:
     { key: 'showLogs', icon: FileText, color: 'text-slate-400' },
     { key: 'editConfig', icon: SettingsIcon, color: 'text-slate-400' },
     { key: 'manageTags', icon: Tag, color: 'text-orange-400' },
+    { key: 'notes', icon: StickyNote, color: 'text-amber-400' },
     { key: 'clone', icon: Copy, color: 'text-cyan-400' },
     { key: 'cleanCache', icon: Eraser, color: 'text-yellow-400' },
     { key: 'removeProject', icon: Trash2, color: 'text-red-400' },

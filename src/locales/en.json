@@ -24,7 +24,13 @@
     "selectImage": "Select Image",
     "filter": "Filter",
     "filters": "Filters",
-    "clearAll": "Clear All"
+    "clearAll": "Clear All",
+    "sortBy": "Sort",
+    "sortName": "Name",
+    "sortDate": "Date",
+    "sortEngine": "Engine",
+    "favorite": "Favorite",
+    "unfavorite": "Remove Favorite"
   },
   "settings": {
     "title": "Settings",
@@ -44,6 +50,7 @@
     "bgEffect": "Background Effect",
     "reduceAnimations": "Reduce Animations",
     "fontSize": "Font Size",
+    "selectLanguage": "Select language",
     "colors": {
       "blue": "Blue",
       "green": "Green",
@@ -97,6 +104,7 @@
     "clone": "Clone Project",
     "editConfig": "Quick Config",
     "manageTags": "Manage Tags",
+    "notes": "Notes",
     "removeProject": "Remove from List",
     "rightClickMenu": "RIGHT CLICK MENU"
   },
@@ -117,7 +125,10 @@
     "tagNamePlaceholder": "Enter tag name...",
     "addTag": "Add Tag",
     "noTags": "No tags found.",
-    "suggestedTags": "Tags"
+    "suggestedTags": "Tags",
+    "notesTitle": "Project Notes",
+    "notesPlaceholder": "Write your notes here...",
+    "notesSaved": "Notes saved."
   },
   "config": {
     "rayTracing": "Ray Tracing",

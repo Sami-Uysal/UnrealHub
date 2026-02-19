@@ -24,7 +24,13 @@
     "selectImage": "Resim Seç",
     "filter": "Filtrele",
     "filters": "Filtreler",
-    "clearAll": "Hepsini Temizle"
+    "clearAll": "Hepsini Temizle",
+    "sortBy": "Sırala",
+    "sortName": "İsim",
+    "sortDate": "Tarih",
+    "sortEngine": "Motor",
+    "favorite": "Favori",
+    "unfavorite": "Favoriyi Kaldır"
   },
   "settings": {
     "title": "Ayarlar",
@@ -44,6 +50,7 @@
     "bgEffect": "Arka Plan Efekti",
     "reduceAnimations": "Animasyonları Azalt",
     "fontSize": "Yazı Boyutu",
+    "selectLanguage": "Dil seçin",
     "colors": {
       "blue": "Mavi",
       "green": "Yeşil",
@@ -97,6 +104,7 @@
     "clone": "Projeyi Kopyala",
     "editConfig": "Hızlı Yapılandırma",
     "manageTags": "Etiketleri Yönet",
+    "notes": "Notlar",
     "removeProject": "Listeden Kaldır",
     "rightClickMenu": "SAĞ TIK MENÜSÜ"
   },
@@ -117,7 +125,10 @@
     "tagNamePlaceholder": "Etiket adı girin...",
     "addTag": "Etiket Ekle",
     "noTags": "Etiket bulunamadı.",
-    "suggestedTags": "Etiketler"
+    "suggestedTags": "Etiketler",
+    "notesTitle": "Proje Notları",
+    "notesPlaceholder": "Notlarınızı buraya yazın...",
+    "notesSaved": "Notlar kaydedildi."
   },
   "config": {
     "rayTracing": "Ray Tracing (Işın İzleme)",

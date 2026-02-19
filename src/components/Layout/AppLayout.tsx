@@ -47,7 +47,6 @@ export const AppLayout: React.FC = () => {
             ${getFontClass()}
             ${reduceAnimations ? '' : 'transition-colors duration-300'}
         `}>
-            {/* Glass Effect Background */}
             {bgEffect === 'glass' && (
                 <>
                     <div className="absolute inset-0 z-0 overflow-hidden">
@@ -61,7 +60,7 @@ export const AppLayout: React.FC = () => {
                 <TitleBar />
             </div>
             <div className="flex flex-1 overflow-hidden h-full w-full relative z-10">
-                <Sidebar currentView={view === 'git' ? 'projects' : view} onViewChange={setView} />
+                <Sidebar currentView={view === 'git' ? 'projects' : (view as View)} onViewChange={setView} />
                 <main className="flex-1 overflow-auto bg-transparent pt-8">
                     <div className={`${view === 'git' ? 'p-0' : 'p-8'} w-full min-h-full flex flex-col ${reduceAnimations ? '' : 'transition-all duration-300'}`}>
                         <header className="flex justify-between items-center mb-0">
