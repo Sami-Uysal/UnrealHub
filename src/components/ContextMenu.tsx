@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FolderOpen, FileText, Trash2, Copy, Settings, Tag, Play, Eraser, Code, StickyNote } from 'lucide-react';
+import { FolderOpen, FileText, Trash2, Copy, Settings, Tag, Play, Eraser, StickyNote, FolderX } from 'lucide-react';
 
 interface ContextMenuProps {
     x: number;
@@ -10,19 +10,19 @@ interface ContextMenuProps {
     onLaunch: () => void;
     onShowInExplorer: () => void;
     onShowLogs: () => void;
-    onGenerateFiles: () => void;
     onCleanCache: () => void;
     onClone: () => void;
     onEditConfig: () => void;
     onManageTags: () => void;
     onNotes: () => void;
     onRemove: () => void;
+    onDeleteProject: () => void;
 }
 
 export const ContextMenu: React.FC<ContextMenuProps> = ({
     x, y, projectName, onClose,
-    onLaunch, onShowInExplorer, onShowLogs, onGenerateFiles,
-    onCleanCache, onClone, onEditConfig, onManageTags, onNotes, onRemove
+    onLaunch, onShowInExplorer, onShowLogs,
+    onCleanCache, onClone, onEditConfig, onManageTags, onNotes, onRemove, onDeleteProject
 }) => {
     const { t } = useTranslation();
     const menuRef = useRef<HTMLDivElement>(null);
@@ -36,8 +36,8 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
             } else {
                 setMenuConfig({
                     launch: true, showInExplorer: true, showLogs: true,
-                    generateProjectFiles: true, cleanCache: true, clone: true,
-                    editConfig: true, manageTags: true, notes: true, removeProject: true
+                    cleanCache: true, clone: true,
+                    editConfig: true, manageTags: true, notes: true, removeProject: true, deleteProject: true
                 });
             }
         };
@@ -100,14 +100,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
                     </button>
                 )}
 
-                {(isVisible('generateProjectFiles') || isVisible('showLogs') || isVisible('editConfig')) && <div className="my-1 border-t border-slate-700/30 mx-2" />}
-
-                {isVisible('generateProjectFiles') && (
-                    <button onClick={onGenerateFiles} className="w-full text-left px-3 py-2 hover:bg-slate-800/80 rounded-md flex items-center gap-3 transition-all group">
-                        <Code size={15} className="text-purple-400 group-hover:scale-110 transition-transform" />
-                        <span className="font-medium">{t('contextMenu.generateProjectFiles')}</span>
-                    </button>
-                )}
+                {(isVisible('showLogs') || isVisible('editConfig')) && <div className="my-1 border-t border-slate-700/30 mx-2" />}
 
                 {isVisible('showLogs') && (
                     <button onClick={onShowLogs} className="w-full text-left px-3 py-2 hover:bg-slate-800/80 rounded-md flex items-center gap-3 transition-all group">
@@ -161,6 +154,13 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
                             <span className="font-medium">{t('contextMenu.removeProject')}</span>
                         </button>
                     </>
+                )}
+
+                {isVisible('deleteProject') && (
+                    <button onClick={onDeleteProject} className="w-full text-left px-3 py-2 hover:bg-red-900/20 text-red-400 hover:text-red-300 rounded-md flex items-center gap-3 transition-all group">
+                        <FolderX size={15} className="group-hover:scale-110 transition-transform" />
+                        <span className="font-medium">{t('contextMenu.deleteProject')}</span>
+                    </button>
                 )}
             </div>
         </div>

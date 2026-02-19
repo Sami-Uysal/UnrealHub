@@ -100,6 +100,13 @@ async function readProjects(): Promise<Project[]> {
 ipcMain.handle('get-projects', async () => {
   const manualProjects = await readProjects();
 
+  // Load exclusion list
+  const excludedPath = path.join(app.getPath('userData'), 'excluded-projects.json');
+  let excluded: string[] = [];
+  if (existsSync(excludedPath)) {
+    try { excluded = JSON.parse(await fs.readFile(excludedPath, 'utf-8')); } catch { excluded = []; }
+  }
+
   const config = await loadConfig();
   const scannedProjects: Project[] = [];
 
@@ -143,7 +150,7 @@ ipcMain.handle('get-projects', async () => {
     }
   }
 
-  const allProjects = [...manualProjects, ...scannedProjects];
+  const allProjects = [...manualProjects, ...scannedProjects].filter(p => !excluded.includes(p.path));
 
   for (const p of allProjects) {
     if (config.projectOverrides && config.projectOverrides[p.path]) {
@@ -349,6 +356,79 @@ ipcMain.handle('launch-project', async (_, projectPath: string) => {
   await shell.openPath(projectPath);
 });
 
+ipcMain.handle('show-in-explorer', async (_, projectPath: string) => {
+  shell.showItemInFolder(projectPath);
+});
+
+ipcMain.handle('remove-project', async (_, projectPath: string) => {
+  // Remove from manual projects store
+  if (existsSync(STORE_PATH)) {
+    try {
+      const data = await fs.readFile(STORE_PATH, 'utf-8');
+      let projects: Project[] = JSON.parse(data);
+      projects = projects.filter(p => p.path !== projectPath);
+      await fs.writeFile(STORE_PATH, JSON.stringify(projects, null, 2));
+    } catch { }
+  }
+
+  // Add to exclusion list so scanned projects don't reappear
+  const excludedPath = path.join(app.getPath('userData'), 'excluded-projects.json');
+  let excluded: string[] = [];
+  if (existsSync(excludedPath)) {
+    try { excluded = JSON.parse(await fs.readFile(excludedPath, 'utf-8')); } catch { excluded = []; }
+  }
+  if (!excluded.includes(projectPath)) {
+    excluded.push(projectPath);
+    await fs.writeFile(excludedPath, JSON.stringify(excluded, null, 2));
+  }
+
+  // Remove override data
+  const config = await loadConfig();
+  if (config.projectOverrides && config.projectOverrides[projectPath]) {
+    delete config.projectOverrides[projectPath];
+    await saveConfig(config);
+  }
+  return true;
+});
+
+ipcMain.handle('delete-project', async (_, projectPath: string) => {
+  const projectDir = path.dirname(projectPath);
+
+  // Move project folder to Recycle Bin (more reliable on Windows, handles locked files)
+  if (existsSync(projectDir)) {
+    await shell.trashItem(projectDir);
+  }
+
+  // Remove from manual projects store
+  if (existsSync(STORE_PATH)) {
+    try {
+      const data = await fs.readFile(STORE_PATH, 'utf-8');
+      let projects: Project[] = JSON.parse(data);
+      projects = projects.filter(p => p.path !== projectPath);
+      await fs.writeFile(STORE_PATH, JSON.stringify(projects, null, 2));
+    } catch { }
+  }
+
+  // Add to exclusion list so scan doesn't error
+  const excludedPath = path.join(app.getPath('userData'), 'excluded-projects.json');
+  let excluded: string[] = [];
+  if (existsSync(excludedPath)) {
+    try { excluded = JSON.parse(await fs.readFile(excludedPath, 'utf-8')); } catch { excluded = []; }
+  }
+  if (!excluded.includes(projectPath)) {
+    excluded.push(projectPath);
+    await fs.writeFile(excludedPath, JSON.stringify(excluded, null, 2));
+  }
+
+  // Clean up overrides
+  const config = await loadConfig();
+  if (config.projectOverrides && config.projectOverrides[projectPath]) {
+    delete config.projectOverrides[projectPath];
+    await saveConfig(config);
+  }
+  return true;
+});
+
 ipcMain.handle('launch-engine', async (_, enginePath: string) => {
   const possiblePaths = [
     path.join(enginePath, 'Engine', 'Binaries', 'Win64', 'UnrealEditor.exe'),
@@ -464,14 +544,6 @@ ipcMain.handle('open-project-log', async (_, projectPath: string) => {
   }
 });
 
-ipcMain.handle('generate-project-files', async (_, projectPath: string) => {
-  try {
-    shell.showItemInFolder(projectPath);
-  } catch (e) {
-    console.error('Error generating files', e);
-  }
-});
-
 ipcMain.handle('clean-project-cache', async (_, projectPath: string) => {
   const projectDir = path.dirname(projectPath);
   const targets = ['Intermediate', 'DerivedDataCache'];
@@ -522,10 +594,32 @@ ipcMain.handle('read-ini-file', async (_, projectPath: string) => {
   const content = await fs.readFile(iniPath, 'utf-8');
   const config: Record<string, any> = {};
 
+  // Ray Tracing
   const rayTracingMatch = content.match(/r\.RayTracing=(True|False)/i);
   if (rayTracingMatch) config.rayTracing = rayTracingMatch[1].toLowerCase() === 'true';
 
-  const rhiMatch = content.match(/DefaultGraphicsRHI=(DefaultGraphicsRHI_DX11|DefaultGraphicsRHI_DX12)/);
+  // Lumen GI
+  const lumenMatch = content.match(/r\.Lumen\.DiffuseIndirect\.Allow=(\d)/);
+  if (lumenMatch) config.lumen = lumenMatch[1] === '1';
+
+  // Nanite
+  const naniteMatch = content.match(/r\.Nanite=(\d)/);
+  if (naniteMatch) config.nanite = naniteMatch[1] === '1';
+
+  // Virtual Shadow Maps
+  const vsmMatch = content.match(/r\.Shadow\.Virtual\.Enable=(\d)/);
+  if (vsmMatch) config.virtualShadowMaps = vsmMatch[1] === '1';
+
+  // Anti-Aliasing Method (0=None, 1=FXAA, 2=TAA, 4=TSR)
+  const aaMatch = content.match(/r\.AntiAliasingMethod=(\d)/);
+  if (aaMatch) config.antiAliasing = parseInt(aaMatch[1]);
+
+  // VSync
+  const vsyncMatch = content.match(/r\.VSync=(\d)/);
+  if (vsyncMatch) config.vsync = vsyncMatch[1] === '1';
+
+  // RHI
+  const rhiMatch = content.match(/DefaultGraphicsRHI=(DefaultGraphicsRHI_\w+)/);
   if (rhiMatch) config.rhi = rhiMatch[1];
 
   return config;
@@ -537,33 +631,53 @@ ipcMain.handle('write-ini-file', async (_, projectPath: string, data: Record<str
 
   let content = await fs.readFile(iniPath, 'utf-8');
 
-  // Update RayTracing
-  if (data.rayTracing !== undefined) {
-    const sectionHeader = '[/Script/Engine.RendererSettings]';
-    if (!content.includes(sectionHeader)) {
-      content += `\n\n${sectionHeader}\nr.RayTracing=${data.rayTracing ? 'True' : 'False'}`;
+  const setIniValue = (section: string, key: string, value: string) => {
+    const keyRegex = new RegExp(`${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}=[^\\r\\n]*`);
+    if (!content.includes(section)) {
+      content += `\n\n${section}\n${key}=${value}`;
+    } else if (keyRegex.test(content)) {
+      content = content.replace(keyRegex, `${key}=${value}`);
     } else {
-      // Section exists, check key
-      if (content.match(/r\.RayTracing=/)) {
-        content = content.replace(/r\.RayTracing=(True|False)/ig, `r.RayTracing=${data.rayTracing ? 'True' : 'False'}`);
-      } else {
-        content = content.replace(sectionHeader, `${sectionHeader}\nr.RayTracing=${data.rayTracing ? 'True' : 'False'}`);
-      }
+      content = content.replace(section, `${section}\n${key}=${value}`);
     }
+  };
+
+  const rendererSection = '[/Script/Engine.RendererSettings]';
+
+  // Ray Tracing
+  if (data.rayTracing !== undefined) {
+    setIniValue(rendererSection, 'r.RayTracing', data.rayTracing ? 'True' : 'False');
   }
 
-  // Update RHI
+  // Lumen GI
+  if (data.lumen !== undefined) {
+    setIniValue(rendererSection, 'r.Lumen.DiffuseIndirect.Allow', data.lumen ? '1' : '0');
+  }
+
+  // Nanite
+  if (data.nanite !== undefined) {
+    setIniValue(rendererSection, 'r.Nanite', data.nanite ? '1' : '0');
+  }
+
+  // Virtual Shadow Maps
+  if (data.virtualShadowMaps !== undefined) {
+    setIniValue(rendererSection, 'r.Shadow.Virtual.Enable', data.virtualShadowMaps ? '1' : '0');
+  }
+
+  // Anti-Aliasing Method
+  if (data.antiAliasing !== undefined) {
+    setIniValue(rendererSection, 'r.AntiAliasingMethod', String(data.antiAliasing));
+  }
+
+  // VSync
+  if (data.vsync !== undefined) {
+    setIniValue(rendererSection, 'r.VSync', data.vsync ? '1' : '0');
+  }
+
+  // RHI
   if (data.rhi !== undefined) {
-    const sectionHeader = '[/Script/WindowsTargetPlatform.WindowsTargetSettings]';
-    if (!content.includes(sectionHeader)) {
-      content += `\n\n${sectionHeader}\nDefaultGraphicsRHI=${data.rhi}`;
-    } else {
-      if (content.match(/DefaultGraphicsRHI=/)) {
-        content = content.replace(/DefaultGraphicsRHI=[^\r\n]*/g, `DefaultGraphicsRHI=${data.rhi}`);
-      } else {
-        content = content.replace(sectionHeader, `${sectionHeader}\nDefaultGraphicsRHI=${data.rhi}`);
-      }
-    }
+    const rhiSection = '[/Script/WindowsTargetPlatform.WindowsTargetSettings]';
+    setIniValue(rhiSection, 'DefaultGraphicsRHI', data.rhi);
   }
 
   await fs.writeFile(iniPath, content, 'utf-8');

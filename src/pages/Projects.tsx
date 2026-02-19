@@ -38,6 +38,8 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
     const [configProject, setConfigProject] = useState<Project | null>(null);
     const [tagModalProject, setTagModalProject] = useState<Project | null>(null);
     const [notesProject, setNotesProject] = useState<Project | null>(null);
+    const [cloneProject, setCloneProject] = useState<Project | null>(null);
+    const [cloneName, setCloneName] = useState('');
     const [allTags, setAllTags] = useState<Record<string, string[]>>({});
 
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -211,40 +213,40 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
                     y={ctxMenu.y}
                     projectName={ctxMenu.project.name}
                     onClose={closeContextMenu}
-                    onLaunch={() => handleAction(async () => window.unreal.launchProject(ctxMenu.project.path))}
-                    onShowInExplorer={() => handleAction(async () => window.unreal.launchProject(ctxMenu.project.path.replace(/[\\/][^\\/]+$/, '')))}
-                    onShowLogs={() => handleAction(async () => window.unreal.openProjectLog(ctxMenu.project.path))}
-                    onGenerateFiles={() => handleAction(async () => {
-                        alert(t('dialogs.generateFilesSuccess'));
-                        await window.unreal.generateProjectFiles(ctxMenu.project.path);
-                    })}
-                    onCleanCache={() => handleAction(async () => {
+                    onLaunch={() => { const p = ctxMenu.project; handleAction(async () => window.unreal.launchProject(p.path)); }}
+                    onShowInExplorer={() => { const p = ctxMenu.project; handleAction(async () => window.unreal.showInExplorer(p.path)); }}
+                    onShowLogs={() => { const p = ctxMenu.project; handleAction(async () => window.unreal.openProjectLog(p.path)); }}
+                    onCleanCache={() => {
+                        const p = ctxMenu.project;
                         if (confirm(t('dialogs.cleanCacheMessage'))) {
-                            await window.unreal.cleanProjectCache(ctxMenu.project.path);
-                            alert(t('dialogs.cleanCacheSuccess'));
-                        }
-                    })}
-                    onClone={() => {
-                        const newName = prompt(t('dialogs.cloneProjectMessage'));
-                        if (newName) {
                             handleAction(async () => {
-                                try {
-                                    await window.unreal.cloneProject(ctxMenu.project.path, newName);
-                                    alert(t('dialogs.cloneProjectSuccess'));
-                                } catch {
-                                    alert(t('dialogs.cloneProjectError'));
-                                }
+                                await window.unreal.cleanProjectCache(p.path);
+                                alert(t('dialogs.cleanCacheSuccess'));
                             });
                         }
                     }}
-                    onEditConfig={() => handleAction(async () => setConfigProject(ctxMenu.project))}
-                    onManageTags={() => handleAction(async () => setTagModalProject(ctxMenu.project))}
-                    onNotes={() => handleAction(async () => setNotesProject(ctxMenu.project))}
-                    onRemove={() => handleAction(async () => {
+                    onClone={() => { const p = ctxMenu.project; closeContextMenu(); setCloneName(p.name + ' Copy'); setCloneProject(p); }}
+                    onEditConfig={() => { const p = ctxMenu.project; handleAction(async () => setConfigProject(p)); }}
+                    onManageTags={() => { const p = ctxMenu.project; handleAction(async () => setTagModalProject(p)); }}
+                    onNotes={() => { const p = ctxMenu.project; handleAction(async () => setNotesProject(p)); }}
+                    onRemove={() => {
+                        const p = ctxMenu.project;
                         if (confirm(t('dialogs.removeProjectMessage'))) {
-                            await window.unreal.removePath('project', ctxMenu.project.path);
+                            handleAction(async () => {
+                                await window.unreal.removeProject(p.path);
+                            });
                         }
-                    })} />
+                    }}
+                    onDeleteProject={() => {
+                        const p = ctxMenu.project;
+                        if (confirm(t('dialogs.deleteProjectMessage'))) {
+                            if (confirm(t('dialogs.deleteProjectConfirm', { name: p.name }))) {
+                                handleAction(async () => {
+                                    await window.unreal.deleteProject(p.path);
+                                });
+                            }
+                        }
+                    }} />
             )}
 
             {configProject && (
@@ -257,6 +259,66 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
 
             {notesProject && (
                 <NotesModal projectPath={notesProject.path} projectName={notesProject.name} onClose={() => setNotesProject(null)} />
+            )}
+
+            {cloneProject && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setCloneProject(null)}>
+                    <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 w-[400px] shadow-2xl" onClick={(e) => e.stopPropagation()}>
+                        <h3 className="text-lg font-bold text-white mb-4">{t('dialogs.cloneProjectTitle')}</h3>
+                        <label className="block text-sm text-slate-400 mb-2">{t('dialogs.cloneProjectMessage')}</label>
+                        <input
+                            type="text"
+                            value={cloneName}
+                            onChange={(e) => setCloneName(e.target.value)}
+                            autoFocus
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && cloneName.trim()) {
+                                    const p = cloneProject;
+                                    const name = cloneName.trim();
+                                    setCloneProject(null);
+                                    (async () => {
+                                        try {
+                                            await window.unreal.cloneProject(p.path, name);
+                                            alert(t('dialogs.cloneProjectSuccess'));
+                                            loadProjects();
+                                        } catch {
+                                            alert(t('dialogs.cloneProjectError'));
+                                        }
+                                    })();
+                                }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-[var(--accent-color)] mb-4"
+                        />
+                        <div className="flex justify-end gap-2">
+                            <button
+                                onClick={() => setCloneProject(null)}
+                                className="px-4 py-2 text-sm text-slate-400 hover:text-white transition-colors"
+                            >
+                                {t('config.cancel')}
+                            </button>
+                            <button
+                                onClick={() => {
+                                    if (!cloneName.trim()) return;
+                                    const p = cloneProject;
+                                    const name = cloneName.trim();
+                                    setCloneProject(null);
+                                    (async () => {
+                                        try {
+                                            await window.unreal.cloneProject(p.path, name);
+                                            alert(t('dialogs.cloneProjectSuccess'));
+                                            loadProjects();
+                                        } catch {
+                                            alert(t('dialogs.cloneProjectError'));
+                                        }
+                                    })();
+                                }}
+                                className="px-4 py-2 text-sm bg-[var(--accent-color)] hover:opacity-80 text-white rounded-lg transition-colors"
+                            >
+                                {t('contextMenu.clone')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
 
             {isAddModalOpen && (
@@ -324,7 +386,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
                             <button
                                 onClick={async () => {
                                     if (confirm(t('dialogs.removeProjectMessage'))) {
-                                        await window.unreal.removePath('project', editingProject.path);
+                                        await window.unreal.removeProject(editingProject.path);
                                         setEditingProject(null);
                                         loadProjects();
                                     }
@@ -369,7 +431,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
                         {isFilterOpen && (
                             <div className="absolute right-0 top-full mt-2 w-72 bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-4 z-50 animate-in fade-in zoom-in-95 duration-200">
                                 <div className="flex justify-between items-center mb-3 px-1">
-                                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('dialogs.tagsTitle')}</span>
+                                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{t('dialogs.suggestedTags')}</span>
                                     {selectedTags.length > 0 && (
                                         <button onClick={() => setSelectedTags([])} className="text-[10px] text-[var(--accent-color)] hover:underline font-medium">
                                             {t('projects.clearAll')}

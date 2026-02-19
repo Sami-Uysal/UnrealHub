@@ -51,7 +51,7 @@ export const NotesModal: React.FC<NotesModalProps> = ({ projectPath, projectName
                 />
 
                 <div className="flex items-center justify-between mt-4">
-                    <span className="text-[10px] text-slate-600">{notes.length} chars</span>
+                    <span className="text-[10px] text-slate-600">{notes.length} {t('common.chars')}</span>
                     <div className="flex gap-3">
                         <button onClick={onClose} className="px-4 py-2 text-sm text-slate-400 hover:text-white rounded transition-colors">
                             {t('config.cancel')}

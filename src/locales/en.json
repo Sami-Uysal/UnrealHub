@@ -99,22 +99,23 @@
     "launch": "Launch Project",
     "showInExplorer": "Show in Explorer",
     "showLogs": "Show Logs",
-    "generateProjectFiles": "Generate Project Files",
     "cleanCache": "Clean Cache",
     "clone": "Clone Project",
     "editConfig": "Quick Config",
     "manageTags": "Manage Tags",
     "notes": "Notes",
     "removeProject": "Remove from List",
+    "deleteProject": "Delete Project",
     "rightClickMenu": "RIGHT CLICK MENU"
   },
   "dialogs": {
+    "removeProjectMessage": "Are you sure you want to remove this project from the list?",
+    "deleteProjectMessage": "⚠️ WARNING: This will permanently DELETE the entire project folder from your disk. This action CANNOT be undone. Continue?",
+    "deleteProjectConfirm": "FINAL WARNING: Delete '{{name}}' permanently? All files will be lost!",
     "cleanCacheTitle": "Clean Cache",
     "cleanCacheMessage": "This will delete 'Intermediate' and 'DerivedDataCache' folders. Temporary files will be removed but your 'Saved' data will be preserved. Do you want to continue?",
     "cleanCacheSuccess": "Cache cleaned successfully.",
     "cleanCacheError": "Error cleaning cache.",
-    "generateFilesSuccess": "Project files generation started.",
-    "generateFilesError": "Error generating project files.",
     "cloneProjectTitle": "Clone Project",
     "cloneProjectMessage": "New project name:",
     "cloneProjectSuccess": "Project cloned successfully.",
@@ -131,11 +132,23 @@
     "notesSaved": "Notes saved."
   },
   "config": {
+    "rendering": "Rendering",
+    "graphics": "Graphics",
     "rayTracing": "Ray Tracing",
+    "lumen": "Lumen Global Illumination",
+    "nanite": "Nanite",
+    "virtualShadowMaps": "Virtual Shadow Maps",
+    "antiAliasing": "Anti-Aliasing",
+    "aaNone": "None",
+    "vsync": "VSync",
     "dx12": "DirectX 12",
     "rhi": "Graphics API (RHI)",
     "save": "Save",
     "cancel": "Cancel",
+    "loading": "Loading config...",
     "success": "Settings saved."
+  },
+  "common": {
+    "chars": "chars"
   }
 }

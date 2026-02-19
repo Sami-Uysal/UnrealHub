@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppearance } from '../context/AppearanceContext';
-import { Folder, Trash2, Plus, Play, FolderOpen, FileText, Code, Eraser, Copy, Settings as SettingsIcon, Tag, StickyNote, Palette, Sparkles, ChevronRight } from 'lucide-react';
+import { Folder, Trash2, Plus, Play, FolderOpen, FileText, Eraser, Copy, Settings as SettingsIcon, Tag, StickyNote, Palette, Sparkles, ChevronRight, FolderX } from 'lucide-react';
 
 interface ConfigPaths {
     enginePaths: string[];
@@ -12,32 +12,31 @@ interface ContextMenuConfig {
     launch: boolean;
     showInExplorer: boolean;
     showLogs: boolean;
-    generateProjectFiles: boolean;
     cleanCache: boolean;
     clone: boolean;
     editConfig: boolean;
     manageTags: boolean;
     notes: boolean;
     removeProject: boolean;
+    deleteProject: boolean;
 }
 
 const defaultMenuConfig: ContextMenuConfig = {
     launch: true,
     showInExplorer: true,
     showLogs: true,
-    generateProjectFiles: true,
     cleanCache: true,
     clone: true,
     editConfig: true,
     manageTags: true,
     notes: true,
-    removeProject: true
+    removeProject: true,
+    deleteProject: true
 };
 
 const menuItems: { key: keyof ContextMenuConfig; icon: React.ElementType; color: string }[] = [
     { key: 'launch', icon: Play, color: 'text-green-400' },
     { key: 'showInExplorer', icon: FolderOpen, color: 'text-primary' },
-    { key: 'generateProjectFiles', icon: Code, color: 'text-purple-400' },
     { key: 'showLogs', icon: FileText, color: 'text-slate-400' },
     { key: 'editConfig', icon: SettingsIcon, color: 'text-slate-400' },
     { key: 'manageTags', icon: Tag, color: 'text-orange-400' },
@@ -45,6 +44,7 @@ const menuItems: { key: keyof ContextMenuConfig; icon: React.ElementType; color:
     { key: 'clone', icon: Copy, color: 'text-cyan-400' },
     { key: 'cleanCache', icon: Eraser, color: 'text-yellow-400' },
     { key: 'removeProject', icon: Trash2, color: 'text-red-400' },
+    { key: 'deleteProject', icon: FolderX, color: 'text-red-500' },
 ];
 
 const Toggle = ({ checked, onChange }: { checked: boolean; onChange: (val: boolean) => void }) => (

@@ -99,22 +99,23 @@
     "launch": "Projeyi Başlat",
     "showInExplorer": "Dosya Gezgininde Göster",
     "showLogs": "Log Dosyalarını Göster",
-    "generateProjectFiles": "Proje Dosyalarını Oluştur",
     "cleanCache": "Önbelleği Temizle",
     "clone": "Projeyi Kopyala",
     "editConfig": "Hızlı Yapılandırma",
     "manageTags": "Etiketleri Yönet",
     "notes": "Notlar",
     "removeProject": "Listeden Kaldır",
+    "deleteProject": "Projeyi Sil",
     "rightClickMenu": "SAĞ TIK MENÜSÜ"
   },
   "dialogs": {
+    "removeProjectMessage": "Bu projeyi listeden kaldırmak istediğinize emin misiniz?",
+    "deleteProjectMessage": "⚠️ UYARI: Bu işlem proje klasörünü diskten kalıcı olarak SİLECEKTİR. Bu işlem GERİ ALINAMAZ. Devam edilsin mi?",
+    "deleteProjectConfirm": "SON UYARI: '{{name}}' kalıcı olarak silinsin mi? Tüm dosyalar kaybolacak!",
     "cleanCacheTitle": "Önbelleği Temizle",
     "cleanCacheMessage": "Bu işlem 'Intermediate' ve 'DerivedDataCache' klasörlerini silecek. Proje geçici dosyaları temizlenecek ancak kayıtlı verileriniz (Saved) korunacak. Devam etmek istiyor musunuz?",
     "cleanCacheSuccess": "Önbellek başarıyla temizlendi.",
     "cleanCacheError": "Önbellek temizlenirken hata oluştu.",
-    "generateFilesSuccess": "Proje dosyaları oluşturma işlemi başlatıldı.",
-    "generateFilesError": "Proje dosyaları oluşturulurken hata oluştu.",
     "cloneProjectTitle": "Projeyi Kopyala",
     "cloneProjectMessage": "Yeni proje adı:",
     "cloneProjectSuccess": "Proje başarıyla kopyalandı.",
@@ -131,11 +132,23 @@
     "notesSaved": "Notlar kaydedildi."
   },
   "config": {
+    "rendering": "Render Ayarları",
+    "graphics": "Grafik",
     "rayTracing": "Ray Tracing (Işın İzleme)",
+    "lumen": "Lumen Global Illumination",
+    "nanite": "Nanite",
+    "virtualShadowMaps": "Virtual Shadow Maps (Sanal Gölge Haritaları)",
+    "antiAliasing": "Kenar Yumuşatma (Anti-Aliasing)",
+    "aaNone": "Kapalı",
+    "vsync": "VSync",
     "dx12": "DirectX 12",
     "rhi": "Grafik API (RHI)",
     "save": "Kaydet",
     "cancel": "İptal",
+    "loading": "Yapılandırma yükleniyor...",
     "success": "Ayarlar kaydedildi."
+  },
+  "common": {
+    "chars": "karakter"
   }
 }

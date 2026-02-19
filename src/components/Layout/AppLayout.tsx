@@ -61,24 +61,24 @@ export const AppLayout: React.FC = () => {
             </div>
             <div className="flex flex-1 overflow-hidden h-full w-full relative z-10">
                 <Sidebar currentView={view === 'git' ? 'projects' : (view as View)} onViewChange={setView} />
-                <main className="flex-1 overflow-auto bg-transparent pt-8">
-                    <div className={`${view === 'git' ? 'p-0' : 'p-8'} w-full min-h-full flex flex-col ${reduceAnimations ? '' : 'transition-all duration-300'}`}>
-                        <header className="flex justify-between items-center mb-0">
-                        </header>
-
-                        <div className="flex-1 min-h-0">
-                            {view === 'projects' && <ProjectsPage onOpenGit={handleOpenGit} />}
-                            {view === 'engines' && <EnginesPage />}
-                            {view === 'settings' && <SettingsPage />}
-                            {view === 'git' && selectedProject && (
-                                <GitHistoryPage
-                                    projectPath={selectedProject.path}
-                                    projectName={selectedProject.name}
-                                    onBack={handleBackFromGit}
-                                />
-                            )}
+                <main className={`flex-1 bg-transparent ${view === 'git' ? 'overflow-hidden pt-8' : 'overflow-auto pt-8'}`}>
+                    {view === 'git' && selectedProject ? (
+                        <div className="h-full w-full">
+                            <GitHistoryPage
+                                projectPath={selectedProject.path}
+                                projectName={selectedProject.name}
+                                onBack={handleBackFromGit}
+                            />
                         </div>
-                    </div>
+                    ) : (
+                        <div className={`p-8 w-full min-h-full flex flex-col ${reduceAnimations ? '' : 'transition-all duration-300'}`}>
+                            <div className="flex-1 min-h-0">
+                                {view === 'projects' && <ProjectsPage onOpenGit={handleOpenGit} />}
+                                {view === 'engines' && <EnginesPage />}
+                                {view === 'settings' && <SettingsPage />}
+                            </div>
+                        </div>
+                    )}
                 </main>
             </div>
         </div>

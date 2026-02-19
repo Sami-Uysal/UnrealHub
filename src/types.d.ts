@@ -20,6 +20,8 @@ declare global {
             saveProject: (project: Project) => Promise<boolean>;
             selectProjectFile: () => Promise<string | null>;
             launchProject: (path: string) => Promise<void>;
+            showInExplorer: (path: string) => Promise<void>;
+            removeProject: (path: string) => Promise<boolean>;
             getEngines: () => Promise<Engine[]>;
             addEnginePath: () => Promise<boolean>;
             getConfigPaths: () => Promise<{ enginePaths: string[], projectPaths: string[] }>;
@@ -35,10 +37,10 @@ declare global {
             getGitHistory: (path: string) => Promise<GitCommit[]>;
             getGitStatus: (path: string) => Promise<{ current: string; branches: string[]; remotes: string[] }>;
             openProjectLog: (path: string) => Promise<void>;
-            generateProjectFiles: (path: string) => Promise<void>;
             cleanProjectCache: (path: string) => Promise<void>;
             cloneProject: (path: string, newName: string) => Promise<void>;
             readIniFile: (path: string) => Promise<Record<string, any>>;
+            deleteProject: (path: string) => Promise<boolean>;
             writeIniFile: (path: string, data: Record<string, any>) => Promise<void>;
             getProjectTags: () => Promise<Record<string, string[]>>;
             saveProjectTags: (tags: Record<string, string[]>) => Promise<void>;
