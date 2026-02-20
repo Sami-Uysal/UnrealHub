@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import { Sidebar, View } from './Sidebar';
 import { ProjectsPage } from '../../pages/Projects';
 import { EnginesPage } from '../../pages/Engines';
 import { SettingsPage } from '../../pages/Settings';
-import { GitHistoryPage } from '../../pages/GitHistory';
+const GitHistoryPage = lazy(() => import('../../pages/GitHistory').then(module => ({ default: module.GitHistoryPage })));
 import { Project } from '../../types';
 import { TitleBar } from './TitleBar';
 
@@ -64,11 +64,13 @@ export const AppLayout: React.FC = () => {
                 <main className={`flex-1 bg-transparent ${view === 'git' ? 'overflow-hidden pt-8' : 'overflow-auto pt-8'}`}>
                     {view === 'git' && selectedProject ? (
                         <div className="h-full w-full">
-                            <GitHistoryPage
-                                projectPath={selectedProject.path}
-                                projectName={selectedProject.name}
-                                onBack={handleBackFromGit}
-                            />
+                            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-500 text-sm">Loading Git History...</div>}>
+                                <GitHistoryPage
+                                    projectPath={selectedProject.path}
+                                    projectName={selectedProject.name}
+                                    onBack={handleBackFromGit}
+                                />
+                            </Suspense>
                         </div>
                     ) : (
                         <div className={`p-8 w-full min-h-full flex flex-col ${reduceAnimations ? '' : 'transition-all duration-300'}`}>

@@ -22,11 +22,20 @@ export default defineConfig({
       // If you want use Node.js in Renderer process, the `nodeIntegration` needs to be enabled in the Main process.
       // See 👉 https://github.com/electron-vite/vite-plugin-electron-renderer
       renderer: process.env.NODE_ENV === 'test'
-        // https://github.com/electron-vite/vite-plugin-electron-renderer/issues/78#issuecomment-2053600808
         ? undefined
         : {},
     }),
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'git-view': ['./src/pages/GitHistory'],
+          'i18n': ['i18next', 'react-i18next']
+        }
+      }
+    }
+  },
   server: {
     port: 5173,
     host: '127.0.0.1',

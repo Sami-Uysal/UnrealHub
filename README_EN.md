@@ -11,6 +11,11 @@ Developed for personal use.
 
 - **Projects**: View all your UE projects and launch them with a single click
 - **Engines**: List installed Unreal Engine versions
+- **Favorites**: Pin your most used projects for quick access
+- **Notes**: Add custom markdown notes to any project
+- **Project Sizes**: Automatically calculates and displays the disk size of each project
+- **Sorting**: Sort projects by Last Modified, Name, or Size
+- **Project Management**: Clone, delete, or clean cache directly from the app
 - **Easy Addition**: Add projects via drag-and-drop or file picker
 - **Customization**: Change project names and cover images
 - **Tag System**: Add tags to projects and filter by tags
