@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Play, Image as ImageIcon, GitBranch, Pencil, Star, HardDrive } from 'lucide-react';
+import { Play, Image as ImageIcon, GitBranch, Pencil, Star, HardDrive, Settings as SettingsIcon } from 'lucide-react';
 import { Project } from '../types';
 import { getTagColor } from '../utils/tagUtils';
 
@@ -23,6 +23,7 @@ interface ProjectCardProps {
     onToggleFavorite: (path: string, e?: React.MouseEvent) => void;
     onEdit: (project: Project, e?: React.MouseEvent) => void;
     onOpenGit?: (project: Project) => void;
+    onOpenConfig?: (project: Project) => void;
     onLaunch: (path: string, args?: string) => void;
 }
 
@@ -38,6 +39,7 @@ export const ProjectCard = React.memo<ProjectCardProps>(({
     onToggleFavorite,
     onEdit,
     onOpenGit,
+    onOpenConfig,
     onLaunch
 }) => {
     const { t } = useTranslation();
@@ -98,6 +100,13 @@ export const ProjectCard = React.memo<ProjectCardProps>(({
                         <GitBranch size={16} />
                     </button>
                 )}
+                <button
+                    onClick={(e) => { e.stopPropagation(); onOpenConfig?.(project); }}
+                    className="p-2.5 rounded-full bg-slate-950/60 backdrop-blur-md text-slate-200 hover:text-white hover:bg-[var(--accent-color)] border border-white/10 transition-colors shadow-lg"
+                    title={t('dialogs.configEditorTitle') || 'Config Editor'}
+                >
+                    <SettingsIcon size={16} />
+                </button>
             </div>
 
             <div className={`absolute inset-x-0 bottom-0 ${compactMode ? 'p-4' : 'p-6'} flex flex-col z-10`}>

@@ -396,4 +396,38 @@ export function registerProjectHandlers() {
         kanbanData[projectPath] = board;
         await writeJsonFile(KANBAN_PATH, kanbanData);
     });
+
+    ipcMain.handle('get-project-configs', async (_, projectPath: string) => {
+        const configDir = path.join(path.dirname(projectPath), 'Config');
+        if (!existsSync(configDir)) return [];
+        try {
+            const files = await fs.readdir(configDir);
+            return files.filter(f => f.toLowerCase().endsWith('.ini'));
+        } catch (e) {
+            console.error('Failed to read config directory:', e);
+            return [];
+        }
+    });
+
+    ipcMain.handle('read-raw-ini-file', async (_, projectPath: string, fileName: string) => {
+        const iniPath = path.join(path.dirname(projectPath), 'Config', fileName);
+        if (!existsSync(iniPath)) return '';
+        try {
+            return await fs.readFile(iniPath, 'utf-8');
+        } catch (e) {
+            console.error(`Failed to read ${fileName}:`, e);
+            return '';
+        }
+    });
+
+    ipcMain.handle('write-raw-ini-file', async (_, projectPath: string, fileName: string, content: string) => {
+        const iniPath = path.join(path.dirname(projectPath), 'Config', fileName);
+        try {
+            await fs.writeFile(iniPath, content, 'utf-8');
+            return true;
+        } catch (e) {
+            console.error(`Failed to write ${fileName}:`, e);
+            throw e;
+        }
+    });
 }

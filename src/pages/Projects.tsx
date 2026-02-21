@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { Plus, FolderPlus, Filter, ArrowUpDown, X, Image as ImageIcon } from 'lucide-react';
 import { Project } from '../types';
 import { ContextMenu } from '../components/ContextMenu';
-import { ConfigEditorModal } from '../components/ConfigEditorModal';
 import { TagManagerModal } from '../components/TagManagerModal';
 import { NotesModal } from '../components/NotesModal';
 import { ProjectKanban } from '../components/Projects/ProjectKanban';
@@ -15,11 +14,12 @@ import { useProjects, useFavorites, useTags } from '../hooks/useProjects';
 
 interface ProjectsPageProps {
     onOpenGit?: (project: Project) => void;
+    onOpenConfig?: (project: Project) => void;
 }
 
 type SortMode = 'date' | 'name' | 'engine';
 
-export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
+export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit, onOpenConfig }) => {
     const { t } = useTranslation();
     const { compactMode, reduceAnimations } = useAppearance();
 
@@ -39,7 +39,6 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
     const [showGit] = useState(() => localStorage.getItem('showGitIntegration') !== 'false');
 
     const [ctxMenu, setCtxMenu] = useState<{ x: number, y: number, project: Project } | null>(null);
-    const [configProject, setConfigProject] = useState<Project | null>(null);
     const [tagModalProject, setTagModalProject] = useState<Project | null>(null);
     const [notesProject, setNotesProject] = useState<Project | null>(null);
     const [kanbanProject, setKanbanProject] = useState<Project | null>(null);
@@ -264,7 +263,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
                         });
                     }}
                     onClone={() => { const p = ctxMenu.project; closeContextMenu(); setCloneName(p.name + ' Copy'); setCloneProject(p); }}
-                    onEditConfig={() => { const p = ctxMenu.project; handleAction(async () => setConfigProject(p)); }}
+                    onEditConfig={() => { const p = ctxMenu.project; handleAction(async () => onOpenConfig?.(p)); }}
                     onManageTags={() => { const p = ctxMenu.project; handleAction(async () => setTagModalProject(p)); }}
                     onNotes={() => { const p = ctxMenu.project; handleAction(async () => setNotesProject(p)); }}
                     onKanban={() => { const p = ctxMenu.project; handleAction(async () => setKanbanProject(p)); }}
@@ -307,7 +306,6 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
 
             {dialogConfig && <ConfirmationModal config={dialogConfig} />}
 
-            {configProject && <ConfigEditorModal projectPath={configProject.path} onClose={() => setConfigProject(null)} />}
             {tagModalProject && <TagManagerModal projectPath={tagModalProject.path} allTags={allTags} onUpdateTags={setAllTags} onClose={() => setTagModalProject(null)} />}
             {notesProject && <NotesModal projectPath={notesProject.path} projectName={notesProject.name} onClose={() => setNotesProject(null)} />}
 

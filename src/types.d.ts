@@ -61,6 +61,9 @@ declare global {
             saveProjectNotes: (notes: Record<string, string>) => Promise<void>;
             getProjectKanban: (path: string) => Promise<KanbanBoard | null>;
             saveProjectKanban: (path: string, board: KanbanBoard) => Promise<void>;
+            getProjectConfigs: (path: string) => Promise<string[]>;
+            readRawIniFile: (path: string, fileName: string) => Promise<string>;
+            writeRawIniFile: (path: string, fileName: string, content: string) => Promise<boolean>;
             minimize: () => Promise<void>;
             maximize: () => Promise<void>;
             close: () => Promise<void>;

@@ -8,9 +8,10 @@ import { TitleBar } from './TitleBar';
 import { useAppearance } from '../../context/AppearanceContext';
 
 const GitHistoryPage = lazy(() => import('../../pages/GitHistory').then(module => ({ default: module.GitHistoryPage })));
+const ConfigEditorPage = lazy(() => import('../../pages/ConfigEditorPage').then(module => ({ default: module.ConfigEditorPage })));
 
 export const AppLayout: React.FC = () => {
-    const [view, setView] = useState<View | 'git'>('projects');
+    const [view, setView] = useState<View | 'git' | 'config'>('projects');
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
     const { bgEffect, fontSize, reduceAnimations } = useAppearance();
 
@@ -20,6 +21,16 @@ export const AppLayout: React.FC = () => {
     };
 
     const handleBackFromGit = () => {
+        setView('projects');
+        setSelectedProject(null);
+    };
+
+    const handleOpenConfig = (project: Project) => {
+        setSelectedProject(project);
+        setView('config');
+    };
+
+    const handleBackFromConfig = () => {
         setView('projects');
         setSelectedProject(null);
     };
@@ -60,8 +71,8 @@ export const AppLayout: React.FC = () => {
                 <TitleBar />
             </div>
             <div className="flex flex-1 overflow-hidden h-full w-full relative z-10">
-                <Sidebar currentView={view === 'git' ? 'projects' : (view as View)} onViewChange={setView} />
-                <main className={`flex-1 bg-transparent ${view === 'git' ? 'overflow-hidden pt-8' : 'overflow-auto pt-8'}`}>
+                <Sidebar currentView={(view === 'git' || view === 'config') ? 'projects' : (view as View)} onViewChange={setView} />
+                <main className={`flex-1 bg-transparent ${(view === 'git' || view === 'config') ? 'overflow-hidden pt-8' : 'overflow-auto pt-8'}`}>
                     {view === 'git' && selectedProject ? (
                         <div className="h-full w-full">
                             <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-500 text-sm">Loading Git History...</div>}>
@@ -72,10 +83,20 @@ export const AppLayout: React.FC = () => {
                                 />
                             </Suspense>
                         </div>
+                    ) : view === 'config' && selectedProject ? (
+                        <div className="h-full w-full">
+                            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-500 text-sm">Loading Config...</div>}>
+                                <ConfigEditorPage
+                                    projectPath={selectedProject.path}
+                                    projectName={selectedProject.name}
+                                    onBack={handleBackFromConfig}
+                                />
+                            </Suspense>
+                        </div>
                     ) : (
                         <div className={`p-8 w-full min-h-full flex flex-col ${reduceAnimations ? '' : 'transition-all duration-300'}`}>
                             <div className="flex-1 min-h-0">
-                                {view === 'projects' && <ProjectsPage onOpenGit={handleOpenGit} />}
+                                {view === 'projects' && <ProjectsPage onOpenGit={handleOpenGit} onOpenConfig={handleOpenConfig} />}
                                 {view === 'engines' && <EnginesPage />}
                                 {view === 'settings' && <SettingsPage />}
                             </div>
