@@ -78,6 +78,7 @@ export async function scanProjects(): Promise<Project[]> {
             const override = config.projectOverrides[p.path];
             if (override.name) p.name = override.name;
             if (override.thumbnail) p.thumbnail = override.thumbnail;
+            if (override.launchProfiles) p.launchProfiles = override.launchProfiles;
         }
 
         if (!p.thumbnail) {

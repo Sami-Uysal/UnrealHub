@@ -4,7 +4,7 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import {
     Project, loadConfig, saveConfig,
-    STORE_PATH, EXCLUDED_PATH,
+    STORE_PATH, EXCLUDED_PATH, KANBAN_PATH,
     readJsonFile, writeJsonFile
 } from '../services/configStore';
 import { scanProjects, getProjectSizeCached } from '../services/scanner';
@@ -14,12 +14,13 @@ export function registerProjectHandlers() {
         return scanProjects();
     });
 
-    ipcMain.handle('update-project-details', async (_, projectPath: string, details: { name?: string, thumbnail?: string }) => {
+    ipcMain.handle('update-project-details', async (_, projectPath: string, details: { name?: string, thumbnail?: string, launchProfiles?: import('../services/configStore').LaunchProfile[] }) => {
         const config = await loadConfig();
         if (!config.projectOverrides) config.projectOverrides = {};
         if (!config.projectOverrides[projectPath]) config.projectOverrides[projectPath] = {};
         if (details.name !== undefined) config.projectOverrides[projectPath].name = details.name;
         if (details.thumbnail !== undefined) config.projectOverrides[projectPath].thumbnail = details.thumbnail;
+        if (details.launchProfiles !== undefined) config.projectOverrides[projectPath].launchProfiles = details.launchProfiles;
         await saveConfig(config);
         return true;
     });
@@ -102,8 +103,73 @@ export function registerProjectHandlers() {
         return false;
     });
 
-    ipcMain.handle('launch-project', async (_, projectPath: string) => {
-        await shell.openPath(projectPath);
+    ipcMain.handle('launch-project', async (_, projectPath: string, args?: string) => {
+        if (!args || args.trim() === '') {
+            await shell.openPath(projectPath);
+            return;
+        }
+
+        try {
+            const projectData = JSON.parse(await fs.readFile(projectPath, 'utf-8'));
+            const association = projectData.EngineAssociation;
+            if (!association) throw new Error('No EngineAssociation found');
+
+            const config = await loadConfig();
+            let engineExe = '';
+
+            for (const ep of config.enginePaths) {
+                if (!existsSync(ep)) continue;
+                const checkPaths = [
+                    path.join(ep, 'Engine', 'Binaries', 'Win64', 'UnrealEditor.exe'),
+                    path.join(ep, 'Engine', 'Binaries', 'Win64', 'UE4Editor.exe'),
+                    // check if the ep is the root epic games folder and has subfolders
+                    path.join(ep, `UE_${association}`, 'Engine', 'Binaries', 'Win64', 'UnrealEditor.exe'),
+                    path.join(ep, association, 'Engine', 'Binaries', 'Win64', 'UnrealEditor.exe')
+                ];
+
+                // Direct version match approach:
+                if (path.basename(ep) === `UE_${association}` || path.basename(ep) === association) {
+                    checkPaths.push(path.join(ep, 'Engine', 'Binaries', 'Win64', 'UnrealEditor.exe'));
+                    checkPaths.push(path.join(ep, 'Engine', 'Binaries', 'Win64', 'UE4Editor.exe'));
+                }
+
+                for (const cp of checkPaths) {
+                    if (existsSync(cp)) {
+                        engineExe = cp;
+                        break;
+                    }
+                }
+                if (engineExe) break;
+            }
+
+            if (!engineExe) {
+                // Try from Windows registry if custom source build (optional, skipping for now) 
+                // Fallback to searching all configured engine paths
+                const dirs = await fs.readdir(config.enginePaths[0] || '').catch(() => []);
+                for (const d of dirs) {
+                    if (d.includes(association)) {
+                        const cp = path.join(config.enginePaths[0], d, 'Engine', 'Binaries', 'Win64', 'UnrealEditor.exe');
+                        if (existsSync(cp)) {
+                            engineExe = cp;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (engineExe) {
+                const { spawn } = await import('node:child_process');
+                const spawnArgs = [projectPath, ...args.split(' ').filter(a => a.trim() !== '')];
+                const child = spawn(engineExe, spawnArgs, { detached: true, stdio: 'ignore' });
+                child.unref();
+            } else {
+                console.warn('Engine executable not found for custom launch. Falling back to default shell open.');
+                await shell.openPath(projectPath);
+            }
+        } catch (e) {
+            console.error('Failed to launch with args', e);
+            await shell.openPath(projectPath);
+        }
     });
 
     ipcMain.handle('show-in-explorer', async (_, projectPath: string) => {
@@ -195,6 +261,74 @@ export function registerProjectHandlers() {
         return getProjectSizeCached(projectPath);
     });
 
+    ipcMain.handle('smart-backup', async (_, projectPath: string) => {
+        const projectDir = path.dirname(projectPath);
+        const projectName = path.basename(projectDir);
+        const defaultPath = `${projectName}_Backup_${new Date().toISOString().replace(/[:.]/g, '-')}.zip`;
+
+        const { filePath } = await dialog.showSaveDialog({
+            title: 'Save Smart Backup',
+            defaultPath: defaultPath,
+            filters: [{ name: 'Zip Archives', extensions: ['zip'] }]
+        });
+
+        if (!filePath) return { success: false, canceled: true };
+
+        return new Promise((resolve, reject) => {
+            import('archiver').then(({ default: archiver }) => {
+                import('node:fs').then(({ createWriteStream }) => {
+                    const output = createWriteStream(filePath);
+                    const archive = archiver('zip', {
+                        zlib: { level: 9 } // Sets the compression level.
+                    });
+
+                    output.on('close', () => {
+                        resolve({ success: true, size: archive.pointer() });
+                    });
+
+                    archive.on('error', (err: any) => {
+                        reject({ success: false, error: err.message });
+                    });
+
+                    archive.pipe(output);
+
+                    const skipDirs = ['Intermediate', 'Saved', 'DerivedDataCache', 'Binaries', '.git', '.vs'];
+
+                    archive.glob('**/*', {
+                        cwd: projectDir,
+                        ignore: skipDirs.map(dir => `${dir}/**`)
+                    });
+
+                    archive.finalize();
+                });
+            }).catch(err => reject({ success: false, error: 'Archiver failed to load: ' + err.message }));
+        });
+    });
+
+    ipcMain.handle('read-uproject-plugins', async (_, projectPath: string) => {
+        try {
+            const content = await fs.readFile(projectPath, 'utf-8');
+            const data = JSON.parse(content);
+            return data.Plugins || [];
+        } catch (e) {
+            console.error('Failed to read uproject plugins', e);
+            return [];
+        }
+    });
+
+    ipcMain.handle('write-uproject-plugins', async (_, projectPath: string, plugins: any[]) => {
+        try {
+            const content = await fs.readFile(projectPath, 'utf-8');
+            const data = JSON.parse(content);
+            data.Plugins = plugins;
+            await fs.writeFile(projectPath, JSON.stringify(data, null, '\t'), 'utf-8');
+            return true;
+        } catch (e) {
+            console.error('Failed to write uproject plugins', e);
+            return false;
+        }
+    });
+
     ipcMain.handle('read-ini-file', async (_, projectPath: string) => {
         const iniPath = path.join(path.dirname(projectPath), 'Config', 'DefaultEngine.ini');
         if (!existsSync(iniPath)) return {};
@@ -250,5 +384,16 @@ export function registerProjectHandlers() {
         }
 
         await fs.writeFile(iniPath, content, 'utf-8');
+    });
+
+    ipcMain.handle('get-project-kanban', async (_, projectPath: string) => {
+        const kanbanData = await readJsonFile<Record<string, any>>(KANBAN_PATH, {});
+        return kanbanData[projectPath] || null;
+    });
+
+    ipcMain.handle('save-project-kanban', async (_, projectPath: string, board: any) => {
+        const kanbanData = await readJsonFile<Record<string, any>>(KANBAN_PATH, {});
+        kanbanData[projectPath] = board;
+        await writeJsonFile(KANBAN_PATH, kanbanData);
     });
 }

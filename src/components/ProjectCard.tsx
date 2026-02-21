@@ -23,7 +23,7 @@ interface ProjectCardProps {
     onToggleFavorite: (path: string, e?: React.MouseEvent) => void;
     onEdit: (project: Project, e?: React.MouseEvent) => void;
     onOpenGit?: (project: Project) => void;
-    onLaunch: (path: string) => void;
+    onLaunch: (path: string, args?: string) => void;
 }
 
 export const ProjectCard = React.memo<ProjectCardProps>(({
@@ -68,7 +68,6 @@ export const ProjectCard = React.memo<ProjectCardProps>(({
                 <div className={`absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent ${!reduceAnimations ? 'transition-opacity duration-300' : ''}`} />
             </div>
 
-            {/* Favorite button */}
             <div className="absolute top-3 left-3 z-20">
                 <button
                     onClick={(e) => onToggleFavorite(project.path, e)}
@@ -82,7 +81,6 @@ export const ProjectCard = React.memo<ProjectCardProps>(({
                 </button>
             </div>
 
-            {/* Edit / Git buttons */}
             <div className="absolute top-3 right-3 flex gap-2 z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-[-10px] group-hover:translate-y-0">
                 <button
                     onClick={(e) => onEdit(project, e)}
@@ -102,7 +100,6 @@ export const ProjectCard = React.memo<ProjectCardProps>(({
                 )}
             </div>
 
-            {/* Bottom content */}
             <div className={`absolute inset-x-0 bottom-0 ${compactMode ? 'p-4' : 'p-6'} flex flex-col z-10`}>
                 <div className="flex items-start justify-between mb-3">
                     <div className="flex-1 min-w-0">
@@ -145,14 +142,54 @@ export const ProjectCard = React.memo<ProjectCardProps>(({
                     )}
                 </div>
 
-                <button
-                    onClick={() => onLaunch(project.path)}
-                    className={`w-full flex items-center justify-center space-x-2 bg-white text-slate-900 hover:bg-[var(--accent-color)] hover:text-white
-            ${compactMode ? 'py-2' : 'py-3'} rounded-xl backdrop-blur-sm transition-all duration-300 font-bold shadow-lg shadow-black/20 group/btn translate-y-2 group-hover:translate-y-0`}
-                >
-                    <Play size={compactMode ? 16 : 20} className="fill-current" />
-                    <span className={compactMode ? 'text-xs' : 'text-sm'}>{t('projects.launch')}</span>
-                </button>
+                <div className="flex gap-2 w-full mt-auto translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                    <button
+                        onClick={() => onLaunch(project.path)}
+                        className={`flex-1 flex items-center justify-center space-x-2 bg-white text-slate-900 hover:bg-[var(--accent-color)] hover:text-white
+                            ${compactMode ? 'py-2' : 'py-3'} rounded-xl backdrop-blur-sm transition-all duration-300 font-bold shadow-lg shadow-black/20`}
+                    >
+                        <Play size={compactMode ? 16 : 20} className="fill-current" />
+                        <span className={compactMode ? 'text-xs' : 'text-sm'}>{t('projects.launch')}</span>
+                    </button>
+
+                    {project.launchProfiles && project.launchProfiles.length > 0 && (
+                        <div className="relative flex items-center">
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    const rect = e.currentTarget.getBoundingClientRect();
+                                    const menu = document.createElement('div');
+                                    menu.className = 'fixed z-50 bg-slate-900 border border-slate-700 rounded-lg shadow-xl overflow-hidden py-1 min-w-[150px] animate-in fade-in zoom-in-95 duration-200';
+                                    menu.style.top = `${rect.bottom + 8}px`;
+                                    menu.style.right = `${window.innerWidth - rect.right}px`;
+
+                                    const items = project.launchProfiles!.map(p => {
+                                        const btn = document.createElement('button');
+                                        btn.className = 'w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-[var(--accent-color)] hover:text-white transition-colors flex items-center gap-2';
+                                        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m11 17 6-5-6-5"/><path d="M18 17 24 12 18 7"/><path d="M6 17 12 12 6 7"/></svg> ${p.name}`;
+                                        btn.onclick = () => {
+                                            onLaunch(project.path, p.args);
+                                            document.body.removeChild(overlay);
+                                        };
+                                        return btn;
+                                    });
+
+                                    items.forEach(item => menu.appendChild(item));
+
+                                    const overlay = document.createElement('div');
+                                    overlay.className = 'fixed inset-0 z-40';
+                                    overlay.onclick = () => document.body.removeChild(overlay);
+                                    overlay.appendChild(menu);
+                                    document.body.appendChild(overlay);
+                                }}
+                                className={`flex items-center justify-center bg-slate-800 text-slate-300 hover:bg-[var(--accent-color)] hover:text-white px-2 rounded-xl border border-slate-700 hover:border-transparent transition-all duration-300`}
+                                title={t('projects.launchOptions')}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-down"><path d="m6 9 6 6 6-6" /></svg>
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

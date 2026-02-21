@@ -16,13 +16,15 @@ interface ContextMenuProps {
     onManageTags: () => void;
     onNotes: () => void;
     onRemove: () => void;
+    onSmartBackup: () => void;
     onDeleteProject: () => void;
+    onKanban: () => void;
 }
 
 export const ContextMenu: React.FC<ContextMenuProps> = ({
     x, y, projectName, onClose,
     onLaunch, onShowInExplorer, onShowLogs,
-    onCleanCache, onClone, onEditConfig, onManageTags, onNotes, onRemove, onDeleteProject
+    onCleanCache, onClone, onEditConfig, onManageTags, onNotes, onRemove, onSmartBackup, onDeleteProject, onKanban
 }) => {
     const { t } = useTranslation();
     const menuRef = useRef<HTMLDivElement>(null);
@@ -37,7 +39,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
                 setMenuConfig({
                     launch: true, showInExplorer: true, showLogs: true,
                     cleanCache: true, clone: true,
-                    editConfig: true, manageTags: true, notes: true, removeProject: true, deleteProject: true
+                    editConfig: true, manageTags: true, notes: true, kanban: true, smartBackup: true, removeProject: true, deleteProject: true
                 });
             }
         };
@@ -132,6 +134,13 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
                     </button>
                 )}
 
+                {isVisible('kanban') && (
+                    <button onClick={onKanban} className="w-full text-left px-3 py-2 hover:bg-slate-800/80 rounded-md flex items-center gap-3 transition-all group">
+                        <FileText size={15} className="text-purple-400 group-hover:scale-110 transition-transform" />
+                        <span className="font-medium">{t('kanban.title')}</span>
+                    </button>
+                )}
+
                 {isVisible('clone') && (
                     <button onClick={onClone} className="w-full text-left px-3 py-2 hover:bg-slate-800/80 rounded-md flex items-center gap-3 transition-all group">
                         <Copy size={15} className="text-cyan-400 group-hover:scale-110 transition-transform" />
@@ -143,6 +152,13 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
                     <button onClick={onCleanCache} className="w-full text-left px-3 py-2 hover:bg-slate-800/80 rounded-md flex items-center gap-3 transition-all group">
                         <Eraser size={15} className="text-yellow-400 group-hover:scale-110 transition-transform" />
                         <span className="font-medium">{t('contextMenu.cleanCache')}</span>
+                    </button>
+                )}
+
+                {isVisible('smartBackup') && (
+                    <button onClick={onSmartBackup} className="w-full text-left px-3 py-2 hover:bg-slate-800/80 rounded-md flex items-center gap-3 transition-all group">
+                        <FolderOpen size={15} className="text-blue-400 group-hover:scale-110 transition-transform" />
+                        <span className="font-medium">{t('contextMenu.smartBackup')}</span>
                     </button>
                 )}
 

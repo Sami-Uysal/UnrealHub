@@ -21,9 +21,13 @@ Kişisel kullanım için geliştirilmiştir.
 - **Özelleştirme**: Proje isimlerini ve kapak resimlerini değiştirin
 - **Etiket Sistemi**: Projelere etiket ekleyin ve etiketlere göre filtreleyin
 - **Git Entegrasyonu**: Commit geçmişini ve dalları görselleştirin (Ayarlardan açılabilir)
+- **Görev Panosu**: Proje içi görevlerinizi sürükle bırak panosuyla (Kanban) yönetin
+- **Akıllı Yedekleme**: Gereksiz ara dosyaları hariç tutarak projeyi tek tıkla zip olarak yedekleyin
+- **Başlatma Seçenekleri**: Özel komut satırı argümanlarıyla başlatma profilleri oluşturun
+- **Eklenti Yöneticisi**: Projedeki eklentileri (.uproject) arayüz üzerinden açıp kapatın
 - **Çoklu Dil**: Türkçe ve İngilizce arayüz desteği
 - **Sağ Tık Menüsü**: Özelleştirilebilir bağlam menüsü (Ayarlardan yapılandırılabilir)
-- **Config Editörü**: `.uproject` dosyasını uygulama içinden düzenleyin
+- **Config Editörü**: `.uproject` dosyasını ve render ayarlarını uygulama içinden düzenleyin
 
 ## Kurulum
 

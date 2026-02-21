@@ -7,18 +7,26 @@ export const CONFIG_PATH = path.join(app.getPath('userData'), 'config.json');
 export const TAGS_PATH = path.join(app.getPath('userData'), 'project-tags.json');
 export const FAVORITES_PATH = path.join(app.getPath('userData'), 'favorites.json');
 export const NOTES_PATH = path.join(app.getPath('userData'), 'project-notes.json');
+export const KANBAN_PATH = path.join(app.getPath('userData'), 'project-kanban.json');
 export const SIZES_CACHE_PATH = path.join(app.getPath('userData'), 'project-sizes.json');
 export const EXCLUDED_PATH = path.join(app.getPath('userData'), 'excluded-projects.json');
 
 export interface ProjectOverride {
     name?: string;
     thumbnail?: string;
+    launchProfiles?: LaunchProfile[];
 }
 
 export interface Config {
     enginePaths: string[];
     projectPaths: string[];
     projectOverrides?: Record<string, ProjectOverride>;
+}
+
+export interface LaunchProfile {
+    id: string;
+    name: string;
+    args: string;
 }
 
 export interface Project {
@@ -28,6 +36,7 @@ export interface Project {
     version: string;
     lastModified: number;
     thumbnail?: string;
+    launchProfiles?: LaunchProfile[];
 }
 
 let configCache: Config | null = null;

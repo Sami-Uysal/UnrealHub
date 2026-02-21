@@ -13,6 +13,12 @@
     "version": "Versiyon:",
     "open": "Aç",
     "launch": "Başlat",
+    "launchOptions": "Başlatma Seçenekleri",
+    "addProfile": "Profil Ekle",
+    "noProfiles": "Henüz profil yok.",
+    "profileName": "Profil Adı",
+    "profileArgs": "Argümanlar (örn: -game)",
+    "saveProfile": "Kaydet",
     "gitHistory": "Git Geçmişi",
     "noProjects": "Proje bulunamadı.",
     "edit": "Düzenle",
@@ -106,7 +112,9 @@
     "notes": "Notlar",
     "removeProject": "Listeden Kaldır",
     "deleteProject": "Projeyi Sil",
-    "rightClickMenu": "SAĞ TIK MENÜSÜ"
+    "smartBackup": "Akıllı Yedekleme",
+    "rightClickMenu": "SAĞ TIK MENÜSÜ",
+    "kanban": "Görev Panosu"
   },
   "dialogs": {
     "removeProjectMessage": "Bu projeyi listeden kaldırmak istediğinize emin misiniz?",
@@ -133,7 +141,9 @@
     "suggestedTags": "Etiketler",
     "notesTitle": "Proje Notları",
     "notesPlaceholder": "Notlarınızı buraya yazın...",
-    "notesSaved": "Notlar kaydedildi."
+    "notesSaved": "Notlar kaydedildi.",
+    "smartBackupSuccess": "Akıllı Yedekleme Başarıyla Tamamlandı! Boyut: {{size}} MB",
+    "smartBackupError": "Akıllı Yedekleme Başarısız Oldu: {{error}}"
   },
   "config": {
     "rendering": "Render Ayarları",
@@ -150,7 +160,31 @@
     "save": "Kaydet",
     "cancel": "İptal",
     "loading": "Yapılandırma yükleniyor...",
-    "success": "Ayarlar kaydedildi."
+    "success": "Ayarlar kaydedildi.",
+    "tabConfig": "Motor Ayarları",
+    "tabPlugins": "Eklentiler",
+    "addPlugin": "Eklenti Ekle",
+    "pluginNamePlaceholder": "Eklenti Adı (örn. Water)",
+    "noPlugins": "Bilinçli olarak eklenmiş eklenti bulunamadı."
+  },
+  "kanban": {
+    "title": "Görev Panosu",
+    "todo": "Yapılacaklar",
+    "inProgress": "Devam Edenler",
+    "review": "İnceleme",
+    "done": "Tamamlananlar",
+    "addCard": "Kart Ekle...",
+    "addList": "Liste Ekle...",
+    "newTitle": "Görev Başlığı",
+    "newDesc": "Görev Açıklaması",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "delete": "Sil",
+    "deleteListTitle": "Listeyi Sil",
+    "deleteListConfirm": "Bu listeyi ve içindeki tüm görevleri silmek istediğinize emin misiniz?",
+    "deleteCardTitle": "Görevi Sil",
+    "deleteCardConfirm": "Bu görevi silmek istediğinize emin misiniz?",
+    "editCard": "Görevi Düzenle"
   },
   "common": {
     "chars": "karakter"

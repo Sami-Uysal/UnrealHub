@@ -13,6 +13,12 @@
     "version": "Version:",
     "open": "Open",
     "launch": "Launch",
+    "launchOptions": "Launch Options",
+    "addProfile": "Add Profile",
+    "noProfiles": "No profiles yet.",
+    "profileName": "Profile Name",
+    "profileArgs": "Arguments (e.g., -game)",
+    "saveProfile": "Save",
     "gitHistory": "Git History",
     "noProjects": "No projects found.",
     "edit": "Edit",
@@ -106,7 +112,9 @@
     "notes": "Notes",
     "removeProject": "Remove from List",
     "deleteProject": "Delete Project",
-    "rightClickMenu": "RIGHT CLICK MENU"
+    "smartBackup": "Smart Backup",
+    "rightClickMenu": "RIGHT CLICK MENU",
+    "kanban": "Task Board"
   },
   "dialogs": {
     "removeProjectMessage": "Are you sure you want to remove this project from the list?",
@@ -133,7 +141,9 @@
     "suggestedTags": "Tags",
     "notesTitle": "Project Notes",
     "notesPlaceholder": "Write your notes here...",
-    "notesSaved": "Notes saved."
+    "notesSaved": "Notes saved.",
+    "smartBackupSuccess": "Smart Backup Completed Successfully! Size: {{size}} MB",
+    "smartBackupError": "Smart Backup Failed: {{error}}"
   },
   "config": {
     "rendering": "Rendering",
@@ -150,7 +160,31 @@
     "save": "Save",
     "cancel": "Cancel",
     "loading": "Loading config...",
-    "success": "Settings saved."
+    "success": "Settings saved.",
+    "tabConfig": "Engine Config",
+    "tabPlugins": "Plugins",
+    "addPlugin": "Add Plugin",
+    "pluginNamePlaceholder": "Plugin Name (e.g. Water)",
+    "noPlugins": "No explicitly added plugins found."
+  },
+  "kanban": {
+    "title": "Task Board",
+    "todo": "To Do",
+    "inProgress": "In Progress",
+    "review": "Review",
+    "done": "Done",
+    "addCard": "Add a card...",
+    "addList": "Add a list...",
+    "newTitle": "Task Title",
+    "newDesc": "Task Description",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "deleteListTitle": "Delete List",
+    "deleteListConfirm": "Are you sure you want to delete this list and all its tasks?",
+    "deleteCardTitle": "Delete Task",
+    "deleteCardConfirm": "Are you sure you want to delete this task?",
+    "editCard": "Edit Task"
   },
   "common": {
     "chars": "chars"

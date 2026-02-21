@@ -6,6 +6,7 @@ import { ContextMenu } from '../components/ContextMenu';
 import { ConfigEditorModal } from '../components/ConfigEditorModal';
 import { TagManagerModal } from '../components/TagManagerModal';
 import { NotesModal } from '../components/NotesModal';
+import { ProjectKanban } from '../components/Projects/ProjectKanban';
 import { ProjectCard } from '../components/ProjectCard';
 import { ConfirmationModal, DialogConfig } from '../components/ConfirmationModal';
 import { useAppearance } from '../context/AppearanceContext';
@@ -32,6 +33,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
     const [editingProject, setEditingProject] = useState<Project | null>(null);
     const [editName, setEditName] = useState('');
     const [editThumb, setEditThumb] = useState<string | undefined>(undefined);
+    const [editLaunchProfiles, setEditLaunchProfiles] = useState<import('../types').LaunchProfile[]>([]);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isDragOverModal, setIsDragOverModal] = useState(false);
     const [showGit] = useState(() => localStorage.getItem('showGitIntegration') !== 'false');
@@ -40,6 +42,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
     const [configProject, setConfigProject] = useState<Project | null>(null);
     const [tagModalProject, setTagModalProject] = useState<Project | null>(null);
     const [notesProject, setNotesProject] = useState<Project | null>(null);
+    const [kanbanProject, setKanbanProject] = useState<Project | null>(null);
     const [cloneProject, setCloneProject] = useState<Project | null>(null);
     const [cloneName, setCloneName] = useState('');
 
@@ -111,15 +114,16 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
         setEditingProject(project);
         setEditName(project.name);
         setEditThumb(project.thumbnail);
+        setEditLaunchProfiles(project.launchProfiles || []);
     }, []);
 
-    const handleLaunch = useCallback((projectPath: string) => {
-        handleAction(async () => window.unreal.launchProject(projectPath));
+    const handleLaunch = useCallback((projectPath: string, args?: string) => {
+        handleAction(async () => window.unreal.launchProject(projectPath, args));
     }, [handleAction]);
 
     const handleSaveEdit = async () => {
         if (!editingProject) return;
-        await window.unreal.updateProjectDetails(editingProject.path, { name: editName, thumbnail: editThumb });
+        await window.unreal.updateProjectDetails(editingProject.path, { name: editName, thumbnail: editThumb, launchProfiles: editLaunchProfiles });
         setEditingProject(null);
         loadProjects();
     };
@@ -182,6 +186,18 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
         }
     };
 
+    const addLaunchProfile = () => {
+        setEditLaunchProfiles([...editLaunchProfiles, { id: Date.now().toString(), name: '', args: '' }]);
+    };
+
+    const updateLaunchProfile = (id: string, field: 'name' | 'args', value: string) => {
+        setEditLaunchProfiles(editLaunchProfiles.map(p => p.id === id ? { ...p, [field]: value } : p));
+    };
+
+    const removeLaunchProfile = (id: string) => {
+        setEditLaunchProfiles(editLaunchProfiles.filter(p => p.id !== id));
+    };
+
     return (
         <div className="relative" onClick={closeContextMenu}>
             {ctxMenu && (
@@ -215,10 +231,43 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
                             }
                         });
                     }}
+                    onSmartBackup={() => {
+                        const p = ctxMenu.project;
+                        closeContextMenu();
+                        window.unreal.smartBackup(p.path).then((res) => {
+                            if (res.canceled) return;
+                            if (res.success) {
+                                showDialog({
+                                    type: 'alert',
+                                    variant: 'success',
+                                    title: t('dialogs.success'),
+                                    message: t('dialogs.smartBackupSuccess', { size: ((res.size || 0) / 1024 / 1024).toFixed(2) }),
+                                    onConfirm: () => { }
+                                });
+                            } else {
+                                showDialog({
+                                    type: 'alert',
+                                    variant: 'destructive',
+                                    title: t('dialogs.error'),
+                                    message: t('dialogs.smartBackupError', { error: res.error }),
+                                    onConfirm: () => { }
+                                });
+                            }
+                        }).catch(e => {
+                            showDialog({
+                                type: 'alert',
+                                variant: 'destructive',
+                                title: t('dialogs.error'),
+                                message: t('dialogs.smartBackupError', { error: e.message }),
+                                onConfirm: () => { }
+                            });
+                        });
+                    }}
                     onClone={() => { const p = ctxMenu.project; closeContextMenu(); setCloneName(p.name + ' Copy'); setCloneProject(p); }}
                     onEditConfig={() => { const p = ctxMenu.project; handleAction(async () => setConfigProject(p)); }}
                     onManageTags={() => { const p = ctxMenu.project; handleAction(async () => setTagModalProject(p)); }}
                     onNotes={() => { const p = ctxMenu.project; handleAction(async () => setNotesProject(p)); }}
+                    onKanban={() => { const p = ctxMenu.project; handleAction(async () => setKanbanProject(p)); }}
                     onRemove={() => {
                         const p = ctxMenu.project;
                         showDialog({
@@ -261,6 +310,17 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
             {configProject && <ConfigEditorModal projectPath={configProject.path} onClose={() => setConfigProject(null)} />}
             {tagModalProject && <TagManagerModal projectPath={tagModalProject.path} allTags={allTags} onUpdateTags={setAllTags} onClose={() => setTagModalProject(null)} />}
             {notesProject && <NotesModal projectPath={notesProject.path} projectName={notesProject.name} onClose={() => setNotesProject(null)} />}
+
+            {/* Kanban Modal */}
+            {kanbanProject && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setKanbanProject(null)}>
+                    <div className="bg-slate-950 border border-slate-700/50 rounded-2xl w-[95vw] h-[90vh] shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex-1 overflow-hidden">
+                            <ProjectKanban projectPath={kanbanProject.path} onClose={() => setKanbanProject(null)} />
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Clone Modal */}
             {cloneProject && (
@@ -328,12 +388,12 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
             {/* Edit Project Modal */}
             {editingProject && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-                    <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 w-96 shadow-2xl">
+                    <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 w-[480px] shadow-2xl max-h-[90vh] flex flex-col">
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="text-xl font-bold text-white">{t('projects.editProjectTitle')}</h3>
                             <button onClick={() => setEditingProject(null)} className="text-slate-500 hover:text-white"><X size={20} /></button>
                         </div>
-                        <div className="space-y-4">
+                        <div className="space-y-4 overflow-y-auto custom-scrollbar flex-1 pr-2">
                             <div>
                                 <label className="block text-xs text-slate-400 mb-1">{t('projects.editProjectNameLabel')}</label>
                                 <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)}
@@ -353,8 +413,49 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
                                     )}
                                 </div>
                             </div>
+
+                            <div className="pt-4 border-t border-slate-800">
+                                <div className="flex justify-between items-center mb-2">
+                                    <label className="block text-xs font-bold text-slate-300 uppercase">{t('projects.launchOptions')}</label>
+                                    <button onClick={addLaunchProfile} className="text-xs text-[var(--accent-color)] hover:underline flex items-center gap-1">
+                                        <Plus size={12} /> {t('projects.addProfile')}
+                                    </button>
+                                </div>
+
+                                {editLaunchProfiles.length === 0 ? (
+                                    <div className="text-center text-slate-500 text-xs py-4 border border-dashed border-slate-700 rounded bg-slate-800/50">
+                                        {t('projects.noProfiles')}
+                                    </div>
+                                ) : (
+                                    <div className="space-y-2">
+                                        {editLaunchProfiles.map(profile => (
+                                            <div key={profile.id} className="flex flex-col gap-2 p-3 bg-slate-800 border border-slate-700 rounded relative group">
+                                                <button onClick={() => removeLaunchProfile(profile.id)} className="absolute top-2 right-2 text-slate-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <X size={14} />
+                                                </button>
+                                                <div className="pr-6">
+                                                    <input
+                                                        type="text"
+                                                        placeholder={t('projects.profileName')}
+                                                        value={profile.name}
+                                                        onChange={(e) => updateLaunchProfile(profile.id, 'name', e.target.value)}
+                                                        className="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs text-white focus:outline-none focus:border-[var(--accent-color)] mb-2"
+                                                    />
+                                                    <textarea
+                                                        placeholder={t('projects.profileArgs')}
+                                                        value={profile.args}
+                                                        onChange={(e) => updateLaunchProfile(profile.id, 'args', e.target.value)}
+                                                        className="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-xs font-mono text-white focus:outline-none focus:border-[var(--accent-color)] resize-y custom-scrollbar min-h-[40px] max-h-[120px]"
+                                                        rows={2}
+                                                    />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                        <div className="flex justify-end space-x-3 mt-6">
+                        <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-slate-800">
                             <button
                                 onClick={() => {
                                     showDialog({
@@ -374,7 +475,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit }) => {
                             >
                                 {t('projects.remove')}
                             </button>
-                            <button onClick={handleSaveEdit} className="px-4 py-2 text-sm bg-primary hover:bg-primary/80 text-white rounded">{t('projects.edit')}</button>
+                            <button onClick={handleSaveEdit} className="px-4 py-2 text-sm bg-[var(--accent-color)] hover:opacity-80 text-white rounded transition-colors">{t('projects.saveProfile')}</button>
                         </div>
                     </div>
                 </div>

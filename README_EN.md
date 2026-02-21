@@ -20,9 +20,13 @@ Developed for personal use.
 - **Customization**: Change project names and cover images
 - **Tag System**: Add tags to projects and filter by tags
 - **Git Integration**: Visualize commit history and branches (can be enabled in Settings)
+- **Task Board**: Manage your project tasks with a drag-and-drop Kanban board
+- **Smart Backup**: Back up your project to a zip archive with a single click, excluding junk files
+- **Launch Profiles**: Create profiles with custom command-line arguments for launching
+- **Plugin Manager**: Enable or disable project plugins (.uproject) directly from the interface
 - **Localization**: Turkish and English interface support
 - **Context Menu**: Customizable right-click menu (configurable in Settings)
-- **Config Editor**: Edit `.uproject` files directly from the app
+- **Config Editor**: Edit `.uproject` files and render settings directly from the app
 
 ## Installation
 

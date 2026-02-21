@@ -17,6 +17,8 @@ interface ContextMenuConfig {
     editConfig: boolean;
     manageTags: boolean;
     notes: boolean;
+    kanban: boolean;
+    smartBackup: boolean;
     removeProject: boolean;
     deleteProject: boolean;
 }
@@ -30,6 +32,8 @@ const defaultMenuConfig: ContextMenuConfig = {
     editConfig: true,
     manageTags: true,
     notes: true,
+    kanban: true,
+    smartBackup: true,
     removeProject: true,
     deleteProject: true
 };
@@ -41,8 +45,10 @@ const menuItems: { key: keyof ContextMenuConfig; icon: React.ElementType; color:
     { key: 'editConfig', icon: SettingsIcon, color: 'text-slate-400' },
     { key: 'manageTags', icon: Tag, color: 'text-orange-400' },
     { key: 'notes', icon: StickyNote, color: 'text-amber-400' },
+    { key: 'kanban', icon: FileText, color: 'text-purple-400' },
     { key: 'clone', icon: Copy, color: 'text-cyan-400' },
     { key: 'cleanCache', icon: Eraser, color: 'text-yellow-400' },
+    { key: 'smartBackup', icon: FolderOpen, color: 'text-blue-400' },
     { key: 'removeProject', icon: Trash2, color: 'text-red-400' },
     { key: 'deleteProject', icon: FolderX, color: 'text-red-500' },
 ];

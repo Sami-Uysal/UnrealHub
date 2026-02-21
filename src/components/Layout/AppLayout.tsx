@@ -3,11 +3,11 @@ import { Sidebar, View } from './Sidebar';
 import { ProjectsPage } from '../../pages/Projects';
 import { EnginesPage } from '../../pages/Engines';
 import { SettingsPage } from '../../pages/Settings';
-const GitHistoryPage = lazy(() => import('../../pages/GitHistory').then(module => ({ default: module.GitHistoryPage })));
 import { Project } from '../../types';
 import { TitleBar } from './TitleBar';
-
 import { useAppearance } from '../../context/AppearanceContext';
+
+const GitHistoryPage = lazy(() => import('../../pages/GitHistory').then(module => ({ default: module.GitHistoryPage })));
 
 export const AppLayout: React.FC = () => {
     const [view, setView] = useState<View | 'git'>('projects');
