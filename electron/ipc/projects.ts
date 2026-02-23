@@ -182,7 +182,7 @@ export function registerProjectHandlers() {
             try {
                 const projects = await readJsonFile<Project[]>(STORE_PATH, []);
                 await writeJsonFile(STORE_PATH, projects.filter(p => p.path !== projectPath));
-            } catch { }
+            } catch (error) { console.error('Failed to remove project from store:', error); }
         }
         // Add to exclusion list
         const excluded = await readJsonFile<string[]>(EXCLUDED_PATH, []);

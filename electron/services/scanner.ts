@@ -23,7 +23,7 @@ async function scanSingleFolder(scanPath: string, dirName: string): Promise<Proj
         try {
             const content = JSON.parse(await fs.readFile(fullPath, 'utf-8'));
             if (content.EngineAssociation) version = content.EngineAssociation;
-        } catch { }
+        } catch (error) { console.warn(`Failed to parse ${fullPath}:`, error); }
 
         const stat = await fs.stat(fullPath);
         return {
@@ -122,7 +122,7 @@ async function getDirectorySizeJS(dirPath: string): Promise<number> {
         });
         const sizes = await Promise.all(promises);
         totalSize = sizes.reduce((a, b) => a + b, 0);
-    } catch { }
+    } catch (error) { console.warn('Failed to get directory size JS:', error); }
     return totalSize;
 }
 

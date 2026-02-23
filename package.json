@@ -1,7 +1,7 @@
 {
   "name": "unreal-hub",
   "private": true,
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Unreal Engine manager for personal use",
   "author": "Sami Uysal",
   "type": "module",

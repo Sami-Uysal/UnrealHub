@@ -36,7 +36,7 @@ export function useFavorites() {
         try {
             const favs = await window.unreal.getFavorites();
             setFavorites(favs || []);
-        } catch { }
+        } catch (error) { console.error('Failed to load favorites', error); }
     }, []);
 
     useEffect(() => { loadFavorites(); }, [loadFavorites]);
