@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppearance } from '../context/AppearanceContext';
-import { Folder, Trash2, Plus, Play, FolderOpen, FileText, Eraser, Copy, Settings as SettingsIcon, Tag, StickyNote, Palette, Sparkles, ChevronRight, FolderX } from 'lucide-react';
+import { Folder, Trash2, Plus, Play, FolderOpen, FileText, Eraser, Copy, Settings as SettingsIcon, Tag, StickyNote, Palette, Sparkles, ChevronRight, FolderX, RefreshCw } from 'lucide-react';
 
 interface ConfigPaths {
     enginePaths: string[];
@@ -113,6 +113,11 @@ export const SettingsPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [menuConfig, setMenuConfig] = useState<ContextMenuConfig>(defaultMenuConfig);
 
+    const [appVersion, setAppVersion] = useState<string>('');
+    const [updateStatus, setUpdateStatus] = useState<string>('idle');
+    const [downloadProgress, setDownloadProgress] = useState<number>(0);
+    const [updateMessage, setUpdateMessage] = useState<string>('');
+
     const loadPaths = async () => {
         try {
             const data = await window.unreal.getConfigPaths();
@@ -129,6 +134,28 @@ export const SettingsPage: React.FC = () => {
         const storedConfig = localStorage.getItem('contextMenuConfig');
         if (storedConfig) {
             setMenuConfig({ ...defaultMenuConfig, ...JSON.parse(storedConfig) });
+        }
+
+        if (window.unreal && window.unreal.getAppVersion) {
+            window.unreal.getAppVersion().then((v: string) => setAppVersion(v));
+
+            window.unreal.onUpdateAvailable(() => {
+                setUpdateStatus('available');
+            });
+            window.unreal.onUpdateNotAvailable(() => {
+                setUpdateStatus('not-available');
+            });
+            window.unreal.onDownloadProgress((progress: { percent: number }) => {
+                setUpdateStatus('downloading');
+                setDownloadProgress(Math.round(progress.percent));
+            });
+            window.unreal.onUpdateDownloaded(() => {
+                setUpdateStatus('downloaded');
+            });
+            window.unreal.onUpdateError((err: string) => {
+                setUpdateStatus('error');
+                setUpdateMessage(err);
+            });
         }
     }, []);
 
@@ -159,6 +186,25 @@ export const SettingsPage: React.FC = () => {
         window.dispatchEvent(new Event('storage'));
     };
 
+    const handleCheckUpdate = async () => {
+        setUpdateStatus('checking');
+        const result = await window.unreal.checkForUpdates();
+        if (result.status === 'error' || result.status === 'dev-mode') {
+            setUpdateStatus('error');
+            setUpdateMessage(result.message || result.error || '');
+        }
+    };
+
+    const handleDownloadUpdate = async () => {
+        setUpdateStatus('downloading');
+        setDownloadProgress(0);
+        await window.unreal.downloadUpdate();
+    };
+
+    const handleQuitAndInstall = () => {
+        window.unreal.quitAndInstall();
+    };
+
     if (loading) return <div className="text-slate-400">{t('git.loading')}</div>;
 
     const accentColors = [
@@ -170,7 +216,7 @@ export const SettingsPage: React.FC = () => {
         { key: 'red', bg: '#ef4444' },
     ] as const;
 
-    const PathList = ({ type, items, onAdd, onRemove }: { type: 'engine' | 'project'; items: string[]; onAdd: () => void; onRemove: (t: any, p: string) => void }) => (
+    const PathList = ({ type, items, onAdd, onRemove }: { type: 'engine' | 'project'; items: string[]; onAdd: () => void; onRemove: (t: 'engine' | 'project', p: string) => void }) => (
         <div>
             {items.length === 0 ? (
                 <div className="px-6 py-8 text-center">
@@ -253,7 +299,7 @@ export const SettingsPage: React.FC = () => {
                                 { key: 'glass', label: t('settings.effects.glass') },
                             ]}
                             value={bgEffect}
-                            onChange={(v) => setBgEffect(v as any)}
+                            onChange={(v) => setBgEffect(v as 'gradient' | 'flat' | 'glass')}
                         />
                     </SettingRow>
 
@@ -265,7 +311,7 @@ export const SettingsPage: React.FC = () => {
                                 { key: 'xlarge', label: t('settings.sizes.xlarge') },
                             ]}
                             value={fontSize}
-                            onChange={(v) => setFontSize(v as any)}
+                            onChange={(v) => setFontSize(v as 'normal' | 'large' | 'xlarge')}
                         />
                     </SettingRow>
 
@@ -276,6 +322,67 @@ export const SettingsPage: React.FC = () => {
                     <SettingRow label={t('settings.reduceAnimations')}>
                         <Toggle checked={reduceAnimations} onChange={setReduceAnimations} />
                     </SettingRow>
+                </SectionCard>
+
+                <SectionCard icon={RefreshCw} title={t('settings.updates')}>
+                    <div className="p-6 flex flex-col items-center">
+                        <div className="mb-4 text-center">
+                            <h4 className="text-xl font-bold text-white">UnrealHub</h4>
+                            <p className="text-sm text-slate-400">v{appVersion}</p>
+                        </div>
+
+                        {(updateStatus === 'idle' || updateStatus === 'not-available' || updateStatus === 'error') && (
+                            <div className="flex flex-col items-center gap-2">
+                                {updateStatus === 'not-available' && <div className="text-sm text-green-400 mb-2">{t('settings.updateNotAvailable')}</div>}
+                                {updateStatus === 'error' && <div className="text-sm text-red-400 mb-2 text-center max-w-sm">{updateMessage || t('settings.updateError')}</div>}
+                                <button
+                                    onClick={handleCheckUpdate}
+                                    className="px-5 py-2.5 bg-[var(--accent-color)] hover:bg-[var(--accent-color)]/80 text-white rounded-xl font-bold transition-colors text-sm"
+                                >
+                                    {t('settings.checkForUpdates')}
+                                </button>
+                            </div>
+                        )}
+
+                        {updateStatus === 'checking' && (
+                            <div className="flex items-center gap-3 text-slate-400 text-sm py-2">
+                                <RefreshCw className="animate-spin" size={16} />
+                                {t('settings.checkForUpdates')}...
+                            </div>
+                        )}
+
+                        {updateStatus === 'available' && (
+                            <button
+                                onClick={handleDownloadUpdate}
+                                className="px-5 py-2.5 bg-green-500 hover:bg-green-600 text-white rounded-xl font-bold transition-colors text-sm"
+                            >
+                                {t('settings.updateAvailable')}
+                            </button>
+                        )}
+
+                        {updateStatus === 'downloading' && (
+                            <div className="w-full max-w-sm">
+                                <div className="flex justify-between text-xs text-slate-400 mb-2">
+                                    <span>{t('settings.downloadingUpdate', { percent: downloadProgress })}</span>
+                                </div>
+                                <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full bg-[var(--accent-color)] transition-all duration-300 relative"
+                                        style={{ width: `${downloadProgress}%` }}
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        {updateStatus === 'downloaded' && (
+                            <button
+                                onClick={handleQuitAndInstall}
+                                className="px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-bold transition-colors text-sm animate-pulse"
+                            >
+                                {t('settings.restartAndInstall')}
+                            </button>
+                        )}
+                    </div>
                 </SectionCard>
 
                 <SectionCard icon={Folder} title={t('settings.enginePaths')} description={t('settings.engineDesc')}>

@@ -61,7 +61,7 @@ const NavItem: React.FC<NavItemProps> = ({ view, currentView, icon: Icon, label,
     );
 };
 
-export const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) => {
+export const Sidebar: React.FC<SidebarProps & { hasUpdate?: boolean }> = ({ currentView, onViewChange, hasUpdate }) => {
     const { t } = useTranslation();
     const { reduceAnimations } = useAppearance();
 
@@ -106,6 +106,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) =
                         <Settings size={18} className={`${!reduceAnimations ? 'transition-transform duration-500' : ''} ${currentView === 'settings' ? 'rotate-45' : 'group-hover:rotate-45'}`} />
                     </div>
                     <span className="font-semibold text-sm tracking-wide">{t('sidebar.settings')}</span>
+                    {hasUpdate && (
+                        <div className="absolute right-4 w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)] animate-pulse" />
+                    )}
                 </button>
             </div>
         </div>

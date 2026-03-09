@@ -76,7 +76,15 @@
       "xlarge": "Çok Büyük"
     },
     "contextMenu": "Sağ Tık Menüsü",
-    "contextMenuDesc": "Menüde görmek istediğiniz öğeleri seçin."
+    "contextMenuDesc": "Menüde görmek istediğiniz öğeleri seçin.",
+    "updates": "Güncellemeler",
+    "checkForUpdates": "Güncellemeleri Kontrol Et",
+    "downloadingUpdate": "Güncelleme indiriliyor: %{{percent}}",
+    "updateAvailable": "Yeni sürüm bulundu! İndiriliyor...",
+    "updateNotAvailable": "En güncel sürümü kullanıyorsunuz.",
+    "updateDownloaded": "Güncelleme hazır.",
+    "restartAndInstall": "Yeniden Başlat ve Kur",
+    "updateError": "Güncelleme kontrolünde hata oluştu."
   },
   "engines": {
     "title": "MOTOR SÜRÜMLERİ",

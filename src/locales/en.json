@@ -76,7 +76,15 @@
       "xlarge": "Extra Large"
     },
     "contextMenu": "Context Menu",
-    "contextMenuDesc": "Select items you want to see in the menu."
+    "contextMenuDesc": "Select items you want to see in the menu.",
+    "updates": "Updates",
+    "checkForUpdates": "Check for Updates",
+    "downloadingUpdate": "Downloading update: {{percent}}%",
+    "updateAvailable": "New version available! Downloading...",
+    "updateNotAvailable": "You are using the latest version.",
+    "updateDownloaded": "Update ready.",
+    "restartAndInstall": "Restart and Install",
+    "updateError": "Error checking for updates."
   },
   "engines": {
     "title": "ENGINE VERSIONS",

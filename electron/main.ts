@@ -14,6 +14,7 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 
 import { registerProjectHandlers } from './ipc/projects';
 import { registerEngineHandlers } from './ipc/engines';
 import { registerGitHandlers } from './ipc/git';
+import { registerUpdaterHandlers } from './ipc/updater';
 import { registerConfigHandlers } from './ipc/config';
 import { registerWindowHandlers } from './ipc/window';
 
@@ -72,6 +73,7 @@ app.whenReady().then(() => {
   registerEngineHandlers();
   registerGitHandlers();
   registerConfigHandlers();
+  registerUpdaterHandlers(() => win);
   registerWindowHandlers(() => win);
 
   createWindow();

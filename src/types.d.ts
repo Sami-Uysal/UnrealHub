@@ -67,6 +67,16 @@ declare global {
             minimize: () => Promise<void>;
             maximize: () => Promise<void>;
             close: () => Promise<void>;
+
+            getAppVersion: () => Promise<string>;
+            checkForUpdates: () => Promise<{ status: string; message?: string; error?: string }>;
+            downloadUpdate: () => Promise<{ status: string; error?: string }>;
+            quitAndInstall: () => void;
+            onUpdateAvailable: (callback: (info: any) => void) => void;
+            onUpdateNotAvailable: (callback: (info: any) => void) => void;
+            onDownloadProgress: (callback: (progress: any) => void) => void;
+            onUpdateDownloaded: (callback: (info: any) => void) => void;
+            onUpdateError: (callback: (error: string) => void) => void;
         };
     }
 }

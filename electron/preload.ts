@@ -45,4 +45,31 @@ contextBridge.exposeInMainWorld('unreal', {
   minimize: () => ipcRenderer.invoke('window-minimize'),
   maximize: () => ipcRenderer.invoke('window-maximize'),
   close: () => ipcRenderer.invoke('window-close'),
+
+  // Updater API
+  getAppVersion: () => ipcRenderer.invoke('get-app-version'),
+  checkForUpdates: () => ipcRenderer.invoke('check-for-updates'),
+  downloadUpdate: () => ipcRenderer.invoke('download-update'),
+  quitAndInstall: () => ipcRenderer.invoke('quit-and-install'),
+
+  onUpdateAvailable: (callback: (info: any) => void) => {
+    ipcRenderer.removeAllListeners('update-available');
+    ipcRenderer.on('update-available', (_event, info) => callback(info));
+  },
+  onUpdateNotAvailable: (callback: (info: any) => void) => {
+    ipcRenderer.removeAllListeners('update-not-available');
+    ipcRenderer.on('update-not-available', (_event, info) => callback(info));
+  },
+  onDownloadProgress: (callback: (progress: any) => void) => {
+    ipcRenderer.removeAllListeners('download-progress');
+    ipcRenderer.on('download-progress', (_event, progress) => callback(progress));
+  },
+  onUpdateDownloaded: (callback: (info: any) => void) => {
+    ipcRenderer.removeAllListeners('update-downloaded');
+    ipcRenderer.on('update-downloaded', (_event, info) => callback(info));
+  },
+  onUpdateError: (callback: (error: string) => void) => {
+    ipcRenderer.removeAllListeners('update-error');
+    ipcRenderer.on('update-error', (_event, error) => callback(error));
+  },
 })

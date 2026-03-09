@@ -14,6 +14,20 @@ export const AppLayout: React.FC = () => {
     const [view, setView] = useState<View | 'git' | 'config'>('projects');
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
     const { bgEffect, fontSize, reduceAnimations } = useAppearance();
+    const [hasUpdateAvailable, setHasUpdateAvailable] = useState(false);
+
+    React.useEffect(() => {
+        if (window.unreal && window.unreal.checkForUpdates) {
+            window.unreal.checkForUpdates().catch(() => { });
+
+            window.unreal.onUpdateAvailable(() => {
+                setHasUpdateAvailable(true);
+            });
+            window.unreal.onUpdateDownloaded(() => {
+                setHasUpdateAvailable(true);
+            });
+        }
+    }, []);
 
     const handleOpenGit = (project: Project) => {
         setSelectedProject(project);
@@ -71,7 +85,11 @@ export const AppLayout: React.FC = () => {
                 <TitleBar />
             </div>
             <div className="flex flex-1 overflow-hidden h-full w-full relative z-10">
-                <Sidebar currentView={(view === 'git' || view === 'config') ? 'projects' : (view as View)} onViewChange={setView} />
+                <Sidebar
+                    currentView={(view === 'git' || view === 'config') ? 'projects' : (view as View)}
+                    onViewChange={setView}
+                    hasUpdate={hasUpdateAvailable}
+                />
                 <main className={`flex-1 bg-transparent ${(view === 'git' || view === 'config') ? 'overflow-hidden pt-8' : 'overflow-auto pt-8'}`}>
                     {view === 'git' && selectedProject ? (
                         <div className="h-full w-full">
