@@ -44,7 +44,8 @@
         "AppImage",
         "deb"
       ],
-      "icon": "public/u.png"
+      "icon": "public/u.png",
+      "maintainer": "Sami Uysal <contact@samiuysal.me>"
     },
     "deb": {
       "priority": "optional"
