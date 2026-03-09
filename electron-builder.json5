@@ -4,6 +4,13 @@
   "appId": "com.unrealhub.manager",
   "asar": true,
   "productName": "UnrealHub",
+  "publish": [
+    {
+      "provider": "github",
+      "owner": "Sami-Uysal",
+      "repo": "UnrealHub"
+    }
+  ],
   "directories": {
     "output": "release/${version}"
   },
