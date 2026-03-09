@@ -38,6 +38,16 @@
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
       "deleteAppDataOnUninstall": false
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "public/u.png"
+    },
+    "deb": {
+      "priority": "optional"
     }
   },
   "dependencies": {

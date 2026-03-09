@@ -29,10 +29,6 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Install Snapcraft
-        if: matrix.os == 'ubuntu-latest'
-        run: sudo snap install snapcraft --classic
-
       - name: Build and Publish Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
