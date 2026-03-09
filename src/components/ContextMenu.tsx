@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FolderOpen, FileText, Trash2, Copy, Settings, Tag, Play, Eraser, StickyNote, FolderX } from 'lucide-react';
+import { FolderOpen, FileText, Trash2, Copy, Settings, Tag, Play, Eraser, StickyNote, FolderX, Archive } from 'lucide-react';
 
 interface ContextMenuProps {
     x: number;
@@ -14,9 +14,11 @@ interface ContextMenuProps {
     onClone: () => void;
     onEditConfig: () => void;
     onManageTags: () => void;
+    onStats: () => void;
     onNotes: () => void;
     onRemove: () => void;
     onSmartBackup: () => void;
+    onGitAutoBackup: () => void;
     onDeleteProject: () => void;
     onKanban: () => void;
 }
@@ -24,7 +26,7 @@ interface ContextMenuProps {
 export const ContextMenu: React.FC<ContextMenuProps> = ({
     x, y, projectName, onClose,
     onLaunch, onShowInExplorer, onShowLogs,
-    onCleanCache, onClone, onEditConfig, onManageTags, onNotes, onRemove, onSmartBackup, onDeleteProject, onKanban
+    onCleanCache, onClone, onEditConfig, onManageTags, onStats, onNotes, onRemove, onSmartBackup, onGitAutoBackup, onDeleteProject, onKanban
 }) => {
     const { t } = useTranslation();
     const menuRef = useRef<HTMLDivElement>(null);
@@ -39,7 +41,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
                 setMenuConfig({
                     launch: true, showInExplorer: true, showLogs: true,
                     cleanCache: true, clone: true,
-                    editConfig: true, manageTags: true, notes: true, kanban: true, smartBackup: true, removeProject: true, deleteProject: true
+                    editConfig: true, manageTags: true, stats: true, notes: true, kanban: true, smartBackup: true, gitAutoBackup: true, removeProject: true, deleteProject: true
                 });
             }
         };
@@ -118,7 +120,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
                     </button>
                 )}
 
-                {(isVisible('manageTags') || isVisible('notes') || isVisible('clone') || isVisible('cleanCache')) && <div className="my-1 border-t border-slate-700/30 mx-2" />}
+                {(isVisible('manageTags') || isVisible('stats') || isVisible('notes') || isVisible('clone') || isVisible('cleanCache')) && <div className="my-1 border-t border-slate-700/30 mx-2" />}
 
                 {isVisible('manageTags') && (
                     <button onClick={onManageTags} className="w-full text-left px-3 py-2 hover:bg-slate-800/80 rounded-md flex items-center gap-3 transition-all group">
@@ -131,6 +133,13 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
                     <button onClick={onNotes} className="w-full text-left px-3 py-2 hover:bg-slate-800/80 rounded-md flex items-center gap-3 transition-all group">
                         <StickyNote size={15} className="text-amber-400 group-hover:scale-110 transition-transform" />
                         <span className="font-medium">{t('contextMenu.notes')}</span>
+                    </button>
+                )}
+
+                {isVisible('stats') && (
+                    <button onClick={onStats} className="w-full text-left px-3 py-2 hover:bg-slate-800/80 rounded-md flex items-center gap-3 transition-all group">
+                        <FileText size={15} className="text-teal-400 group-hover:scale-110 transition-transform" />
+                        <span className="font-medium">{t('contextMenu.stats')}</span>
                     </button>
                 )}
 
@@ -159,6 +168,13 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
                     <button onClick={onSmartBackup} className="w-full text-left px-3 py-2 hover:bg-slate-800/80 rounded-md flex items-center gap-3 transition-all group">
                         <FolderOpen size={15} className="text-blue-400 group-hover:scale-110 transition-transform" />
                         <span className="font-medium">{t('contextMenu.smartBackup')}</span>
+                    </button>
+                )}
+
+                {isVisible('gitAutoBackup') && (
+                    <button onClick={onGitAutoBackup} className="w-full text-left px-3 py-2 hover:bg-slate-800/80 rounded-md flex items-center gap-3 transition-all group">
+                        <Archive size={15} className="text-violet-400 group-hover:scale-110 transition-transform" />
+                        <span className="font-medium">{t('contextMenu.gitAutoBackup')}</span>
                     </button>
                 )}
 

@@ -21,8 +21,11 @@ contextBridge.exposeInMainWorld('unreal', {
   checkGitRepo: (path: string) => ipcRenderer.invoke('check-git-repo', path),
   getGitHistory: (path: string) => ipcRenderer.invoke('get-git-history', path),
   getGitStatus: (path: string) => ipcRenderer.invoke('get-git-status', path),
+  gitAutoBackup: (path: string) => ipcRenderer.invoke('git-auto-backup', path),
   openProjectLog: (path: string) => ipcRenderer.invoke('open-project-log', path),
   cleanProjectCache: (path: string) => ipcRenderer.invoke('clean-project-cache', path),
+
+  getProjectStats: (path: string) => ipcRenderer.invoke('get-project-stats', path),
   cloneProject: (path: string, newName: string) => ipcRenderer.invoke('clone-project', path, newName),
   smartBackup: (path: string) => ipcRenderer.invoke('smart-backup', path),
   deleteProject: (path: string) => ipcRenderer.invoke('delete-project', path),

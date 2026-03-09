@@ -1,9 +1,10 @@
 import React, { useState, useRef, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, FolderPlus, Filter, ArrowUpDown, X, Image as ImageIcon } from 'lucide-react';
+import { Plus, FolderPlus, Filter, ArrowUpDown, X, Image as ImageIcon, LayoutGrid, List } from 'lucide-react';
 import { Project } from '../types';
 import { ContextMenu } from '../components/ContextMenu';
 import { TagManagerModal } from '../components/TagManagerModal';
+import { ProjectStatsModal } from '../components/ProjectStatsModal';
 import { NotesModal } from '../components/NotesModal';
 import { ProjectKanban } from '../components/Projects/ProjectKanban';
 import { ProjectCard } from '../components/ProjectCard';
@@ -21,7 +22,7 @@ type SortMode = 'date' | 'name' | 'engine';
 
 export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit, onOpenConfig }) => {
     const { t } = useTranslation();
-    const { compactMode, reduceAnimations } = useAppearance();
+    const { reduceAnimations } = useAppearance();
 
     // Custom hooks
     const { projects, projectSizes, loadProjects } = useProjects();
@@ -38,8 +39,16 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit, onOpenCon
     const [isDragOverModal, setIsDragOverModal] = useState(false);
     const [showGit] = useState(() => localStorage.getItem('showGitIntegration') !== 'false');
 
+    const [viewMode, setViewMode] = useState<'grid' | 'list'>(() =>
+        (localStorage.getItem('projectViewMode') as 'grid' | 'list') || 'grid'
+    );
+    const [cardSize, setCardSize] = useState<'small' | 'medium' | 'large'>(() =>
+        (localStorage.getItem('projectCardSize') as 'small' | 'medium' | 'large') || 'medium'
+    );
+
     const [ctxMenu, setCtxMenu] = useState<{ x: number, y: number, project: Project } | null>(null);
     const [tagModalProject, setTagModalProject] = useState<Project | null>(null);
+    const [statsProject, setStatsProject] = useState<Project | null>(null);
     const [notesProject, setNotesProject] = useState<Project | null>(null);
     const [kanbanProject, setKanbanProject] = useState<Project | null>(null);
     const [cloneProject, setCloneProject] = useState<Project | null>(null);
@@ -198,7 +207,7 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit, onOpenCon
     };
 
     return (
-        <div className="relative" onClick={closeContextMenu}>
+        <div className="relative pb-28" onClick={closeContextMenu}>
             {ctxMenu && (
                 <ContextMenu
                     x={ctxMenu.x}
@@ -262,9 +271,42 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit, onOpenCon
                             });
                         });
                     }}
+                    onGitAutoBackup={async () => {
+                        const p = ctxMenu.project;
+                        closeContextMenu();
+                        try {
+                            const res = await window.unreal.gitAutoBackup(p.path);
+                            if (res.success) {
+                                showDialog({
+                                    type: 'alert',
+                                    variant: 'success',
+                                    title: t('dialogs.success'),
+                                    message: t('dialogs.gitAutoBackupSuccess'),
+                                    onConfirm: () => { }
+                                });
+                            } else {
+                                showDialog({
+                                    type: 'alert',
+                                    variant: 'destructive',
+                                    title: t('dialogs.error'),
+                                    message: t('dialogs.gitAutoBackupError', { error: res.error }),
+                                    onConfirm: () => { }
+                                });
+                            }
+                        } catch (e: any) {
+                            showDialog({
+                                type: 'alert',
+                                variant: 'destructive',
+                                title: t('dialogs.error'),
+                                message: t('dialogs.gitAutoBackupError', { error: e.message }),
+                                onConfirm: () => { }
+                            });
+                        }
+                    }}
                     onClone={() => { const p = ctxMenu.project; closeContextMenu(); setCloneName(p.name + ' Copy'); setCloneProject(p); }}
                     onEditConfig={() => { const p = ctxMenu.project; handleAction(async () => onOpenConfig?.(p)); }}
                     onManageTags={() => { const p = ctxMenu.project; handleAction(async () => setTagModalProject(p)); }}
+                    onStats={() => { const p = ctxMenu.project; handleAction(async () => setStatsProject(p)); }}
                     onNotes={() => { const p = ctxMenu.project; handleAction(async () => setNotesProject(p)); }}
                     onKanban={() => { const p = ctxMenu.project; handleAction(async () => setKanbanProject(p)); }}
                     onRemove={() => {
@@ -307,6 +349,12 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit, onOpenCon
             {dialogConfig && <ConfirmationModal config={dialogConfig} />}
 
             {tagModalProject && <TagManagerModal projectPath={tagModalProject.path} allTags={allTags} onUpdateTags={setAllTags} onClose={() => setTagModalProject(null)} />}
+            <ProjectStatsModal
+                isOpen={!!statsProject}
+                onClose={() => setStatsProject(null)}
+                projectPath={statsProject?.path || ''}
+                projectName={statsProject?.name || ''}
+            />
             {notesProject && <NotesModal projectPath={notesProject.path} projectName={notesProject.name} onClose={() => setNotesProject(null)} />}
 
             {/* Kanban Modal */}
@@ -620,12 +668,20 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit, onOpenCon
             )}
 
             {/* Project cards grid */}
-            <div className={`grid ${compactMode ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'}`}>
+            <div className={`grid ${viewMode === 'list'
+                ? 'grid-cols-1 gap-3'
+                : cardSize === 'small'
+                    ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3'
+                    : cardSize === 'large'
+                        ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6'
+                        : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
+                }`}>
                 {filteredProjects.map((project) => (
                     <ProjectCard
                         key={project.path}
                         project={project}
-                        compactMode={compactMode}
+                        viewMode={viewMode}
+                        cardSize={cardSize}
                         reduceAnimations={reduceAnimations}
                         showGit={showGit}
                         isFavorite={favorites.includes(project.path)}
@@ -638,6 +694,65 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit, onOpenCon
                         onLaunch={handleLaunch}
                     />
                 ))}
+            </div>
+
+            {/* View Controls (Bottom Right) */}
+            <div className="fixed bottom-8 right-8 z-40 flex items-center gap-2 bg-slate-900/90 backdrop-blur-xl border border-white/10 p-2 rounded-2xl shadow-2xl">
+                <div className="flex bg-slate-800/50 rounded-xl p-1 border border-white/5">
+                    <button
+                        onClick={() => { setViewMode('grid'); localStorage.setItem('projectViewMode', 'grid'); }}
+                        className={`p-2 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-[var(--accent-color)] text-white' : 'text-slate-400 hover:text-white'}`}
+                        title={t('projects.viewGrid')}
+                    >
+                        <LayoutGrid size={18} />
+                    </button>
+                    <button
+                        onClick={() => { setViewMode('list'); localStorage.setItem('projectViewMode', 'list'); }}
+                        className={`p-2 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-[var(--accent-color)] text-white' : 'text-slate-400 hover:text-white'}`}
+                        title={t('projects.viewList')}
+                    >
+                        <List size={18} />
+                    </button>
+                </div>
+                {viewMode === 'grid' && (
+                    <>
+                        <div className="w-px h-6 bg-slate-700 mx-1" />
+                        <div className="flex bg-slate-800/50 rounded-xl p-1 border border-white/5 gap-1">
+                            <button
+                                onClick={() => { setCardSize('small'); localStorage.setItem('projectCardSize', 'small'); }}
+                                className={`p-2 rounded-lg transition-colors ${cardSize === 'small' ? 'bg-[var(--accent-color)] text-white' : 'text-slate-400 hover:text-white'}`}
+                                title={t('projects.sizeSmall')}
+                            >
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <rect x="5" y="5" width="6" height="6" rx="1" />
+                                    <rect x="13" y="5" width="6" height="6" rx="1" />
+                                    <rect x="5" y="13" width="6" height="6" rx="1" />
+                                    <rect x="13" y="13" width="6" height="6" rx="1" />
+                                </svg>
+                            </button>
+                            <button
+                                onClick={() => { setCardSize('medium'); localStorage.setItem('projectCardSize', 'medium'); }}
+                                className={`p-2 rounded-lg transition-colors ${cardSize === 'medium' ? 'bg-[var(--accent-color)] text-white' : 'text-slate-400 hover:text-white'}`}
+                                title={t('projects.sizeMedium')}
+                            >
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <rect x="7" y="7" width="10" height="7" rx="1" />
+                                    <path d="M7 17h10" />
+                                </svg>
+                            </button>
+                            <button
+                                onClick={() => { setCardSize('large'); localStorage.setItem('projectCardSize', 'large'); }}
+                                className={`p-2 rounded-lg transition-colors ${cardSize === 'large' ? 'bg-[var(--accent-color)] text-white' : 'text-slate-400 hover:text-white'}`}
+                                title={t('projects.sizeLarge')}
+                            >
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <rect x="3" y="5" width="18" height="12" rx="1.5" />
+                                    <path d="M3 20h18" />
+                                </svg>
+                            </button>
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );

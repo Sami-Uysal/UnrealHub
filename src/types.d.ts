@@ -44,8 +44,11 @@ declare global {
             checkGitRepo: (path: string) => Promise<boolean>;
             getGitHistory: (path: string) => Promise<GitCommit[]>;
             getGitStatus: (path: string) => Promise<{ current: string; branches: string[]; remotes: string[] }>;
+            gitAutoBackup: (path: string) => Promise<{ success: boolean; error?: string }>;
             openProjectLog: (path: string) => Promise<void>;
             cleanProjectCache: (path: string) => Promise<void>;
+
+            getProjectStats: (path: string) => Promise<{ blueprints: number, assets: number, maps: number, cpp: number, h: number }>;
             cloneProject: (path: string, newName: string) => Promise<void>;
             readIniFile: (path: string) => Promise<Record<string, any>>;
             deleteProject: (path: string) => Promise<boolean>;

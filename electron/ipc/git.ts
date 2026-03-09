@@ -67,4 +67,29 @@ export function registerGitHandlers() {
             return [];
         }
     });
+
+    ipcMain.handle('git-auto-backup', async (_, projectPath: string) => {
+        try {
+            const git = simpleGit(path.dirname(projectPath));
+            const isRepo = await git.checkIsRepo();
+            if (!isRepo) {
+                return { success: false, error: 'Not a git repository' };
+            }
+
+            // check if there's anything to commit
+            const status = await git.status();
+            if (status.isClean()) {
+                return { success: false, error: 'No changes to backup' };
+            }
+
+            await git.add('.');
+            const dateStr = new Date().toLocaleString();
+            await git.commit(`Auto-Backup: ${dateStr}`);
+
+            return { success: true };
+        } catch (e: any) {
+            console.error('Git Auto Backup error:', e);
+            return { success: false, error: e.message || 'Unknown error' };
+        }
+    });
 }

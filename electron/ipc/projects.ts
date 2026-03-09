@@ -230,6 +230,40 @@ export function registerProjectHandlers() {
         );
     });
 
+
+
+    ipcMain.handle('get-project-stats', async (_, projectPath: string) => {
+        const stats = { blueprints: 0, assets: 0, maps: 0, cpp: 0, h: 0 };
+        const projectDir = path.dirname(projectPath);
+
+        const scanDir = async (dir: string) => {
+            if (!existsSync(dir)) return;
+            try {
+                const files = await fs.readdir(dir, { withFileTypes: true });
+                for (const f of files) {
+                    const fullPath = path.join(dir, f.name);
+                    if (f.isDirectory()) {
+                        await scanDir(fullPath);
+                    } else {
+                        const ext = path.extname(f.name).toLowerCase();
+                        if (ext === '.uasset') {
+                            stats.assets++;
+                            // Simple heuristic: if filename implies a BP
+                            if (f.name.startsWith('BP_') || f.name.includes('Blueprint')) stats.blueprints++;
+                        }
+                        else if (ext === '.umap') stats.maps++;
+                        else if (ext === '.cpp') stats.cpp++;
+                        else if (ext === '.h') stats.h++;
+                    }
+                }
+            } catch { /* ignore */ }
+        };
+
+        await scanDir(path.join(projectDir, 'Content'));
+        await scanDir(path.join(projectDir, 'Source'));
+        return stats;
+    });
+
     ipcMain.handle('clone-project', async (_, projectPath: string, newName: string) => {
         const projectDir = path.dirname(projectPath);
         const parentDir = path.dirname(projectDir);

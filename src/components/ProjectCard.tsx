@@ -13,7 +13,8 @@ function formatSize(bytes: number): string {
 
 interface ProjectCardProps {
     project: Project;
-    compactMode: boolean;
+    viewMode: 'grid' | 'list';
+    cardSize: 'small' | 'medium' | 'large';
     reduceAnimations: boolean;
     showGit: boolean;
     isFavorite: boolean;
@@ -28,7 +29,8 @@ interface ProjectCardProps {
 
 export const ProjectCard = React.memo<ProjectCardProps>(({
     project,
-    compactMode,
+    viewMode,
+    cardSize,
     reduceAnimations,
     showGit,
     isFavorite,
@@ -42,6 +44,105 @@ export const ProjectCard = React.memo<ProjectCardProps>(({
 }) => {
     const { t } = useTranslation();
 
+    if (viewMode === 'list') {
+        return (
+            <div
+                onContextMenu={(e) => onContextMenu(e, project)}
+                className={`
+                    group relative bg-slate-900 border border-slate-800 rounded-xl overflow-hidden flex items-center pr-4 h-[100px]
+                    hover:shadow-lg
+                    ${!reduceAnimations ? 'hover:shadow-[var(--accent-color)]/10 hover:border-[var(--accent-color)]/30 transition-all duration-300' : ''}
+                `}
+            >
+                <div className="w-[180px] h-[100px] bg-slate-800 shrink-0 relative overflow-hidden">
+                    {project.thumbnail ? (
+                        <img
+                            src={project.thumbnail}
+                            alt={project.name}
+                            loading="lazy"
+                            className="w-full h-full object-cover"
+                        />
+                    ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
+                            <ImageIcon size={32} className="text-slate-700 opacity-50" />
+                        </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent to-slate-900/90" />
+                </div>
+
+                <div className="flex-1 min-w-0 pl-4 py-3 flex flex-col justify-center items-start">
+                    <div className="flex items-center gap-3 mb-1">
+                        <h3 className="font-bold text-lg text-white truncate group-hover:text-[var(--accent-color)] transition-colors">
+                            {project.name}
+                        </h3>
+                        <div className="flex gap-1.5 items-center">
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-slate-800/50 text-white border border-white/10 whitespace-nowrap">
+                                UE {project.version}
+                            </span>
+                            {projectSize > 0 && (
+                                <span className="px-2 py-0.5 rounded text-[10px] tracking-wider bg-slate-800/50 text-slate-400 border border-white/10 flex items-center gap-1 whitespace-nowrap">
+                                    <HardDrive size={10} />
+                                    {formatSize(projectSize)}
+                                </span>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="text-[11px] text-slate-500 font-mono truncate mb-2">
+                        {project.path}
+                    </div>
+
+                    <div className="flex flex-wrap gap-1.5">
+                        {tags.map(tag => (
+                            <span key={tag} style={{ backgroundColor: getTagColor(tag) }}
+                                className="px-2 py-0.5 rounded text-[10px] font-bold text-white shadow-sm border border-white/10">
+                                {tag}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-2 pl-4 shrink-0">
+                    <button
+                        onClick={(e) => onToggleFavorite(project.path, e)}
+                        className={`p-2 rounded-full transition-all duration-300 ${isFavorite
+                            ? 'text-amber-400 hover:bg-amber-400/10'
+                            : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800'
+                            }`}
+                        title={isFavorite ? t('projects.unfavorite') : t('projects.favorite')}
+                    >
+                        <Star size={16} className={isFavorite ? 'fill-amber-400' : ''} />
+                    </button>
+                    <button
+                        onClick={(e) => onEdit(project, e)}
+                        className="p-2 rounded-full text-slate-500 hover:text-white hover:bg-[var(--accent-color)] transition-colors"
+                        title={t('projects.edit')}
+                    >
+                        <Pencil size={16} />
+                    </button>
+                    {showGit && (
+                        <button
+                            onClick={(e) => { e.stopPropagation(); onOpenGit?.(project); }}
+                            className="p-2 rounded-full text-slate-500 hover:text-white hover:bg-[var(--accent-color)] transition-colors"
+                            title={t('projects.gitHistory')}
+                        >
+                            <GitBranch size={16} />
+                        </button>
+                    )}
+                    <button
+                        onClick={() => onLaunch(project.path)}
+                        className="p-2 ml-2 rounded-xl bg-[var(--accent-color)] text-white hover:opacity-80 transition-opacity"
+                        title={t('projects.launch')}
+                    >
+                        <Play size={18} className="fill-current" />
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    const heightClass = cardSize === 'small' ? 'h-[220px]' : cardSize === 'large' ? 'h-[340px]' : 'h-[280px]';
+
     return (
         <div
             onContextMenu={(e) => onContextMenu(e, project)}
@@ -49,7 +150,7 @@ export const ProjectCard = React.memo<ProjectCardProps>(({
         group relative bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden 
         hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)]
         ${!reduceAnimations ? 'hover:shadow-[var(--accent-color)]/20 hover:border-[var(--accent-color)]/50 hover:-translate-y-2 transition-all duration-500' : ''}
-        ${compactMode ? 'h-[220px]' : 'h-[320px]'}
+        ${heightClass}
       `}
         >
             <div className="absolute inset-0 bg-slate-800 rounded-2xl overflow-hidden" style={{ willChange: 'transform' }}>
@@ -100,10 +201,10 @@ export const ProjectCard = React.memo<ProjectCardProps>(({
                 )}
             </div>
 
-            <div className={`absolute inset-x-0 bottom-0 ${compactMode ? 'p-4' : 'p-6'} flex flex-col z-10`}>
+            <div className={`absolute inset-x-0 bottom-0 ${cardSize === 'small' ? 'p-4' : 'p-6'} flex flex-col z-10`}>
                 <div className="flex items-start justify-between mb-3">
                     <div className="flex-1 min-w-0">
-                        <h3 className={`font-black text-white truncate pr-2 ${compactMode ? 'text-lg' : 'text-2xl'} group-hover:text-[var(--accent-color)] transition-colors`} style={{ textShadow: '0 0 8px rgba(0,0,0,0.5), 0 0 20px rgba(0,0,0,0.3)' }}>
+                        <h3 className={`font-black text-white truncate pr-2 ${cardSize === 'small' ? 'text-lg' : 'text-2xl'} group-hover:text-[var(--accent-color)] transition-colors`} style={{ textShadow: '0 0 8px rgba(0,0,0,0.5), 0 0 20px rgba(0,0,0,0.3)' }}>
                             {project.name}
                         </h3>
                         <div className="flex items-center flex-wrap gap-1.5 mt-1">
@@ -111,7 +212,7 @@ export const ProjectCard = React.memo<ProjectCardProps>(({
                                 UE {project.version}
                             </span>
                             {projectSize > 0 && (
-                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-black/50 text-slate-300 backdrop-blur-md border border-white/10 items-center gap-1 whitespace-nowrap ${compactMode ? 'hidden sm:flex' : 'flex'}`}>
+                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-black/50 text-slate-300 backdrop-blur-md border border-white/10 items-center gap-1 whitespace-nowrap ${cardSize === 'small' ? 'hidden sm:flex' : 'flex'}`}>
                                     <HardDrive size={9} />
                                     {formatSize(projectSize)}
                                 </span>
@@ -120,7 +221,7 @@ export const ProjectCard = React.memo<ProjectCardProps>(({
                     </div>
                 </div>
 
-                {!compactMode && (
+                {cardSize !== 'small' && (
                     <div className="flex items-center space-x-2 mb-4 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0 delay-75">
                         <div className="text-[10px] text-slate-400 truncate font-mono bg-black/40 px-2 py-1 rounded border border-white/5 w-full">
                             {project.path}
@@ -129,15 +230,15 @@ export const ProjectCard = React.memo<ProjectCardProps>(({
                 )}
 
                 <div className="flex flex-wrap gap-1.5 mb-4 transition-opacity">
-                    {tags.slice(0, compactMode ? 2 : 3).map(tag => (
+                    {tags.slice(0, cardSize === 'small' ? 2 : 3).map(tag => (
                         <span key={tag} style={{ backgroundColor: getTagColor(tag) }}
                             className="px-2 py-0.5 rounded text-[10px] font-bold text-white shadow-sm border border-white/10">
                             {tag}
                         </span>
                     ))}
-                    {tags.length > (compactMode ? 2 : 3) && (
+                    {tags.length > (cardSize === 'small' ? 2 : 3) && (
                         <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-400 border border-slate-700">
-                            +{tags.length - (compactMode ? 2 : 3)}
+                            +{tags.length - (cardSize === 'small' ? 2 : 3)}
                         </span>
                     )}
                 </div>
@@ -146,10 +247,10 @@ export const ProjectCard = React.memo<ProjectCardProps>(({
                     <button
                         onClick={() => onLaunch(project.path)}
                         className={`flex-1 flex items-center justify-center space-x-2 bg-white text-slate-900 hover:bg-[var(--accent-color)] hover:text-white
-                            ${compactMode ? 'py-2' : 'py-3'} rounded-xl backdrop-blur-sm transition-all duration-300 font-bold shadow-lg shadow-black/20`}
+                            ${cardSize === 'small' ? 'py-2' : 'py-3'} rounded-xl backdrop-blur-sm transition-all duration-300 font-bold shadow-lg shadow-black/20`}
                     >
-                        <Play size={compactMode ? 16 : 20} className="fill-current" />
-                        <span className={compactMode ? 'text-xs' : 'text-sm'}>{t('projects.launch')}</span>
+                        <Play size={cardSize === 'small' ? 16 : 20} className="fill-current" />
+                        <span className={cardSize === 'small' ? 'text-xs' : 'text-sm'}>{t('projects.launch')}</span>
                     </button>
 
                     {project.launchProfiles && project.launchProfiles.length > 0 && (

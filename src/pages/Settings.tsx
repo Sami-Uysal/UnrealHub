@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppearance } from '../context/AppearanceContext';
-import { Folder, Trash2, Plus, Play, FolderOpen, FileText, Eraser, Copy, Settings as SettingsIcon, Tag, StickyNote, Palette, Sparkles, ChevronRight, FolderX, RefreshCw } from 'lucide-react';
+import { Folder, Trash2, Plus, Play, FolderOpen, FileText, Eraser, Copy, Settings as SettingsIcon, Tag, StickyNote, Palette, Sparkles, ChevronRight, FolderX, RefreshCw, Archive } from 'lucide-react';
 
 interface ConfigPaths {
     enginePaths: string[];
@@ -16,9 +16,11 @@ interface ContextMenuConfig {
     clone: boolean;
     editConfig: boolean;
     manageTags: boolean;
+    stats: boolean;
     notes: boolean;
     kanban: boolean;
     smartBackup: boolean;
+    gitAutoBackup: boolean;
     removeProject: boolean;
     deleteProject: boolean;
 }
@@ -31,9 +33,11 @@ const defaultMenuConfig: ContextMenuConfig = {
     clone: true,
     editConfig: true,
     manageTags: true,
+    stats: true,
     notes: true,
     kanban: true,
     smartBackup: true,
+    gitAutoBackup: true,
     removeProject: true,
     deleteProject: true
 };
@@ -44,11 +48,13 @@ const menuItems: { key: keyof ContextMenuConfig; icon: React.ElementType; color:
     { key: 'showLogs', icon: FileText, color: 'text-slate-400' },
     { key: 'editConfig', icon: SettingsIcon, color: 'text-slate-400' },
     { key: 'manageTags', icon: Tag, color: 'text-orange-400' },
+    { key: 'stats', icon: FileText, color: 'text-teal-400' },
     { key: 'notes', icon: StickyNote, color: 'text-amber-400' },
     { key: 'kanban', icon: FileText, color: 'text-purple-400' },
     { key: 'clone', icon: Copy, color: 'text-cyan-400' },
     { key: 'cleanCache', icon: Eraser, color: 'text-yellow-400' },
     { key: 'smartBackup', icon: FolderOpen, color: 'text-blue-400' },
+    { key: 'gitAutoBackup', icon: Archive, color: 'text-violet-400' },
     { key: 'removeProject', icon: Trash2, color: 'text-red-400' },
     { key: 'deleteProject', icon: FolderX, color: 'text-red-500' },
 ];
@@ -117,6 +123,8 @@ export const SettingsPage: React.FC = () => {
     const [updateStatus, setUpdateStatus] = useState<string>('idle');
     const [downloadProgress, setDownloadProgress] = useState<number>(0);
     const [updateMessage, setUpdateMessage] = useState<string>('');
+
+
 
     const loadPaths = async () => {
         try {
@@ -194,6 +202,8 @@ export const SettingsPage: React.FC = () => {
             setUpdateMessage(result.message || result.error || '');
         }
     };
+
+
 
     const handleDownloadUpdate = async () => {
         setUpdateStatus('downloading');
@@ -323,6 +333,8 @@ export const SettingsPage: React.FC = () => {
                         <Toggle checked={reduceAnimations} onChange={setReduceAnimations} />
                     </SettingRow>
                 </SectionCard>
+
+
 
                 <SectionCard icon={RefreshCw} title={t('settings.updates')}>
                     <div className="p-6 flex flex-col items-center">
