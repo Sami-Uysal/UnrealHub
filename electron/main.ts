@@ -21,16 +21,23 @@ import { registerWindowHandlers } from './ipc/window';
 let win: BrowserWindow | null;
 
 function createWindow() {
-  win = new BrowserWindow({
-    frame: false,
-    show: false,
-    backgroundColor: 'rgba(52, 52, 52, 0.8)',
-    icon: path.join(process.env.VITE_PUBLIC, 'u.png'),
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.mjs'),
-      backgroundThrottling: false,
-    },
-  });
+    const isMac = process.platform === 'darwin';
+    const isWindows = process.platform === 'win32';
+
+    win = new BrowserWindow({
+      frame: false,
+      transparent: isMac ? true : false,
+      backgroundColor: '#00000000',
+      ...(isMac ? { vibrancy: 'fullscreen-ui', visualEffectState: 'active' } : {}),
+      ...(isWindows ? { backgroundMaterial: 'acrylic' } : {}),
+      icon: path.join(process.env.VITE_PUBLIC, 'u.png'),
+      webPreferences: {
+        preload: path.join(__dirname, 'preload.mjs'),
+        backgroundThrottling: false,
+        nodeIntegration: false,
+        contextIsolation: true,
+      },
+    });
 
   win.once('ready-to-show', () => {
     win?.show();

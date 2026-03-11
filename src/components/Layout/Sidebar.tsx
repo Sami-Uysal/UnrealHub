@@ -22,40 +22,36 @@ interface NavItemProps {
     icon: any;
     label: string;
     reduceAnimations: boolean;
+    compactMode: boolean;
     onViewChange: (view: View) => void;
 }
 
-const NavItem: React.FC<NavItemProps> = ({ view, currentView, icon: Icon, label, reduceAnimations, onViewChange }) => {
+const NavItem: React.FC<NavItemProps> = ({ view, currentView, icon: Icon, label, reduceAnimations, compactMode, onViewChange }) => {
     const isActive = currentView === view;
     return (
         <button
             onClick={() => onViewChange(view)}
             className={`
-                w-full flex items-center gap-3 px-4 py-3 rounded-2xl no-drag relative overflow-hidden
+                w-full flex items-center ${compactMode ? 'justify-center px-0' : 'gap-3.5 px-3'} py-2.5 rounded-xl no-drag relative overflow-hidden group
                 ${!reduceAnimations ? 'transition-all duration-300' : ''}
                 ${isActive
-                    ? 'text-white'
-                    : 'text-slate-500 hover:text-slate-200 hover:bg-white/[0.04]'
+                    ? 'text-white bg-white/10 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
                 }
             `}
         >
-            {isActive && (
-                <div className="absolute inset-0 bg-gradient-to-r from-[var(--accent-color)] to-[var(--accent-color)]/70 rounded-2xl" />
-            )}
-            {isActive && (
-                <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent rounded-2xl" />
-            )}
-
-            <div className={`relative z-10 flex items-center justify-center w-9 h-9 rounded-xl ${!reduceAnimations ? 'transition-all duration-300' : ''} ${isActive ? 'bg-white/15 shadow-inner' : 'bg-white/[0.03]'}`}>
-                <Icon size={18} className={`${!reduceAnimations ? 'transition-transform duration-300' : ''} ${isActive ? 'scale-110' : ''}`} />
+            <div className={`relative z-10 flex items-center justify-center w-8 h-8 rounded-lg shrink-0 ${!reduceAnimations ? 'transition-all duration-300' : ''} ${isActive ? 'text-[var(--accent-color)]' : 'text-slate-400 group-hover:text-slate-300'}`}>
+                <Icon size={20} className={`${!reduceAnimations ? 'transition-transform duration-300' : ''} ${isActive ? 'scale-110' : ''}`} />
             </div>
 
-            <span className={`relative z-10 font-semibold text-sm tracking-wide ${!reduceAnimations ? 'transition-colors duration-300' : ''}`}>
-                {label}
-            </span>
+            {!compactMode && (
+                <span className={`relative z-10 font-medium text-[13px] tracking-wide max-w-[130px] truncate text-left ${!reduceAnimations ? 'transition-colors duration-300' : ''}`}>
+                    {label}
+                </span>
+            )}
 
-            {isActive && !reduceAnimations && (
-                <div className="absolute -right-2 top-1/2 -translate-y-1/2 w-5 h-5 bg-[var(--accent-color)] rounded-full blur-xl opacity-60" />
+            {isActive && !reduceAnimations && !compactMode && (
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 w-[3px] h-4 bg-[var(--accent-color)] rounded-full" />
             )}
         </button>
     );
@@ -63,51 +59,54 @@ const NavItem: React.FC<NavItemProps> = ({ view, currentView, icon: Icon, label,
 
 export const Sidebar: React.FC<SidebarProps & { hasUpdate?: boolean }> = ({ currentView, onViewChange, hasUpdate }) => {
     const { t } = useTranslation();
-    const { reduceAnimations } = useAppearance();
+    const { reduceAnimations, compactMode } = useAppearance();
 
     return (
-        <div className="w-64 h-full bg-[#080d1a]/90 backdrop-blur-xl border-r border-white/[0.04] flex flex-col select-none">
-            <div className="px-5 pt-10 pb-8 flex items-center gap-3.5">
-                <div className={`w-11 h-11 shrink-0 flex items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--accent-color)]/20 to-[var(--accent-color)]/5 border border-[var(--accent-color)]/20 ${!reduceAnimations ? 'group transition-all duration-500 hover:scale-105 hover:shadow-lg hover:shadow-[var(--accent-color)]/20' : ''}`}>
-                    <img src="u.png" alt="Logo" className={`w-7 h-7 object-contain ${!reduceAnimations ? 'transition-transform duration-500 group-hover:scale-110' : ''}`} />
+        <div className={`h-full bg-[#04070d]/60 flex flex-col select-none relative z-20 ${compactMode ? 'w-[72px]' : 'w-60'} ${!reduceAnimations ? 'transition-all duration-300' : ''}`}>
+            <div className={`pt-8 pb-6 flex items-center ${compactMode ? 'justify-center px-0' : 'gap-3 px-5'}`}>
+                <div className={`w-9 h-9 shrink-0 flex items-center justify-center rounded-xl bg-gradient-to-br from-[var(--accent-color)]/20 to-[var(--accent-color)]/5 border border-[var(--accent-color)]/20 shadow-sm ${!reduceAnimations ? 'group transition-all duration-500 hover:scale-105' : ''}`}>
+                    <img src="u.png" alt="Logo" className={`w-5 h-5 object-contain ${!reduceAnimations ? 'transition-transform duration-500 group-hover:scale-110' : ''}`} />
                 </div>
-                <div className="flex flex-col overflow-hidden">
-                    <span className="text-lg font-black tracking-tight text-white">UnrealHub</span>
-                    <span className="text-[9px] tracking-[0.2em] text-slate-600 font-semibold uppercase">{t('sidebar.projectManager')}</span>
-                </div>
+                {!compactMode && (
+                    <div className="flex flex-col overflow-hidden">
+                        <span className="text-[17px] font-bold tracking-tight text-white leading-tight">UnrealHub</span>
+                    </div>
+                )}
             </div>
 
-            <div className="px-5 mb-4">
-                <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+            <div className={`px-4 mb-4 ${compactMode ? 'opacity-0 h-0 hidden' : 'opacity-100'}`}>
+                <div className="h-px bg-gradient-to-r from-white/10 to-transparent" />
             </div>
 
             <nav className="flex-1 px-3 space-y-1.5">
-                <NavItem view="projects" currentView={currentView} icon={LayoutGrid} label={t('sidebar.projects')} reduceAnimations={reduceAnimations} onViewChange={onViewChange} />
-                <NavItem view="engines" currentView={currentView} icon={UnrealIcon} label={t('sidebar.engines')} reduceAnimations={reduceAnimations} onViewChange={onViewChange} />
+                <NavItem view="projects" currentView={currentView} icon={LayoutGrid} label={t('sidebar.projects')} reduceAnimations={reduceAnimations} compactMode={compactMode} onViewChange={onViewChange} />
+                <NavItem view="engines" currentView={currentView} icon={UnrealIcon} label={t('sidebar.engines')} reduceAnimations={reduceAnimations} compactMode={compactMode} onViewChange={onViewChange} />
             </nav>
 
-            <div className="px-5 mb-3">
-                <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+            <div className={`px-4 mb-3 ${compactMode ? 'opacity-0 h-0 hidden' : 'opacity-100'}`}>
+                <div className="h-px bg-gradient-to-r from-white/10 to-transparent" />
             </div>
 
-            <div className="px-3 pb-6">
+            <div className="px-3 pb-5">
                 <button
                     onClick={() => onViewChange('settings')}
                     className={`
-                        w-full flex items-center gap-3 px-4 py-3 rounded-2xl no-drag group
+                        w-full flex items-center ${compactMode ? 'justify-center px-0' : 'gap-3.5 px-3'} py-2.5 rounded-xl no-drag group overflow-hidden
                         ${!reduceAnimations ? 'transition-all duration-300' : ''}
                         ${currentView === 'settings'
-                            ? 'bg-white/[0.06] text-white'
-                            : 'text-slate-500 hover:text-slate-300 hover:bg-white/[0.03]'
+                            ? 'bg-white/10 text-white shadow-sm'
+                            : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
                         }
                     `}
                 >
-                    <div className={`flex items-center justify-center w-9 h-9 rounded-xl ${!reduceAnimations ? 'transition-all duration-300' : ''} ${currentView === 'settings' ? 'bg-white/10' : 'bg-white/[0.03]'}`}>
-                        <Settings size={18} className={`${!reduceAnimations ? 'transition-transform duration-500' : ''} ${currentView === 'settings' ? 'rotate-45' : 'group-hover:rotate-45'}`} />
+                    <div className={`flex items-center justify-center shrink-0 w-8 h-8 rounded-lg ${!reduceAnimations ? 'transition-all duration-300' : ''} ${currentView === 'settings' ? 'text-white' : 'text-slate-400 group-hover:text-slate-300'}`}>
+                        <Settings size={20} className={`${!reduceAnimations ? 'transition-transform duration-500' : ''} ${currentView === 'settings' ? 'rotate-45' : 'group-hover:rotate-45'}`} />
                     </div>
-                    <span className="font-semibold text-sm tracking-wide">{t('sidebar.settings')}</span>
+                    {!compactMode && (
+                        <span className="font-medium text-[13px] tracking-wide">{t('sidebar.settings')}</span>
+                    )}
                     {hasUpdate && (
-                        <div className="absolute right-4 w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)] animate-pulse" />
+                        <div className={`absolute ${compactMode ? 'top-2 right-2' : 'right-4'} w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)] animate-pulse`} />
                     )}
                 </button>
             </div>

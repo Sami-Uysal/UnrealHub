@@ -52,7 +52,7 @@ export const AppLayout: React.FC = () => {
     const getBgClass = () => {
         switch (bgEffect) {
             case 'flat': return 'bg-slate-950';
-            case 'glass': return 'bg-slate-950';
+            case 'glass': return 'bg-transparent';
             case 'gradient': default: return 'bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950';
         }
     };
@@ -73,12 +73,7 @@ export const AppLayout: React.FC = () => {
             ${reduceAnimations ? '' : 'transition-colors duration-300'}
         `}>
             {bgEffect === 'glass' && (
-                <>
-                    <div className="absolute inset-0 z-0 overflow-hidden">
-                        <div className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-[conic-gradient(from_0deg_at_50%_50%,var(--accent-color)_0deg,#0f172a_60deg,#7c3aed_120deg,#0f172a_180deg,var(--accent-color)_240deg,#0f172a_300deg,#06b6d4_360deg)] opacity-30 blur-[100px] animate-spin" style={{ animationDuration: '30s' }} />
-                    </div>
-                    <div className="absolute inset-0 z-0 bg-slate-950/70 backdrop-blur-3xl" />
-                </>
+                <div className="absolute inset-0 z-0 bg-black/20" />
             )}
 
             <div className="absolute top-0 left-0 right-0 z-50">
@@ -90,7 +85,7 @@ export const AppLayout: React.FC = () => {
                     onViewChange={setView}
                     hasUpdate={hasUpdateAvailable}
                 />
-                <main className={`flex-1 bg-transparent ${(view === 'git' || view === 'config') ? 'overflow-hidden pt-8' : 'overflow-auto pt-8'}`}>
+                <main className={`flex-1 bg-transparent border-l border-white/5 shadow-[-4px_0_24px_-8px_rgba(0,0,0,0.5)] ${(view === 'git' || view === 'config') ? 'overflow-hidden pt-8' : 'overflow-auto pt-8'}`}>
                     {view === 'git' && selectedProject ? (
                         <div className="h-full w-full">
                             <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-500 text-sm">Loading Git History...</div>}>
