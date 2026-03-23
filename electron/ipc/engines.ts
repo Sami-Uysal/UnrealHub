@@ -52,8 +52,12 @@ export function registerEngineHandlers() {
 
     ipcMain.handle('launch-engine', async (_, enginePath: string) => {
         const possiblePaths = [
-            path.join(enginePath, 'Engine', 'Binaries', 'Win64', 'UnrealEditor.exe'),
-            path.join(enginePath, 'Engine', 'Binaries', 'Win64', 'UE4Editor.exe')
+            path.join(enginePath, 'Engine', 'Binaries', 'Win64', 'UnrealEditor.exe'), // Windows UE5
+            path.join(enginePath, 'Engine', 'Binaries', 'Win64', 'UE4Editor.exe'),    // Windows UE4
+            path.join(enginePath, 'Engine', 'Binaries', 'Mac', 'UnrealEditor.app', 'Contents', 'MacOS', 'UnrealEditor'), // Mac UE5
+            path.join(enginePath, 'Engine', 'Binaries', 'Mac', 'UE4Editor.app', 'Contents', 'MacOS', 'UE4Editor'),       // Mac UE4
+            path.join(enginePath, 'Engine', 'Binaries', 'Linux', 'UnrealEditor'),     // Linux UE5
+            path.join(enginePath, 'Engine', 'Binaries', 'Linux', 'UE4Editor')         // Linux UE4
         ];
         for (const exePath of possiblePaths) {
             if (existsSync(exePath)) {

@@ -80,8 +80,80 @@ declare global {
             onDownloadProgress: (callback: (progress: any) => void) => void;
             onUpdateDownloaded: (callback: (info: any) => void) => void;
             onUpdateError: (callback: (error: string) => void) => void;
+
+            // Marketplace API
+            scanEnginePlugins: (enginePath: string) => Promise<PluginInfo[]>;
+            scanProjectPlugins: (projectPath: string) => Promise<PluginInfo[]>;
+            getVaultAssets: () => Promise<VaultAssetInfo[]>;
+            getInstalledManifests: () => Promise<InstalledManifest[]>;
+            showPluginInExplorer: (pluginPath: string) => Promise<void>;
+
+            // Epic Auth API
+            epicAuthStatus: () => Promise<{ loggedIn: boolean; displayName?: string; accountId?: string }>;
+            epicLogin: () => Promise<{ success: boolean; displayName?: string; error?: string }>;
+            epicLogout: () => Promise<void>;
+            epicGetLibrary: () => Promise<{ error: string | null; items: EpicLibraryItem[] }>;
+            epicGetLibraryCached: () => Promise<{ error: string | null; items: EpicLibraryItem[]; cached: boolean; timestamp?: number }>;
+            epicGetCatalogInfo: (namespace: string, catalogItemId: string) => Promise<any>;
+            epicGetAssetManifest: (namespace: string, catalogItemId: string, appName: string) => Promise<any>;
+            epicSelectVaultDir: () => Promise<string | null>;
+            epicCancelDownload: () => Promise<boolean>;
+            epicDownloadAsset: (namespace: string, catalogItemId: string, appName: string, title: string) => Promise<any>;
+            onDownloadAssetProgress: (callback: (payload: any) => void) => void;
         };
     }
+}
+
+export interface EpicLibraryItem {
+    id: string;
+    catalogItemId?: string;
+    namespace: string;
+    appName: string;
+    title: string;
+    description: string;
+    thumbnail: string;
+    categories: string;
+    developer: string;
+    releaseDate: string;
+    compatibleVersions: string;
+    versions?: string[];
+    installed: boolean;
+}
+
+export interface PluginInfo {
+    name: string;
+    friendlyName: string;
+    description: string;
+    category: string;
+    version: string;
+    createdBy: string;
+    enabledByDefault: boolean;
+    isExperimental: boolean;
+    isBeta: boolean;
+    canContainContent: boolean;
+    installed: boolean;
+    pluginPath: string;
+    iconPath: string | null;
+    modules: string[];
+}
+
+export interface VaultAssetInfo {
+    id: string;
+    appName: string;
+    catalogItemId: string;
+    title: string;
+    buildVersion: string;
+    installPath: string;
+    sizeBytes: number;
+}
+
+export interface InstalledManifest {
+    installLocation: string;
+    appName: string;
+    catalogItemId: string;
+    displayName: string;
+    appVersion: string;
+    namespace: string;
 }
 
 export interface GitCommit {

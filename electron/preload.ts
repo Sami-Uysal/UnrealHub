@@ -49,6 +49,30 @@ contextBridge.exposeInMainWorld('unreal', {
   maximize: () => ipcRenderer.invoke('window-maximize'),
   close: () => ipcRenderer.invoke('window-close'),
 
+  // Marketplace API
+  scanEnginePlugins: (enginePath: string) => ipcRenderer.invoke('scan-engine-plugins', enginePath),
+  scanProjectPlugins: (projectPath: string) => ipcRenderer.invoke('scan-project-plugins', projectPath),
+  getVaultAssets: () => ipcRenderer.invoke('get-vault-assets'),
+  getInstalledManifests: () => ipcRenderer.invoke('get-installed-manifests'),
+  showPluginInExplorer: (pluginPath: string) => ipcRenderer.invoke('show-plugin-in-explorer', pluginPath),
+
+  // Epic Auth API
+  epicAuthStatus: () => ipcRenderer.invoke('epic-auth-status'),
+  epicLogin: () => ipcRenderer.invoke('epic-auth-login'),
+  epicLogout: () => ipcRenderer.invoke('epic-auth-logout'),
+  epicGetLibrary: () => ipcRenderer.invoke('epic-get-library'),
+  epicGetLibraryCached: () => ipcRenderer.invoke('epic-get-library-cached'),
+  epicGetCatalogInfo: (namespace: string, catalogItemId: string) => ipcRenderer.invoke('epic-get-catalog-info', namespace, catalogItemId),
+  epicGetAssetManifest: (namespace: string, catalogItemId: string, appName: string) => ipcRenderer.invoke('epic-get-asset-manifest', namespace, catalogItemId, appName),
+  epicSelectVaultDir: () => ipcRenderer.invoke('epic-select-vault-dir'),
+  epicCancelDownload: () => ipcRenderer.invoke('epic-cancel-download'),
+  epicDownloadAsset: (namespace: string, catalogItemId: string, appName: string, title: string) => ipcRenderer.invoke('epic-download-asset', namespace, catalogItemId, appName, title),
+  
+  onDownloadAssetProgress: (callback: (payload: any) => void) => {
+    ipcRenderer.removeAllListeners('download-asset-progress');
+    ipcRenderer.on('download-asset-progress', (_event, payload) => callback(payload));
+  },
+
   // Updater API
   getAppVersion: () => ipcRenderer.invoke('get-app-version'),
   checkForUpdates: () => ipcRenderer.invoke('check-for-updates'),

@@ -17,6 +17,8 @@ import { registerGitHandlers } from './ipc/git';
 import { registerUpdaterHandlers } from './ipc/updater';
 import { registerConfigHandlers } from './ipc/config';
 import { registerWindowHandlers } from './ipc/window';
+import { registerMarketplaceHandlers } from './ipc/marketplace';
+import { registerEpicAuthHandlers } from './ipc/epic-auth';
 
 let win: BrowserWindow | null;
 
@@ -82,6 +84,8 @@ app.whenReady().then(() => {
   registerConfigHandlers();
   registerUpdaterHandlers(() => win);
   registerWindowHandlers(() => win);
+  registerMarketplaceHandlers();
+  registerEpicAuthHandlers();
 
   createWindow();
 });

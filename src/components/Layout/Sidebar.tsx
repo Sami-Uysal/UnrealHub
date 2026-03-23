@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { LayoutGrid, Settings } from 'lucide-react';
+import { LayoutGrid, Settings, Package } from 'lucide-react';
 import { useAppearance } from '../../context/AppearanceContext';
 
 const UnrealIcon = ({ size = 20, className = "" }: { size?: number, className?: string }) => (
@@ -9,7 +9,7 @@ const UnrealIcon = ({ size = 20, className = "" }: { size?: number, className?: 
     </svg>
 );
 
-export type View = 'projects' | 'engines' | 'settings';
+export type View = 'projects' | 'engines' | 'marketplace' | 'settings';
 
 interface SidebarProps {
     currentView: View;
@@ -81,6 +81,7 @@ export const Sidebar: React.FC<SidebarProps & { hasUpdate?: boolean }> = ({ curr
             <nav className="flex-1 px-3 space-y-1.5">
                 <NavItem view="projects" currentView={currentView} icon={LayoutGrid} label={t('sidebar.projects')} reduceAnimations={reduceAnimations} compactMode={compactMode} onViewChange={onViewChange} />
                 <NavItem view="engines" currentView={currentView} icon={UnrealIcon} label={t('sidebar.engines')} reduceAnimations={reduceAnimations} compactMode={compactMode} onViewChange={onViewChange} />
+                <NavItem view="marketplace" currentView={currentView} icon={Package} label={t('sidebar.marketplace')} reduceAnimations={reduceAnimations} compactMode={compactMode} onViewChange={onViewChange} />
             </nav>
 
             <div className={`px-4 mb-3 ${compactMode ? 'opacity-0 h-0 hidden' : 'opacity-100'}`}>

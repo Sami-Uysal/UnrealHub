@@ -30,3 +30,4 @@ release/
 # User Config (local paths, overrides)
 config.json
 projects.json
+extracted

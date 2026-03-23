@@ -120,17 +120,37 @@ export function registerProjectHandlers() {
             for (const ep of config.enginePaths) {
                 if (!existsSync(ep)) continue;
                 const checkPaths = [
+                    // Windows
                     path.join(ep, 'Engine', 'Binaries', 'Win64', 'UnrealEditor.exe'),
                     path.join(ep, 'Engine', 'Binaries', 'Win64', 'UE4Editor.exe'),
-                    // check if the ep is the root epic games folder and has subfolders
+                    // Mac
+                    path.join(ep, 'Engine', 'Binaries', 'Mac', 'UnrealEditor.app', 'Contents', 'MacOS', 'UnrealEditor'),
+                    path.join(ep, 'Engine', 'Binaries', 'Mac', 'UE4Editor.app', 'Contents', 'MacOS', 'UE4Editor'),
+                    // Linux
+                    path.join(ep, 'Engine', 'Binaries', 'Linux', 'UnrealEditor'),
+                    path.join(ep, 'Engine', 'Binaries', 'Linux', 'UE4Editor'),
+                    
+                    // Windows subfolders
                     path.join(ep, `UE_${association}`, 'Engine', 'Binaries', 'Win64', 'UnrealEditor.exe'),
-                    path.join(ep, association, 'Engine', 'Binaries', 'Win64', 'UnrealEditor.exe')
+                    path.join(ep, association, 'Engine', 'Binaries', 'Win64', 'UnrealEditor.exe'),
+                    // Mac subfolders
+                    path.join(ep, `UE_${association}`, 'Engine', 'Binaries', 'Mac', 'UnrealEditor.app', 'Contents', 'MacOS', 'UnrealEditor'),
+                    path.join(ep, association, 'Engine', 'Binaries', 'Mac', 'UnrealEditor.app', 'Contents', 'MacOS', 'UnrealEditor'),
+                    // Linux subfolders
+                    path.join(ep, `UE_${association}`, 'Engine', 'Binaries', 'Linux', 'UnrealEditor'),
+                    path.join(ep, association, 'Engine', 'Binaries', 'Linux', 'UnrealEditor')
                 ];
 
                 // Direct version match approach:
                 if (path.basename(ep) === `UE_${association}` || path.basename(ep) === association) {
-                    checkPaths.push(path.join(ep, 'Engine', 'Binaries', 'Win64', 'UnrealEditor.exe'));
-                    checkPaths.push(path.join(ep, 'Engine', 'Binaries', 'Win64', 'UE4Editor.exe'));
+                    checkPaths.push(
+                        path.join(ep, 'Engine', 'Binaries', 'Win64', 'UnrealEditor.exe'),
+                        path.join(ep, 'Engine', 'Binaries', 'Win64', 'UE4Editor.exe'),
+                        path.join(ep, 'Engine', 'Binaries', 'Mac', 'UnrealEditor.app', 'Contents', 'MacOS', 'UnrealEditor'),
+                        path.join(ep, 'Engine', 'Binaries', 'Mac', 'UE4Editor.app', 'Contents', 'MacOS', 'UE4Editor'),
+                        path.join(ep, 'Engine', 'Binaries', 'Linux', 'UnrealEditor'),
+                        path.join(ep, 'Engine', 'Binaries', 'Linux', 'UE4Editor')
+                    );
                 }
 
                 for (const cp of checkPaths) {
@@ -148,11 +168,18 @@ export function registerProjectHandlers() {
                 const dirs = await fs.readdir(config.enginePaths[0] || '').catch(() => []);
                 for (const d of dirs) {
                     if (d.includes(association)) {
-                        const cp = path.join(config.enginePaths[0], d, 'Engine', 'Binaries', 'Win64', 'UnrealEditor.exe');
-                        if (existsSync(cp)) {
-                            engineExe = cp;
-                            break;
+                        const fallbackPaths = [
+                            path.join(config.enginePaths[0], d, 'Engine', 'Binaries', 'Win64', 'UnrealEditor.exe'),
+                            path.join(config.enginePaths[0], d, 'Engine', 'Binaries', 'Mac', 'UnrealEditor.app', 'Contents', 'MacOS', 'UnrealEditor'),
+                            path.join(config.enginePaths[0], d, 'Engine', 'Binaries', 'Linux', 'UnrealEditor')
+                        ];
+                        for (const cp of fallbackPaths) {
+                            if (existsSync(cp)) {
+                                engineExe = cp;
+                                break;
+                            }
                         }
+                        if (engineExe) break;
                     }
                 }
             }
