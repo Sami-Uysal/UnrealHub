@@ -1,5 +1,25 @@
 # UnrealHub — Çince Destekli Değiştirilmiş Sürüm
 
+## Epic Games Launcher ve UnrealHub karşılaştırması
+
+**Çok sürümlü UE geliştirme için yerel çalışma alanı: özyinelemeli keşif, proje sürüm grupları ve kaynak/kurulu motor ayrımı.**
+
+| İş akışı | Epic Games Launcher | Bu UnrealHub fork'u |
+| --- | --- | --- |
+| Amaç | Resmî motor kurulumu ve içerik ekosistemi | **Bilgisayardaki mevcut motor ve projeleri yönetme** |
+| Kopyalanan/alt dizindeki projeler | Epic, kopyalanan projelerin listeye girmeden önce yerel olarak açılmasını açıklar | **Belirlenen köklerde `.uproject` dosyalarını özyinelemeli bulma** |
+| Tarama geri bildirimi | Belgelenen Library proje listesi iş akışı | **Bulundukça sonuç, dizin sayısı, geçerli yol ve yeniden tarama** |
+| Motor türleri | Launcher derlenmiş motor kurar; kaynak derlemeler ayrı edinilir | **Kaynak ve kurulu motor grupları, sayısal sürüm sırası** |
+| Proje sürümleri | Projelerin uyumlu UE sürümü gösterilir | **Sürüm düğmeleri ve tüm sürümler için ayrı proje grupları** |
+| Proje araçları | Açma, klasörde gösterme, kısayol, klonlama ve silme | **Etiket, favori, not, görev panosu, Git ve yapılandırma düzenleme** |
+| Hesap ve arka plan | Motor indirmek için Epic girişi gerekir | **Yerel keşif için giriş gerekmez; kapatınca sistem tepsisi** |
+| Motor kurulumu/güncelleme | Resmî kurulum ve güncelleme desteği | **Motor kurulum ve güncellemelerinde Epic araçlarını kullanın** |
+
+**[Windows x64 paketlerini indir](https://github.com/GoldenDragons/UnrealHub/releases/latest)**
+
+Kaynaklar: [Epic proje açma belgesi](https://dev.epicgames.com/documentation/en-us/unreal-engine/opening-an-existing-unreal-engine-project), [kurulum belgesi](https://dev.epicgames.com/documentation/unreal-engine/install-unreal-engine). Bu tablo belgelenen iş akışlarını karşılaştırır; doğrulanmamış eksik özellik veya hız/bellek iddiası içermez. Marketplace ve güvenlik sınırlamaları aşağıdadır.
+
+
 [简体中文](README.md) · [English](README_EN.md) · [Değişiklik günlüğü](CHANGELOG.md)
 
 Bu depo, [Sami-Uysal/UnrealHub](https://github.com/Sami-Uysal/UnrealHub) 1.6.1 tabanlı, GoldenDragons tarafından sürdürülen açık bir fork'tur. Sami Uysal'ın adı, kaynak geçmişi ve [MIT lisansı](LICENSE) korunur. Resmî üst kaynak sürümü değildir.

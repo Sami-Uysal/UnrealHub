@@ -1,5 +1,25 @@
 # UnrealHub 中文修改版
 
+## Epic Games Launcher vs UnrealHub
+
+**面向多版本 UE 开发的本地工作区：递归找项目、按版本分组、统一管理源码版与安装版引擎。**
+
+| 对比项 | Epic Games Launcher 的 UE 工作流 | UnrealHub 中文修改版 |
+| --- | --- | --- |
+| 主要用途 | 官方引擎下载、版本管理及内容生态 | **集中管理已经存在于本机的引擎与项目** |
+| 新复制或深层项目 | 官方说明：复制来的项目通常先在本地打开一次，才会进入项目列表 | **指定根目录递归发现 `.uproject`，覆盖多层子目录** |
+| 扫描时的反馈 | 官方文档以 Library 项目列表介绍打开流程 | **边扫描边显示结果，提供目录数、数量、当前路径和重新扫描** |
+| 源码版与安装版 | Launcher 安装预编译引擎；源码构建由 GitHub 等渠道获取 | **同一页面分为源码版 / 安装版，各组按数字版本排序** |
+| 多版本项目切换 | 项目列表显示兼容的 UE 版本 | **版本按钮直接筛选；全部版本按 UE 版本分区展示** |
+| 日常项目工具 | 项目菜单包括打开、定位、快捷方式、克隆和删除 | **集成标签、收藏、笔记、任务看板、Git 历史和配置编辑** |
+| 本地管理与账号 | 下载官方引擎需要 Epic 账号登录 | **本地扫描和分类无需 Epic 登录；关闭后可驻留托盘** |
+| 官方引擎安装与升级 | 官方支持的下载、安装和更新入口 | **本版不提供官方引擎下载安装或升级，仍使用 Epic 官方工具** |
+
+**[立即下载 Windows x64 版](https://github.com/GoldenDragons/UnrealHub/releases/latest)** · [查看新版全屏界面](#新版界面)
+
+对比依据：[Epic 官方项目打开说明](https://dev.epicgames.com/documentation/en-us/unreal-engine/opening-an-existing-unreal-engine-project)、[引擎安装说明](https://dev.epicgames.com/documentation/unreal-engine/install-unreal-engine)。这里比较工作流与本版已实现功能，不宣称 Epic 缺少未核实的能力，也未使用未经基准测试的启动速度或内存数据。商城登录/下载及安全加固限制见文末。
+
+
 [English](README_EN.md) · [Türkçe](README_TR.md) · [中文使用说明](README_ZH.md) · [完整改动日志](CHANGELOG.md)
 
 UnrealHub 是 Unreal Engine 项目与引擎管理工具。本仓库是 [Sami-Uysal/UnrealHub](https://github.com/Sami-Uysal/UnrealHub) 的公开修改版，由 GoldenDragons 维护，保留原作者 Sami Uysal 的署名、上游历史和 [MIT 许可证](LICENSE)。它并非上游官方发行版。

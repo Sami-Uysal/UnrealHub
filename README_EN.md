@@ -1,5 +1,25 @@
 # UnrealHub — Chinese Modified Edition
 
+## Epic Games Launcher vs UnrealHub
+
+**A local workspace for multi-version UE development: recursive discovery, project version groups, and source/installed engine organization.**
+
+| Workflow | Epic Games Launcher | This UnrealHub fork |
+| --- | --- | --- |
+| Primary role | Official engine installation and content ecosystem | **Manage engines and projects already on your machine** |
+| Copied or nested projects | Epic documents opening copied projects locally before they appear in the list | **Recursively discover `.uproject` files under configured roots** |
+| Discovery feedback | Epic documents the Library project-list workflow | **Progressive results, folder counts, current path and rescan** |
+| Engine builds | Launcher installs precompiled builds; source builds are obtained separately | **Source and installed groups, sorted numerically** |
+| Project versions | Project entries show their compatible UE version | **Version buttons and separate version sections in All Versions** |
+| Project tools | Open, locate, shortcut, clone and delete actions | **Tags, favorites, notes, task boards, Git history and config editing** |
+| Accounts and background use | An Epic login is required to download engines | **Local discovery needs no Epic login; close to tray** |
+| Engine installation and updates | Official installation/update support | **Continue using Epic's tools for engine installation and updates** |
+
+**[Download Windows x64 builds](https://github.com/GoldenDragons/UnrealHub/releases/latest)** · [Current interface](#current-interface)
+
+Sources: [Epic's project-opening guide](https://dev.epicgames.com/documentation/en-us/unreal-engine/opening-an-existing-unreal-engine-project) and [installation guide](https://dev.epicgames.com/documentation/unreal-engine/install-unreal-engine). This compares documented workflows with implemented features, not unverified feature absences or unbenchmarked speed/memory claims. Marketplace and security limitations are described below.
+
+
 [简体中文](README.md) · [Türkçe](README_TR.md) · [Changelog](CHANGELOG.md)
 
 This is a public modified fork of [Sami-Uysal/UnrealHub](https://github.com/Sami-Uysal/UnrealHub), based on upstream 1.6.1 and maintained by GoldenDragons. It preserves Sami Uysal's attribution, upstream history and the [MIT license](LICENSE). It is not an official upstream release.
