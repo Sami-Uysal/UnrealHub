@@ -42,7 +42,11 @@
     "sortDate": "Tarih",
     "sortEngine": "Motor",
     "favorite": "Favori",
-    "unfavorite": "Favoriyi Kaldır"
+    "unfavorite": "Favoriyi Kaldır",
+    "engineVersionFilter": "Motor Sürümü",
+    "allEngineVersions": "Tüm sürümler",
+    "unknownEngineVersion": "Bilinmeyen sürüm",
+    "filteredCount": "{{count}} / {{total}} proje"
   },
   "settings": {
     "title": "Ayarlar",
@@ -50,8 +54,8 @@
     "projectPaths": "Proje Arama Klasörleri",
     "addFolder": "Klasör Ekle",
     "noFolders": "Henüz eklenmiş bir klasör yok.",
-    "engineDesc": "Bu klasörlerdeki Unreal Engine kurulumları otomatik taranır.",
-    "projectDesc": "Bu klasörlerdeki projeler (.uproject) otomatik taranır.",
+    "engineDesc": "Bu klasörleri ve alt klasörlerini Unreal Engine kurulumları ve kaynak kod sürümleri için özyinelemeli tarar.",
+    "projectDesc": "Bu klasörleri ve alt klasörlerini projeler (.uproject) için özyinelemeli tarar.",
     "extraSettings": "Ekstra Ayarlar",
     "gitIntegration": "Git Entegrasyonu",
     "gitIntegrationDesc": "Proje kartlarında Git geçmişi butonunu gösterir. (Git kurulu olmalıdır)",
@@ -97,7 +101,11 @@
     "scanning": "Motorlar taranıyor...",
     "noEngines": "Motor Bulunamadı",
     "noEnginesDesc": "Ayarlar sayfasından motor kurulu klasörleri ekleyebilirsiniz.",
-    "launch": "Başlat"
+    "launch": "Başlat",
+    "sourceBuilds": "Kaynak Kod Sürümleri",
+    "installedBuilds": "Kurulu Sürümler",
+    "noCategoryEngines": "Bu kategoride motor bulunamadı.",
+    "scanError": "Motorlar taranamadı. Arama yollarınızı kontrol edip tekrar deneyin."
   },
   "git": {
     "title": "Git Geçmişi",
@@ -232,7 +240,10 @@
     "editCard": "Görevi Düzenle"
   },
   "common": {
-    "chars": "karakter"
+    "chars": "karakter",
+    "ok": "Tamam",
+    "loading": "Yükleniyor...",
+    "closeToTray": "Sistem tepsisine kapat"
   },
   "marketplace": {
     "title": "MAĞAZA",
@@ -304,6 +315,20 @@
     "cancelDownload": "İndirmeyi İptal Et",
     "noCompatibleTargets": "Uyumlu hedef bulunamadı.",
     "selectTargetPlaceholder": "Bir hedef seçin...",
-    "installIntoBtn": "Kur"
+    "installIntoBtn": "Kur",
+    "sort": "Sırala:",
+    "filter": "Filtre:",
+    "cancel": "İptal",
+    "refresh": "Kütüphaneyi Yenile"
+  },
+  "scan": {
+    "progress": "Taranıyor: {{directories}} klasör kontrol edildi, {{found}} öğe bulundu",
+    "complete": "Tarama tamamlandı: {{directories}} klasör kontrol edildi, {{found}} öğe bulundu",
+    "failed": "Tarama başarısız. Arama yollarını ve klasör izinlerini kontrol edip tekrar deneyin.",
+    "scanning": "Taranıyor",
+    "refresh": "Yeniden tara",
+    "waiting": "Aranıyor — sonuçlar bulundukça gösterilir...",
+    "checkPaths": "Ayarlardaki arama yollarını ve klasör izinlerini kontrol edin.",
+    "partialError": "Bazı klasörler okunamadı. Bulunan sonuçlar kullanılabilir."
   }
 }

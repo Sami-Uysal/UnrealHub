@@ -1,32 +1,35 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Project } from '../types';
+import { useScan } from './useScan';
+
+const getProjectScan = (refresh: boolean) => window.unreal.getProjectScan(refresh);
 
 export function useProjects() {
-    const [projects, setProjects] = useState<Project[]>([]);
+    const { snapshot, refresh: loadProjects } = useScan<Project>(getProjectScan);
+    const projects = snapshot.items;
     const [projectSizes, setProjectSizes] = useState<Record<string, number>>({});
     const sizeRequestedRef = useRef<Set<string>>(new Set());
 
-    const loadProjects = useCallback(async () => {
-        try {
-            const data = await window.unreal.getProjects();
-            setProjects(data);
+    useEffect(() => {
+        if (snapshot.scanning) return;
+        let cancelled = false;
+        const queue = projects.filter(project => !sizeRequestedRef.current.has(project.path));
+        const worker = async () => {
+            while (!cancelled && queue.length) {
+                const project = queue.shift()!;
+                if (sizeRequestedRef.current.has(project.path)) continue;
+                sizeRequestedRef.current.add(project.path);
+                try {
+                    const size = await window.unreal.getProjectSize(project.path);
+                    if (!cancelled) setProjectSizes(previous => ({ ...previous, [project.path]: size }));
+                } catch (error) { console.error('Failed to get project size:', error); }
+            }
+        };
+        void Promise.all([worker(), worker()]);
+        return () => { cancelled = true; };
+    }, [projects, snapshot.scanning]);
 
-            data.forEach(p => {
-                if (!sizeRequestedRef.current.has(p.path)) {
-                    sizeRequestedRef.current.add(p.path);
-                    window.unreal.getProjectSize(p.path).then(size => {
-                        setProjectSizes(prev => ({ ...prev, [p.path]: size }));
-                    });
-                }
-            });
-        } catch (error) {
-            console.error(error);
-        }
-    }, []);
-
-    useEffect(() => { loadProjects(); }, [loadProjects]);
-
-    return { projects, projectSizes, loadProjects };
+    return { projects, projectSizes, loadProjects, scan: snapshot };
 }
 
 export function useFavorites() {

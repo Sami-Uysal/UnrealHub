@@ -1,4 +1,5 @@
 import React, { useState, Suspense, lazy } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Sidebar, View } from './Sidebar';
 import { ProjectsPage } from '../../pages/Projects';
 import { EnginesPage } from '../../pages/Engines';
@@ -12,6 +13,7 @@ const ConfigEditorPage = lazy(() => import('../../pages/ConfigEditorPage').then(
 const MarketplacePage = lazy(() => import('../../pages/MarketplacePage').then(module => ({ default: module.MarketplacePage })));
 
 export const AppLayout: React.FC = () => {
+    const { t } = useTranslation();
     const [view, setView] = useState<View | 'git' | 'config' | 'marketplace'>('projects');
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
     const { bgEffect, fontSize, reduceAnimations } = useAppearance();
@@ -89,13 +91,13 @@ export const AppLayout: React.FC = () => {
                 <main className={`flex-1 bg-transparent border-l border-white/5 shadow-[-4px_0_24px_-8px_rgba(0,0,0,0.5)] ${(view === 'git' || view === 'config' || view === 'marketplace') ? 'overflow-hidden pt-8' : 'overflow-auto pt-8'}`}>
                     {view === 'marketplace' ? (
                         <div className="p-8 w-full h-full flex flex-col overflow-hidden">
-                            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-500 text-sm">Loading Marketplace...</div>}>
+                            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-500 text-sm">{t('common.loading')}</div>}>
                                 <MarketplacePage />
                             </Suspense>
                         </div>
                     ) : view === 'git' && selectedProject ? (
                         <div className="h-full w-full">
-                            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-500 text-sm">Loading Git History...</div>}>
+                            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-500 text-sm">{t('common.loading')}</div>}>
                                 <GitHistoryPage
                                     projectPath={selectedProject.path}
                                     projectName={selectedProject.name}
@@ -105,7 +107,7 @@ export const AppLayout: React.FC = () => {
                         </div>
                     ) : view === 'config' && selectedProject ? (
                         <div className="h-full w-full">
-                            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-500 text-sm">Loading Config...</div>}>
+                            <Suspense fallback={<div className="flex items-center justify-center h-full text-slate-500 text-sm">{t('common.loading')}</div>}>
                                 <ConfigEditorPage
                                     projectPath={selectedProject.path}
                                     projectName={selectedProject.name}

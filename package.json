@@ -1,13 +1,13 @@
 {
   "name": "unreal-hub",
   "private": true,
-  "version": "1.6.1",
+  "version": "1.6.2-zh.2",
   "description": "Unreal Engine manager for personal use",
   "author": "Sami Uysal",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && electron-builder",
+    "build": "tsc && vite build && electron-builder --config electron-builder.json5",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
@@ -17,7 +17,7 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "Sami-Uysal",
+        "owner": "GoldenDragons",
         "repo": "UnrealHub"
       }
     ],

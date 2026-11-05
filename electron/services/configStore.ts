@@ -34,6 +34,7 @@ export interface Project {
     name: string;
     path: string;
     version: string;
+    engineVersion?: string;
     lastModified: number;
     thumbnail?: string;
     launchProfiles?: LaunchProfile[];

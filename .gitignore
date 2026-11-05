@@ -31,3 +31,5 @@ release/
 config.json
 projects.json
 extracted
+# Local agent runtime state
+.omx/

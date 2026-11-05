@@ -1,91 +1,65 @@
-# UnrealHub
-**The Lightweight, Open-Source Alternative to Epic Games Launcher for Unreal Engine Developers.**
+# UnrealHub — Chinese Modified Edition
 
-[TR](README.md) | **EN** | 🌐 **[Website](https://unrealhub.samiuysal.me)**
+## Epic Games Launcher vs UnrealHub
 
-Tired of waiting for the Epic Games Launcher to open just to start your project? **UnrealHub** is a lightning-fast, bloat-free desktop application designed specifically to manage your Unreal Engine projects and engines seamlessly.
+**A local workspace for multi-version UE development: recursive discovery, project version groups, and source/installed engine organization.**
 
-![UnrealHub Screenshot](github-assets/projects-main.png)
+| Workflow | Epic Games Launcher | This UnrealHub fork |
+| --- | --- | --- |
+| Primary role | Official engine installation and content ecosystem | **Manage engines and projects already on your machine** |
+| Copied or nested projects | Epic documents opening copied projects locally before they appear in the list | **Recursively discover `.uproject` files under configured roots** |
+| Discovery feedback | Epic documents the Library project-list workflow | **Progressive results, folder counts, current path and rescan** |
+| Engine builds | Launcher installs precompiled builds; source builds are obtained separately | **Source and installed groups, sorted numerically** |
+| Project versions | Project entries show their compatible UE version | **Version buttons and separate version sections in All Versions** |
+| Project tools | Open, locate, shortcut, clone and delete actions | **Tags, favorites, notes, task boards, Git history and config editing** |
+| Accounts and background use | An Epic login is required to download engines | **Local discovery needs no Epic login; close to tray** |
+| Engine installation and updates | Official installation/update support | **Continue using Epic's tools for engine installation and updates** |
 
-## Epic Games Launcher vs. UnrealHub
+**[Download Windows x64 builds](https://github.com/GoldenDragons/UnrealHub/releases/latest)** · [Current interface](#current-interface)
 
-| Feature | Epic Games Launcher | UnrealHub |
-|---------|---------------------|-----------|
-| **Launch Speed** | ~10-15 Seconds | **< 1 Second** |
-| **Focus** | Store & Games | **Purely Your Projects** |
-| **Telemetry/Tracking**| Yes | **No (Open Source)** |
-| **Offline Mode** | Clunky | **Native** |
+Sources: [Epic's project-opening guide](https://dev.epicgames.com/documentation/en-us/unreal-engine/opening-an-existing-unreal-engine-project) and [installation guide](https://dev.epicgames.com/documentation/unreal-engine/install-unreal-engine). This compares documented workflows with implemented features, not unverified feature absences or unbenchmarked speed/memory claims. Marketplace and security limitations are described below.
 
-## Why UnrealHub?
 
-- **Instant Launch:** View all your UE projects and launch them with a single click.
-- **Bloat-Free:** No storefronts, no ads, no background tracking.
-### Engine Management
-Automatically detects installed Unreal Engine versions. View and manage your engines in one place.
+[简体中文](README.md) · [Türkçe](README_TR.md) · [Changelog](CHANGELOG.md)
 
-<img src="github-assets/engine-versions.png" width="700">
+This is a public modified fork of [Sami-Uysal/UnrealHub](https://github.com/Sami-Uysal/UnrealHub), based on upstream 1.6.1 and maintained by GoldenDragons. It preserves Sami Uysal's attribution, upstream history and the [MIT license](LICENSE). It is not an official upstream release.
 
-### Advanced Project Management
-Automatically calculate and display the actual disk size of each project. Use the Context Menu to clone, delete, or clean `Saved`/`Intermediate` cache folders, or create smart **.zip backups** to save space directly from the app.
+Current version: **1.6.2-zh.2**. [Download Windows x64 installer or portable executable](https://github.com/GoldenDragons/UnrealHub/releases/latest).
 
-<img src="github-assets/context-menu.png" width="700">
+## Changes in this fork
 
-### Customization & Tags
-Change project names, and cover images to customize the look of your projects.
-<img src="github-assets/edit-project.png" width="700">
+- Closing the window hides it to the system tray. Click the tray icon to restore it, or use Quit UnrealHub to exit. Opening the executable again restores the existing instance.
 
-Create your own organization logic by adding Tags to your projects.
-<img src="github-assets/tag-system.png" width="700">
+- 302 Simplified Chinese translation strings, persistent language selection, and English/Turkish support.
+- Fix for the whole-window blank screen when opening Marketplace.
+- Recursive engine/project discovery, including search roots and nested folders, with overlapping-path deduplication.
+- Progressive results and visible scan progress, error messages and a rescan button. Large-directory traversal uses bounded breadth-first batches and shares in-flight scan tasks.
+- Source and installed engine groups, sorted by actual numeric version. Source GUID associations are resolved when possible.
+- Side-by-side project version buttons. All versions are displayed in separate version sections with project counts; search, tags, favorites and grid/list views work within these groups.
 
-### Power User Tools
+See the [detailed changelog](CHANGELOG.md) for local iteration history, validation and limitations.
 
-**Project Notes (Markdown)**
-Jot down ideas, to-dos, and project details directly into the built-in notes panel.
-<img src="github-assets/project-notes.png" width="700">
+## Current interface
 
-**Task Board (Kanban)**
-Built-in drag-and-drop task board to manage your project tasks directly in the launcher.
-<img src="github-assets/task-board.png" width="700">
+All images below are from the actual **1.6.2-zh.2 executable**, maximized to 1920×1032, using isolated demo projects. Upstream's old screenshots have been removed.
 
-**Git Integration**
-Visualize commit history and branches seamlessly within the app.
-<img src="github-assets/git-history.png" width="700">
+![Projects grouped by UE version](github-assets/projects-all-fullscreen.png)
 
-**Plugin & Config Editor**
-Comprehensive built-in editor to enable/disable `.uproject` plugins or edit settings like `DefaultEngine.ini` without opening the engine!
-<img src="github-assets/ini-editor.png" width="700">
+![Source and installed engine groups](github-assets/engines-fullscreen.png)
 
-## Installation
+![Selecting a specific UE version](github-assets/projects-version-fullscreen.png)
 
-Ready to speed up your workflow? 
+## Build and verify
 
-**[Download the latest `.exe` from Releases](https://github.com/Sami-Uysal/UnrealHub/releases)** 
-
-*One-click installation: Download and start using it in seconds!*
-
-## Flow Launcher Integration
-Boost your productivity even further! Use our official **[Flow Launcher Plugin](https://github.com/Sami-Uysal/Flow.Launcher.Plugin.UnrealHub)** to search and launch any Unreal Engine project straight from your keyboard (`Alt + Space`).
-
-## Development
-
-<details>
-<summary>Click to view development instructions</summary>
-
-```bash
-# Install dependencies
-npm install
-
-# Run in development mode
-npm run dev
-
-# Build for distribution
-npm run build
+```powershell
+npm.cmd ci --no-audit --no-fund
+npm.cmd run build -- --publish never
+node scripts/check-scanning.mjs
+node scripts/check-versions.mjs
+node scripts/check-marketplace.mjs
+node scripts/capture-screenshots.mjs
 ```
 
-The installer is created in the `release/` folder.
+Build output: `release/1.6.2-zh.2/`. Test/screenshot scripts require Node.js 22+. Executables do not require Node.js. Select Simplified Chinese in Settings → Language.
 
-**Technologies Used:** Electron, React + TypeScript, Vite, TailwindCSS
-</details>
-
-## License
-This project is open-source and free to use.
+Existing lint findings have not been cleaned up. Installer installation, Epic login and asset downloads have not been acceptance-tested; previously identified token-storage security weaknesses are not hardened by this release. See the [Chinese guide](README_ZH.md) for scanning rules and operating details.

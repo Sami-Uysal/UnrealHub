@@ -1,7 +1,9 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Minus, Square, X } from 'lucide-react';
 
 export const TitleBar: React.FC = () => {
+    const { t } = useTranslation();
     return (
         <div className="h-8 bg-transparent flex justify-between items-center select-none" style={{ WebkitAppRegion: 'drag' } as any}>
             <div className="px-4 text-xs text-slate-500 font-medium">
@@ -21,6 +23,8 @@ export const TitleBar: React.FC = () => {
                 </button>
                 <button
                     onClick={() => window.unreal.close()}
+                    title={t('common.closeToTray')}
+                    aria-label={t('common.closeToTray')}
                     className="h-full w-12 flex items-center justify-center text-slate-400 hover:bg-red-600 hover:text-white transition-colors"
                 >
                     <X size={16} />

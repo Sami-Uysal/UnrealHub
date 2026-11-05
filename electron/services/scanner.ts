@@ -1,34 +1,39 @@
 import fs from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
-import { exec } from 'node:child_process';
+import { exec, execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import {
     Project, loadConfig,
     STORE_PATH, EXCLUDED_PATH, SIZES_CACHE_PATH,
     readJsonFile, writeJsonFile
 } from './configStore';
+import { discoverProjectFiles, parseRegisteredBuilds, pathKey, resolveEngineVersion } from './discovery';
+import type { DiscoveryOptions, DiscoveredEngine } from './discovery';
 
 const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
-async function scanSingleFolder(scanPath: string, dirName: string): Promise<Project | null> {
-    const subFolderPath = path.join(scanPath, dirName);
+async function registeredBuilds(): Promise<Map<string, string>> {
+    if (process.platform !== 'win32') return new Map();
     try {
-        const subEntries = await fs.readdir(subFolderPath);
-        const uprojectFile = subEntries.find(f => f.endsWith('.uproject'));
-        if (!uprojectFile) return null;
+        const { stdout } = await execFileAsync('reg.exe', ['query', 'HKCU\\Software\\Epic Games\\Unreal Engine\\Builds'], { windowsHide: true, timeout: 5000 });
+        return parseRegisteredBuilds(stdout);
+    } catch { return new Map(); }
+}
 
-        const fullPath = path.join(subFolderPath, uprojectFile);
+async function readProject(fullPath: string): Promise<Project | null> {
+    try {
         let version = 'Unknown';
         try {
             const content = JSON.parse(await fs.readFile(fullPath, 'utf-8'));
-            if (content.EngineAssociation) version = content.EngineAssociation;
+            if (typeof content.EngineAssociation === 'string' && content.EngineAssociation) version = content.EngineAssociation;
         } catch (error) { console.warn(`Failed to parse ${fullPath}:`, error); }
 
         const stat = await fs.stat(fullPath);
         return {
             id: fullPath,
-            name: uprojectFile.replace('.uproject', ''),
+            name: path.basename(fullPath).replace(/\.uproject$/i, ''),
             path: fullPath,
             version,
             lastModified: stat.mtimeMs
@@ -38,58 +43,47 @@ async function scanSingleFolder(scanPath: string, dirName: string): Promise<Proj
     }
 }
 
-export async function scanProjects(): Promise<Project[]> {
-    const [manualProjects, excluded, config] = await Promise.all([
+export async function scanProjects(options: DiscoveryOptions<Project> = {}): Promise<Project[]> {
+    const [manualProjects, excluded, config, builds] = await Promise.all([
         readJsonFile<Project[]>(STORE_PATH, []),
         readJsonFile<string[]>(EXCLUDED_PATH, []),
-        loadConfig()
+        loadConfig(),
+        registeredBuilds()
     ]);
 
-    const scannedProjects: Project[] = [];
-    const knownPaths = new Set(manualProjects.map(p => p.path));
-
-    for (const scanPath of config.projectPaths) {
-        if (!existsSync(scanPath)) continue;
-        try {
-            const entries = await fs.readdir(scanPath, { withFileTypes: true });
-            const dirs = entries.filter(e => e.isDirectory());
-
-            const results = await Promise.allSettled(
-                dirs.map(entry => scanSingleFolder(scanPath, entry.name))
-            );
-
-            for (const result of results) {
-                if (result.status === 'fulfilled' && result.value) {
-                    const project = result.value;
-                    if (!knownPaths.has(project.path) && !scannedProjects.some(p => p.path === project.path)) {
-                        scannedProjects.push(project);
-                    }
-                }
-            }
-        } catch (e) {
-            console.error(`Error scanning project path ${scanPath}:`, e);
-        }
-    }
-
-    const allProjects = [...manualProjects, ...scannedProjects].filter(p => !excluded.includes(p.path));
-
-    for (const p of allProjects) {
-        if (config.projectOverrides?.[p.path]) {
-            const override = config.projectOverrides[p.path];
-            if (override.name) p.name = override.name;
-            if (override.thumbnail) p.thumbnail = override.thumbnail;
-            if (override.launchProfiles) p.launchProfiles = override.launchProfiles;
-        }
-
+    const excludedPaths = new Set(excluded.map(pathKey));
+    const projects = new Map<string, Project>();
+    const versionCache = new Map<string, Promise<DiscoveredEngine | null>>();
+    const enrich = async (project: Project) => {
+        const p = { ...project };
+        p.engineVersion = await resolveEngineVersion(p.path, p.version, builds, versionCache);
+        const override = config.projectOverrides?.[p.path];
+        if (override?.name) p.name = override.name;
+        if (override?.thumbnail) p.thumbnail = override.thumbnail;
+        if (override?.launchProfiles) p.launchProfiles = override.launchProfiles;
         if (!p.thumbnail) {
             const thumbPath = path.join(path.dirname(p.path), 'Saved', 'AutoScreenshot.png');
-            if (existsSync(thumbPath)) {
-                p.thumbnail = `local-file://${encodeURIComponent(thumbPath.replace(/\\/g, '/'))}`;
-            }
+            if (existsSync(thumbPath)) p.thumbnail = 'local-file://' + encodeURIComponent(thumbPath.replace(/\\/g, '/'));
         }
+        projects.set(pathKey(p.path), p);
+        await options.onItem?.(p);
+    };
+    for (const project of manualProjects) {
+        const key = pathKey(project.path);
+        if (!excludedPaths.has(key) && !projects.has(key)) await enrich(project);
     }
-
-    return allProjects.sort((a, b) => b.lastModified - a.lastModified);
+    await discoverProjectFiles(config.projectPaths, {
+        onProgress: options.onProgress,
+        onError: options.onError,
+        signal: options.signal,
+        onItem: async fullPath => {
+            const key = pathKey(fullPath);
+            if (projects.has(key) || excludedPaths.has(key)) return;
+            const project = await readProject(fullPath);
+            if (project) await enrich(project);
+        },
+    });
+    return [...projects.values()].sort((a, b) => b.lastModified - a.lastModified);
 }
 
 export async function getDirectorySize(dirPath: string): Promise<number> {

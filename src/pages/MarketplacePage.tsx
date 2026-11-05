@@ -487,7 +487,7 @@ export const MarketplacePage: React.FC = () => {
                                 
                                 <div className="flex items-center gap-3">
                                     <div className="flex items-center gap-2">
-                                        <span className="text-xs text-slate-400">Sort:</span>
+                                        <span className="text-xs text-slate-400">{t('marketplace.sort')}</span>
                                         <div className="relative">
                                             <select
                                                 value={librarySort}
@@ -503,7 +503,7 @@ export const MarketplacePage: React.FC = () => {
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-xs text-slate-400">Filter:</span>
+                                        <span className="text-xs text-slate-400">{t('marketplace.filter')}</span>
                                         <div className="relative">
                                             <input
                                                 type="text"

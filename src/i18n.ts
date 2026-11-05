@@ -4,6 +4,14 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 
 import en from './locales/en.json';
 import tr from './locales/tr.json';
+import zhCN from './locales/zh-CN.json';
+
+const updateDocumentLanguage = (language: string) => {
+    document.documentElement.lang = language;
+    void window.unreal?.setTrayLanguage(language).catch(error => console.warn('Failed to update tray language:', error));
+};
+
+i18n.on('languageChanged', updateDocumentLanguage);
 
 i18n
     .use(LanguageDetector)
@@ -12,7 +20,9 @@ i18n
         resources: {
             en: { translation: en },
             tr: { translation: tr },
+            'zh-CN': { translation: zhCN },
         },
+        supportedLngs: ['en', 'tr', 'zh-CN'],
         fallbackLng: 'tr', 
         interpolation: {
             escapeValue: false, 
@@ -21,6 +31,8 @@ i18n
             order: ['localStorage', 'navigator'],
             caches: ['localStorage'], 
             lookupLocalStorage: 'i18nextLng', 
+            convertDetectedLanguage: (language: string) =>
+                /^zh(?:-|$)/i.test(language.replace(/_/g, '-')) ? 'zh-CN' : language,
         }
     });
 

@@ -14,7 +14,7 @@ export default {
         accent: '#f59e0b',
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['Inter', '"Microsoft YaHei"', '"PingFang SC"', '"Noto Sans CJK SC"', 'sans-serif'],
       }
     },
   },

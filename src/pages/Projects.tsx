@@ -8,9 +8,11 @@ import { ProjectStatsModal } from '../components/ProjectStatsModal';
 import { NotesModal } from '../components/NotesModal';
 import { ProjectKanban } from '../components/Projects/ProjectKanban';
 import { ProjectCard } from '../components/ProjectCard';
+import { ScanProgress } from '../components/ScanProgress';
 import { ConfirmationModal, DialogConfig } from '../components/ConfirmationModal';
 import { useAppearance } from '../context/AppearanceContext';
 import { getTagColor } from '../utils/tagUtils';
+import { compareEngineVersions, getProjectEngineVersion } from '../utils/engineVersions';
 import { useProjects, useFavorites, useTags } from '../hooks/useProjects';
 
 interface ProjectsPageProps {
@@ -25,12 +27,13 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit, onOpenCon
     const { reduceAnimations } = useAppearance();
 
     // Custom hooks
-    const { projects, projectSizes, loadProjects } = useProjects();
+    const { projects, projectSizes, loadProjects, scan } = useProjects();
     const { favorites, toggleFavorite } = useFavorites();
     const { allTags, setAllTags } = useTags();
 
     // Local UI state
     const [searchTerm, setSearchTerm] = useState('');
+    const [engineFilter, setEngineFilter] = useState('all');
     const [editingProject, setEditingProject] = useState<Project | null>(null);
     const [editName, setEditName] = useState('');
     const [editThumb, setEditThumb] = useState<string | undefined>(undefined);
@@ -71,6 +74,14 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit, onOpenCon
     }, []);
 
     // Memoized values
+    const engineVersionGroups = useMemo(() => {
+        const versions = Array.from(new Set(projects.map(getProjectEngineVersion)));
+        return versions.filter(version => version !== 'unknown')
+            .sort((a, b) => compareEngineVersions(b, a))
+            .concat(versions.includes('unknown') ? ['unknown'] : []);
+    }, [projects]);
+    const activeEngineFilter = engineVersionGroups.includes(engineFilter) ? engineFilter : 'all';
+
     const uniqueTags = useMemo(() =>
         Array.from(new Set(Object.values(allTags).flat())).sort(),
         [allTags]
@@ -82,7 +93,8 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit, onOpenCon
                 const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase());
                 const projectTags = allTags[p.path] || [];
                 const matchesTags = selectedTags.length === 0 || selectedTags.every(tag => projectTags.includes(tag));
-                return matchesSearch && matchesTags;
+                const matchesEngine = activeEngineFilter === 'all' || getProjectEngineVersion(p) === activeEngineFilter;
+                return matchesSearch && matchesTags && matchesEngine;
             })
             .sort((a, b) => {
                 const aFav = favorites.includes(a.path) ? -1 : 0;
@@ -90,12 +102,24 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit, onOpenCon
                 if (aFav !== bFav) return aFav - bFav;
                 switch (sortMode) {
                     case 'name': return a.name.localeCompare(b.name);
-                    case 'engine': return a.version.localeCompare(b.version);
+                    case 'engine': return compareEngineVersions(b.engineVersion || b.version, a.engineVersion || a.version);
                     case 'date': default: return b.lastModified - a.lastModified;
                 }
             }),
-        [projects, searchTerm, allTags, selectedTags, favorites, sortMode]
+        [projects, searchTerm, allTags, selectedTags, favorites, sortMode, activeEngineFilter]
     );
+
+    const projectGroups = useMemo(() => {
+        const groups = new Map<string, Project[]>();
+        for (const project of filteredProjects) {
+            const version = getProjectEngineVersion(project);
+            const group = groups.get(version) || [];
+            group.push(project);
+            groups.set(version, group);
+        }
+        return engineVersionGroups.filter(version => groups.has(version))
+            .map(version => ({ version, projects: groups.get(version)! }));
+    }, [filteredProjects, engineVersionGroups]);
 
     const sortLabels: Record<SortMode, string> = useMemo(() => ({
         date: t('projects.sortDate'),
@@ -529,8 +553,8 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit, onOpenCon
 
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-                <div className="flex items-center space-x-4">
-                    <h2 className="text-3xl font-black text-white tracking-tight">
+                <div className="flex shrink-0 items-center space-x-4">
+                    <h2 className="whitespace-nowrap text-3xl font-black text-white tracking-tight">
                         {t('projects.title').toUpperCase()}
                     </h2>
                 </div>
@@ -667,32 +691,75 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit, onOpenCon
                 </div>
             )}
 
-            {/* Project cards grid */}
-            <div className={`grid ${viewMode === 'list'
-                ? 'grid-cols-1 gap-3'
-                : cardSize === 'small'
-                    ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3'
-                    : cardSize === 'large'
-                        ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6'
-                        : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
-                }`}>
-                {filteredProjects.map((project) => (
-                    <ProjectCard
-                        key={project.path}
-                        project={project}
-                        viewMode={viewMode}
-                        cardSize={cardSize}
-                        reduceAnimations={reduceAnimations}
-                        showGit={showGit}
-                        isFavorite={favorites.includes(project.path)}
-                        projectSize={projectSizes[project.path] || 0}
-                        tags={allTags[project.path] || []}
-                        onContextMenu={handleContextMenu}
-                        onToggleFavorite={toggleFavorite}
-                        onEdit={handleEditClick}
-                        onOpenGit={onOpenGit}
-                        onLaunch={handleLaunch}
-                    />
+            <ScanProgress snapshot={scan} onRefresh={() => { void loadProjects(); }} />
+            <div className="flex flex-wrap items-center gap-3 mb-6">
+                <span id="project-engine-version-label" className="text-sm text-slate-400 shrink-0">
+                    {t('projects.engineVersionFilter')}
+                </span>
+                <div role="group" aria-labelledby="project-engine-version-label" className="flex flex-wrap gap-2">
+                    {['all', ...engineVersionGroups].map(version => (
+                        <button
+                            key={version}
+                            type="button"
+                            data-engine-version={version}
+                            aria-pressed={activeEngineFilter === version}
+                            onClick={() => setEngineFilter(version)}
+                            className={`h-10 whitespace-nowrap rounded-xl border px-4 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent-color)] ${activeEngineFilter === version
+                                ? 'bg-[var(--accent-color)] border-[var(--accent-color)] text-white'
+                                : 'bg-slate-900/50 border-white/10 text-slate-400 hover:text-white hover:border-white/20'
+                                }`}
+                        >
+                            {version === 'all' ? t('projects.allEngineVersions')
+                                : version === 'unknown' ? t('projects.unknownEngineVersion') : `UE ${version}`}
+                        </button>
+                    ))}
+                </div>
+                <span className="text-xs text-slate-500">
+                    {t('projects.filteredCount', { count: filteredProjects.length, total: projects.length })}
+                </span>
+            </div>
+            {filteredProjects.length === 0 && (
+                <div className="py-12 text-center text-slate-500">
+                    {t(scan.scanning ? 'scan.waiting' : 'projects.noProjects')}
+                    {!scan.scanning && projects.length === 0 && <p className="mt-2 text-sm">{t('scan.checkPaths')}</p>}
+                </div>
+            )}
+
+            <div className="space-y-10">
+                {projectGroups.map(group => (
+                    <section key={group.version} data-project-version={group.version} aria-labelledby={`projects-version-${group.version}`}>
+                        <h3 id={`projects-version-${group.version}`} className="text-xl font-bold text-white mb-4">
+                            {group.version === 'unknown' ? t('projects.unknownEngineVersion') : `UE ${group.version}`}
+                            <span className="ml-3 text-sm font-medium text-slate-500">{group.projects.length}</span>
+                        </h3>
+                        <div className={`grid ${viewMode === 'list'
+                            ? 'grid-cols-1 gap-3'
+                            : cardSize === 'small'
+                                ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3'
+                                : cardSize === 'large'
+                                    ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6'
+                                    : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
+                            }`}>
+                            {group.projects.map((project) => (
+                                <ProjectCard
+                                    key={project.path}
+                                    project={project}
+                                    viewMode={viewMode}
+                                    cardSize={cardSize}
+                                    reduceAnimations={reduceAnimations}
+                                    showGit={showGit}
+                                    isFavorite={favorites.includes(project.path)}
+                                    projectSize={projectSizes[project.path] || 0}
+                                    tags={allTags[project.path] || []}
+                                    onContextMenu={handleContextMenu}
+                                    onToggleFavorite={toggleFavorite}
+                                    onEdit={handleEditClick}
+                                    onOpenGit={onOpenGit}
+                                    onLaunch={handleLaunch}
+                                />
+                            ))}
+                        </div>
+                    </section>
                 ))}
             </div>
 

@@ -77,7 +77,7 @@ export const ProjectCard = React.memo<ProjectCardProps>(({
                         </h3>
                         <div className="flex gap-1.5 items-center">
                             <span className="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-slate-800/50 text-white border border-white/10 whitespace-nowrap">
-                                UE {project.version}
+                                UE {project.engineVersion || project.version}
                             </span>
                             {projectSize > 0 && (
                                 <span className="px-2 py-0.5 rounded text-[10px] tracking-wider bg-slate-800/50 text-slate-400 border border-white/10 flex items-center gap-1 whitespace-nowrap">
@@ -209,7 +209,7 @@ export const ProjectCard = React.memo<ProjectCardProps>(({
                         </h3>
                         <div className="flex items-center flex-wrap gap-1.5 mt-1">
                             <span className="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-black/50 text-white backdrop-blur-md border border-white/20 group-hover:bg-[var(--accent-color)] group-hover:border-[var(--accent-color)] transition-colors duration-300 whitespace-nowrap">
-                                UE {project.version}
+                                UE {project.engineVersion || project.version}
                             </span>
                             {projectSize > 0 && (
                                 <span className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-black/50 text-slate-300 backdrop-blur-md border border-white/10 items-center gap-1 whitespace-nowrap ${cardSize === 'small' ? 'hidden sm:flex' : 'flex'}`}>
