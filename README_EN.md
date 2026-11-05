@@ -1,93 +1,43 @@
-# UnrealHub
+# UnrealHub — Chinese Modified Edition
 
-> This is a modified fork of [Sami-Uysal/UnrealHub](https://github.com/Sami-Uysal/UnrealHub). It adds Simplified Chinese support and fixes the whole-window blank screen when opening Marketplace. [Download this fork](https://github.com/GoldenDragons/UnrealHub/releases/latest).
-**The Lightweight, Open-Source Alternative to Epic Games Launcher for Unreal Engine Developers.**
+[简体中文](README.md) · [Türkçe](README_TR.md) · [Changelog](CHANGELOG.md)
 
-[简体中文](README.md) | [TR](README_TR.md) | **EN** | 🌐 **[Website](https://unrealhub.samiuysal.me)**
+This is a public modified fork of [Sami-Uysal/UnrealHub](https://github.com/Sami-Uysal/UnrealHub), based on upstream 1.6.1 and maintained by GoldenDragons. It preserves Sami Uysal's attribution, upstream history and the [MIT license](LICENSE). It is not an official upstream release.
 
-Tired of waiting for the Epic Games Launcher to open just to start your project? **UnrealHub** is a lightning-fast, bloat-free desktop application designed specifically to manage your Unreal Engine projects and engines seamlessly.
+Current version: **1.6.2-zh.1**. [Download Windows x64 installer or portable executable](https://github.com/GoldenDragons/UnrealHub/releases/latest).
 
-![UnrealHub Screenshot](github-assets/projects-main.png)
+## Changes in this fork
 
-## Epic Games Launcher vs. UnrealHub
+- 301 Simplified Chinese translation strings, persistent language selection, and English/Turkish support.
+- Fix for the whole-window blank screen when opening Marketplace.
+- Recursive engine/project discovery, including search roots and nested folders, with overlapping-path deduplication.
+- Progressive results and visible scan progress, error messages and a rescan button. Large-directory traversal uses bounded breadth-first batches and shares in-flight scan tasks.
+- Source and installed engine groups, sorted by actual numeric version. Source GUID associations are resolved when possible.
+- Side-by-side project version buttons. All versions are displayed in separate version sections with project counts; search, tags, favorites and grid/list views work within these groups.
 
-| Feature | Epic Games Launcher | UnrealHub |
-|---------|---------------------|-----------|
-| **Launch Speed** | ~10-15 Seconds | **< 1 Second** |
-| **Focus** | Store & Games | **Purely Your Projects** |
-| **Telemetry/Tracking**| Yes | **No (Open Source)** |
-| **Offline Mode** | Clunky | **Native** |
+See the [detailed changelog](CHANGELOG.md) for local iteration history, validation and limitations.
 
-## Why UnrealHub?
+## Current interface
 
-- **Instant Launch:** View all your UE projects and launch them with a single click.
-- **Bloat-Free:** No storefronts, no ads, no background tracking.
-### Engine Management
-Automatically detects installed Unreal Engine versions. View and manage your engines in one place.
+All images below are from the actual **1.6.2-zh.1 executable**, maximized to 1920×1032, using isolated demo projects. Upstream's old screenshots have been removed.
 
-<img src="github-assets/engine-versions.png" width="700">
+![Projects grouped by UE version](github-assets/projects-all-fullscreen.png)
 
-### Advanced Project Management
-Automatically calculate and display the actual disk size of each project. Use the Context Menu to clone, delete, or clean `Saved`/`Intermediate` cache folders, or create smart **.zip backups** to save space directly from the app.
+![Source and installed engine groups](github-assets/engines-fullscreen.png)
 
-<img src="github-assets/context-menu.png" width="700">
+![Selecting a specific UE version](github-assets/projects-version-fullscreen.png)
 
-### Customization & Tags
-Change project names, and cover images to customize the look of your projects.
-<img src="github-assets/edit-project.png" width="700">
+## Build and verify
 
-Create your own organization logic by adding Tags to your projects.
-<img src="github-assets/tag-system.png" width="700">
-
-### Power User Tools
-
-**Project Notes (Markdown)**
-Jot down ideas, to-dos, and project details directly into the built-in notes panel.
-<img src="github-assets/project-notes.png" width="700">
-
-**Task Board (Kanban)**
-Built-in drag-and-drop task board to manage your project tasks directly in the launcher.
-<img src="github-assets/task-board.png" width="700">
-
-**Git Integration**
-Visualize commit history and branches seamlessly within the app.
-<img src="github-assets/git-history.png" width="700">
-
-**Plugin & Config Editor**
-Comprehensive built-in editor to enable/disable `.uproject` plugins or edit settings like `DefaultEngine.ini` without opening the engine!
-<img src="github-assets/ini-editor.png" width="700">
-
-## Installation
-
-Ready to speed up your workflow? 
-
-**[Download the latest `.exe` from Releases](https://github.com/Sami-Uysal/UnrealHub/releases)** 
-
-*One-click installation: Download and start using it in seconds!*
-
-## Flow Launcher Integration
-Boost your productivity even further! Use our official **[Flow Launcher Plugin](https://github.com/Sami-Uysal/Flow.Launcher.Plugin.UnrealHub)** to search and launch any Unreal Engine project straight from your keyboard (`Alt + Space`).
-
-## Development
-
-<details>
-<summary>Click to view development instructions</summary>
-
-```bash
-# Install dependencies
-npm install
-
-# Run in development mode
-npm run dev
-
-# Build for distribution
-npm run build
+```powershell
+npm.cmd ci --no-audit --no-fund
+npm.cmd run build -- --publish never
+node scripts/check-scanning.mjs
+node scripts/check-versions.mjs
+node scripts/check-marketplace.mjs
+node scripts/capture-screenshots.mjs
 ```
 
-The installer is created in the `release/` folder.
+Build output: `release/1.6.2-zh.1/`. Test/screenshot scripts require Node.js 22+. Executables do not require Node.js. Select Simplified Chinese in Settings → Language.
 
-**Technologies Used:** Electron, React + TypeScript, Vite, TailwindCSS
-</details>
-
-## License
-This project is open-source and free to use.
+Existing lint findings have not been cleaned up. Installer installation, Epic login and asset downloads have not been acceptance-tested; previously identified token-storage security weaknesses are not hardened by this release. See the [Chinese guide](README_ZH.md) for scanning rules and operating details.

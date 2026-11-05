@@ -7,12 +7,12 @@ import {
     STORE_PATH, EXCLUDED_PATH, KANBAN_PATH,
     readJsonFile, writeJsonFile
 } from '../services/configStore';
-import { scanProjects, getProjectSizeCached } from '../services/scanner';
+import { getProjectSizeCached } from '../services/scanner';
+import { getProjectScan, getProjectsComplete } from '../services/scanCoordinator';
 
 export function registerProjectHandlers() {
-    ipcMain.handle('get-projects', async () => {
-        return scanProjects();
-    });
+    ipcMain.handle('get-projects', () => getProjectsComplete());
+    ipcMain.handle('get-project-scan', (_, refresh?: boolean) => getProjectScan(refresh === true));
 
     ipcMain.handle('update-project-details', async (_, projectPath: string, details: { name?: string, thumbnail?: string, launchProfiles?: import('../services/configStore').LaunchProfile[] }) => {
         const config = await loadConfig();

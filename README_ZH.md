@@ -1,53 +1,57 @@
-# UnrealHub 简体中文版
+# UnrealHub 中文使用说明
 
-上游仓库：https://github.com/Sami-Uysal/UnrealHub
+当前版本：**1.6.2-zh.1**。这是 [Sami-Uysal/UnrealHub](https://github.com/Sami-Uysal/UnrealHub) 的修改版；界面截图、功能介绍和下载见 [主页](README.md)，逐版本变更见 [改动日志](CHANGELOG.md)。
 
-基于上游 1.6.1（提交 `7467409323055cbaff62383be0704e0d5b03534f`）添加简体中文支持，保留英文和土耳其语。
+## 运行与升级
 
-## 运行
+从 [最新发布](https://github.com/GoldenDragons/UnrealHub/releases/latest) 下载安装版或免安装版。运行 exe 无需 Node.js；使用新版前先关闭旧版即可，已保存的搜索路径和界面设置可继续使用。
 
-- 免安装版：`release/1.6.1-zh.1/UnrealHub-Windows-1.6.1-zh.1-zh-CN-Portable.exe`，双击运行即可。
-- 安装版：`release/1.6.1-zh.1/UnrealHub-Windows-1.6.1-zh.1-Setup.exe`，支持选择中文安装界面和安装目录。
-- 解包版本：`release/1.6.1-zh.1/win-unpacked/UnrealHub.exe`，需保留整个 `win-unpacked` 文件夹。
+本地编译输出：`release/1.6.2-zh.1/`。`win-unpacked/UnrealHub.exe` 必须和整个文件夹一起保留，不能单独复制该 exe。
 
-以上均为 Windows x64 程序，运行时无需安装 Node.js 或开发依赖。
+## 递归搜索
 
-打开 **Settings → Language → 简体中文** 即可切换，选择会在重启后保留。浏览器语言为中文且没有已有语言选择时，会自动启用简体中文；部分 Electron 环境默认报告英文，此时手动切换一次即可。
+在“设置 → 引擎搜索路径 / 项目搜索路径”添加目录。程序检查该目录本身和多层子目录；不用逐个添加每个项目文件夹。
 
-在“设置”中添加引擎和项目搜索文件夹，或者使用项目页面的加号导入 `.uproject`。
+- 已找到的结果立即显示，不必等整棵目录树扫描结束。
+- 状态条显示已检查目录数、已找到数量和当前扫描位置。
+- 扫描完成后可点击“重新扫描”，读取新增或移动的项目与引擎。
+- 重叠路径会去重；无法访问的目录不会阻断其它分支，界面会提示异常。
+- 符号链接、目录联接、常见生成缓存，以及已识别项目的 Content/Source/Plugins 等内部目录会跳过，减少重复和无效遍历。普通子文件夹继续递归。
 
-## 中文支持
+## 引擎分类
 
-- 新增 `src/locales/zh-CN.json`，共 285 条翻译，覆盖项目、引擎、设置、资源商城、Git 历史、任务看板、配置编辑、确认对话框等界面。
-- 在 `src/i18n.ts` 注册中文资源，将中文语言标识归一化为 `zh-CN`，并同步 HTML 文档语言。
-- 在设置页面增加“简体中文”，补齐加载提示、确定按钮、商城排序/筛选/刷新/取消文字。
-- 为字体列表加入微软雅黑等中文字体。
-- 防止默认小窗口下“项目”标题逐字换行。
-- 明确使用 `electron-builder.json5` 打包，新增免安装目标和安装语言选择。
-- 移除 `src/main.tsx` 中调用未暴露的 `window.ipcRenderer` 的模板日志监听，修复点击资源商城后整个界面灰屏的问题。
+源码版和安装版分别显示，组内按数字版本从新到旧排序。版本来自 `Engine/Build/Build.version`，安装版依据 `Engine/Build/InstalledBuild.txt` 标记识别。
 
-项目名、文件路径、插件名称、第三方资源说明及原始错误消息保留其原有内容。
+源码引擎未编译时仍可能被发现，但只有存在对应编辑器可执行文件时才能启动。源码项目 GUID 关联会尝试查询本机 Windows 引擎注册信息；无法解析时显示“未知版本”。
 
-## 从源码编译
+## 项目版本按钮与分组
+
+所有已发现项目的 UE 主次版本以并排按钮显示；点击某个版本只显示该版本的项目。
+
+选择“全部版本”时，每个 UE 版本有独立标题、项目数量和项目区域，按新到旧排列；未知版本在最后。同一主次版本的补丁版会归入同组，例如 5.7、5.7.1 和 5.7.4 都属于 UE 5.7。
+
+搜索和标签筛选继续作用于这些分组。收藏优先及名称/日期排序在各组内生效；网格/列表和卡片大小同样适用。
+
+![新版全屏项目分组](github-assets/projects-all-fullscreen.png)
+
+## 编译、测试与截图
 
 ```powershell
 npm.cmd ci --no-audit --no-fund
 npx.cmd tsc --noEmit
 npm.cmd run build -- --publish never
+node scripts/check-scanning.mjs
+node scripts/check-versions.mjs
+node scripts/check-marketplace.mjs
+node scripts/capture-screenshots.mjs
 ```
 
-安装包输出至 `release/1.6.1-zh.1/`。`--publish never` 用于本地构建。
+脚本使用 Node.js 22+。截图脚本会创建独立演示数据，最大化实际 exe 后生成 `github-assets/*-fullscreen.png`，不使用真实账号或私人项目。
 
-如果 electron-builder 24 的 winCodeSign 工具解压提示无法创建 `darwin` 下的符号链接，可仅解压其 Windows 工具至本机 electron-builder 缓存的 `winCodeSign/winCodeSign-2.6.0` 目录，再重新构建。本次构建已通过此方式解决，无需调整系统权限。
+Windows 若在 electron-builder 24 解压 winCodeSign 工具时遇到 macOS 符号链接权限错误，可仅解压 Windows 工具到 electron-builder 的 `winCodeSign/winCodeSign-2.6.0` 缓存再构建。本次构建使用此方式，无需更改系统权限。
 
-## 本次验证
+## 验证与限制
 
-- TypeScript 检查和生产构建通过，生成安装版和免安装版。
-- 中、英、土三种语言的 285 个键及插值占位符一致。
-- 9 组语言检测场景、语言切换和 localStorage 保存检查通过。
-- 已启动实际免安装 exe，验证中文设置、引擎页面及重启后语言选择。
-- 灰屏修复后，实际免安装 exe 连续完成 3 轮资源商城/设置切换，无未捕获异常且 React 根节点保持挂载。可用 Node.js 22+ 执行 `node scripts/check-marketplace.mjs` 重跑本地打包回归检查；测试会启动独立应用实例并在结束后关闭。
-- 原仓库 lint 有 71 个错误、5 个警告；与上游源码比较，本次没有新增 lint 问题。
-- 未执行真实项目删除、缓存清理、Git 提交、Epic 登录或资源下载等操作；安装版未执行安装测试。
+扫描合成目录测试、数字版本排序测试、实际 exe 的版本按钮/分组/搜索/列表测试、商城连续导航及截图检查通过。大目录真实路径测试也确认了后台扫描过程中结果可见；阶段数量不代表全部项目或固定性能承诺。
 
-此修改版版本号为 `1.6.1-zh.1`，更新源已指向 [GoldenDragons/UnrealHub](https://github.com/GoldenDragons/UnrealHub/releases)，与上游官方发行版区分。
+原有 lint 问题未清理；安装流程、Epic 登录和资源下载未验收。此前安全审计发现的令牌存储等问题尚未加固，参见 [主页的已知限制](README.md#已知限制)。更新源为本 Fork 的 Releases。

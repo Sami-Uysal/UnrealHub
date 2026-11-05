@@ -42,7 +42,11 @@
     "sortDate": "日期",
     "sortEngine": "引擎",
     "favorite": "收藏",
-    "unfavorite": "取消收藏"
+    "unfavorite": "取消收藏",
+    "engineVersionFilter": "引擎版本",
+    "allEngineVersions": "全部版本",
+    "unknownEngineVersion": "未知版本",
+    "filteredCount": "显示 {{count}} / {{total}} 个项目"
   },
   "settings": {
     "title": "设置",
@@ -50,8 +54,8 @@
     "projectPaths": "项目搜索路径",
     "addFolder": "添加文件夹",
     "noFolders": "尚未添加文件夹。",
-    "engineDesc": "自动扫描这些文件夹中安装的 Unreal Engine。",
-    "projectDesc": "自动扫描这些文件夹中的项目（.uproject）。",
+    "engineDesc": "递归扫描这些文件夹及其子文件夹中的 Unreal Engine 安装版和源码版。",
+    "projectDesc": "递归扫描这些文件夹及其子文件夹中的项目（.uproject）。",
     "extraSettings": "其他设置",
     "gitIntegration": "Git 集成",
     "gitIntegrationDesc": "在项目卡片上显示 Git 历史按钮。（需要安装 Git）",
@@ -97,7 +101,11 @@
     "scanning": "正在扫描引擎…",
     "noEngines": "未找到引擎",
     "noEnginesDesc": "可以在设置页面中添加引擎安装文件夹。",
-    "launch": "启动"
+    "launch": "启动",
+    "sourceBuilds": "源码版",
+    "installedBuilds": "安装版",
+    "noCategoryEngines": "此分类下暂无引擎。",
+    "scanError": "引擎扫描失败，请检查搜索路径后重试。"
   },
   "git": {
     "title": "Git 历史",
@@ -311,5 +319,15 @@
     "filter": "筛选：",
     "cancel": "取消",
     "refresh": "刷新资源库"
+  },
+  "scan": {
+    "progress": "正在扫描：已检查 {{directories}} 个文件夹，已找到 {{found}} 项",
+    "complete": "扫描完成：检查了 {{directories}} 个文件夹，找到 {{found}} 项",
+    "failed": "扫描失败，请检查搜索路径和目录访问权限后重试。",
+    "scanning": "扫描中",
+    "refresh": "重新扫描",
+    "waiting": "正在搜索，找到的结果会立即显示…",
+    "checkPaths": "请在设置中确认已添加正确的搜索路径，并检查目录访问权限。",
+    "partialError": "部分目录无法访问，已找到的结果仍可使用。"
   }
 }

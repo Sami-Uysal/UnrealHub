@@ -2,12 +2,14 @@ import { ipcRenderer, contextBridge } from 'electron'
 
 contextBridge.exposeInMainWorld('unreal', {
   getProjects: () => ipcRenderer.invoke('get-projects'),
+  getProjectScan: (refresh = false) => ipcRenderer.invoke('get-project-scan', refresh),
   saveProject: (project: any) => ipcRenderer.invoke('save-project', project),
   selectProjectFile: () => ipcRenderer.invoke('select-project-file'),
   launchProject: (path: string, args?: string) => ipcRenderer.invoke('launch-project', path, args),
   showInExplorer: (path: string) => ipcRenderer.invoke('show-in-explorer', path),
   removeProject: (path: string) => ipcRenderer.invoke('remove-project', path),
   getEngines: () => ipcRenderer.invoke('get-engines'),
+  getEngineScan: (refresh = false) => ipcRenderer.invoke('get-engine-scan', refresh),
   addEnginePath: () => ipcRenderer.invoke('add-engine-path'),
   getConfigPaths: () => ipcRenderer.invoke('get-config-paths'),
   addProjectPath: () => ipcRenderer.invoke('add-project-path'),

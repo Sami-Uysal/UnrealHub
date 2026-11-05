@@ -1,91 +1,30 @@
-# UnrealHub
-**Unreal Engine Geliştiricileri İçin Epic Games Launcher'a Hızlı ve Açık Kaynaklı Alternatif.**
+# UnrealHub — Çince Destekli Değiştirilmiş Sürüm
 
-**TR** | [EN](README_EN.md) | 🌐 **[Web Sitesi](https://unrealhub.samiuysal.me)**
+[简体中文](README.md) · [English](README_EN.md) · [Değişiklik günlüğü](CHANGELOG.md)
 
-Projenizi açmak için Epic Games Launcher'ın yüklenmesini beklemekten sıkıldınız mı? **UnrealHub**, Unreal Engine projelerinizi ve motor sürümlerinizi yönetmek için tasarlanmış, şimşek hızında ve hafif bir masaüstü uygulamasıdır.
+Bu depo, [Sami-Uysal/UnrealHub](https://github.com/Sami-Uysal/UnrealHub) 1.6.1 tabanlı, GoldenDragons tarafından sürdürülen açık bir fork'tur. Sami Uysal'ın adı, kaynak geçmişi ve [MIT lisansı](LICENSE) korunur. Resmî üst kaynak sürümü değildir.
 
-![UnrealHub Screenshot](github-assets/projects-main.png)
+Güncel sürüm: **1.6.2-zh.1**. [Windows x64 kurulum ve taşınabilir paketlerini indir](https://github.com/GoldenDragons/UnrealHub/releases/latest).
 
-## Epic Games Launcher vs UnrealHub
+## Başlıca değişiklikler
 
-| Özellik | Epic Games Launcher | UnrealHub |
-|---------|---------------------|-----------|
-| **Açılış Hızı** | ~10-15 Saniye | **< 1 Saniye** |
-| **Odak** | Mağaza ve Oyunlar | **Sadece Projeleriniz** |
-| **Telemetri/Takip**| Var | **Yok (Açık Kaynak)** |
-| **Çevrimdışı Çalışma** | Sıkıntılı | **Doğrudan (Native)** |
+- Basitleştirilmiş Çince desteği, dil seçimi ve seçimin saklanması; Türkçe ve İngilizce korunur.
+- Marketplace açıldığında tüm pencerenin boş kalmasına neden olan hata düzeltildi.
+- Motor ve proje klasörleri alt klasörleriyle birlikte taranır; bulunan sonuçlar tarama bitmeden gösterilir.
+- Tarama ilerlemesi, hata bildirimi ve yeniden tarama düğmesi eklendi. Büyük dizinlerde sınırlı eşzamanlılık ve ortak tarama görevleri kullanılır.
+- Kaynak kod motorları ve kurulu motorlar ayrı gruplarda, gerçek sayısal sürüme göre sıralanır.
+- Proje sürümleri yan yana düğmelerle seçilir. Tüm sürümler görünümünde her UE sürümünün kendi başlığı, sayısı ve proje grubu vardır.
 
-## Neden UnrealHub?
+Ayrıntılı sürüm geçmişi ve doğrulama kapsamı için [CHANGELOG.md](CHANGELOG.md).
 
-- **Anında Başlatma:** Tüm UE projelerinizi tek ekranda görün ve tek tıkla başlatın.
-- **Gereksiz Yüklerden Arındırılmış:** Mağaza yok, reklam yok, arka planda çalışan takip uygulamaları yok.
-### Motor Yönetimi
-Yüklü tüm Unreal Engine sürümlerini otomatik algılar. Motorlarınızı tek bir ekranda görün ve yönetin.
+## Yeni arayüz
 
-<img src="github-assets/engine-versions.png" width="700">
+Görseller gerçek **1.6.2-zh.1 exe** dosyasından, büyütülmüş 1920×1032 pencere ve bağımsız örnek projeler kullanılarak alınmıştır. Eski üst kaynak görselleri kullanılmaz.
 
-### Gelişmiş Proje Yönetimi
-Her projenin diskte kapladığı gerçek alanı görün. Sağ tık menüsü (Context Menu) ile projeleri anında kopyalayın, silin, `Saved`/`Intermediate` önbelleklerini temizleyin veya boyut kazanmak için akıllı **.zip yedekleri** alın.
+![UE sürümüne göre proje grupları](github-assets/projects-all-fullscreen.png)
 
-<img src="github-assets/context-menu.png" width="700">
+![Kaynak kod ve kurulu motor grupları](github-assets/engines-fullscreen.png)
 
-### Özelleştirme ve Etiketler
-Proje isimlerini, kapak resimlerini değiştirin ve uygulamanın görünümünü özelleştirin.
-<img src="github-assets/edit-project.png" width="700">
+Derleme komutu: `npm.cmd ci` ve `npm.cmd run build -- --publish never`. Çıktı: `release/1.6.2-zh.1/`. Çalıştırmak için Node.js gerekmez.
 
-Projelerinize etiket (Tag) ekleyerek kendi düzeninizi yaratın.
-<img src="github-assets/tag-system.png" width="700">
-
-### Geliştiriciler İçin Güçlü Araçlar
-
-**Proje Notları (Markdown Destekli)**
-Projenizdeki fikirleri, alınacak notları ve detayları doğrudan uygulama içindeki notlar paneline yazın.
-<img src="github-assets/project-notes.png" width="700">
-
-**Görev Panosu (Kanban)**
-Yerleşik sürükle-bırak görev panosu ile projelerinizin gidişatını yönetin.
-<img src="github-assets/task-board.png" width="700">
-
-**Git Entegrasyonu**
-Commit geçmişini ve dalları doğrudan uygulama içinden görselleştirin.
-<img src="github-assets/git-history.png" width="700">
-
-**Eklenti ve Config Editörü**
-Kapsamlı yerleşik editörü kullanarak `DefaultEngine.ini` gibi config dosyalarını veya aktif eklentileri (plugins) motoru açmadan kolayca düzenleyin!
-<img src="github-assets/ini-editor.png" width="700">
-
-## Kurulum
-
-İş akışınızı hızlandırmaya hazır mısınız?
-
-**[Releases sayfasından en son sürümü hemen indirin](https://github.com/Sami-Uysal/UnrealHub/releases)** 
-
-*Tek tıkla kurulum: İndirin ve saniyeler içinde kullanmaya başlayın!*
-
-## Flow Launcher Entegrasyonu
-Üretkenliğinizi daha da artırın! Klavye üzerinden (`Alt + Boşluk`) anında arama ve proje başlatma yapmak için resmi **[Flow Launcher Eklentimizi](https://github.com/Sami-Uysal/Flow.Launcher.Plugin.UnrealHub)** kullanın.
-
-## Geliştirme
-
-<details>
-<summary>Geliştirici talimatlarını görmek için tıklayın</summary>
-
-```bash
-# Bağımlılıkları yükle
-npm install
-
-# Geliştirme modunda çalıştır
-npm run dev
-
-# Kurulum dosyası oluştur
-npm run build
-```
-
-Kurulum dosyası `release/` klasöründe oluşturulur.
-
-**Kullanılan Teknolojiler:** Electron, React + TypeScript, Vite, TailwindCSS
-</details>
-
-## Lisans
-Bu proje açık kaynaklıdır ve tamamen ücretsizdir.
+Kurulum, Epic girişi ve indirmeler kabul testinden geçirilmemiştir. Önceden belirlenen token saklama güvenlik sorunları bu sürümde giderilmemiştir. İşletim ve tarama ayrıntıları [Çince kılavuzda](README_ZH.md) açıklanır.

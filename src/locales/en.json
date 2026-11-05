@@ -42,7 +42,11 @@
     "sortDate": "Date",
     "sortEngine": "Engine",
     "favorite": "Favorite",
-    "unfavorite": "Remove Favorite"
+    "unfavorite": "Remove Favorite",
+    "engineVersionFilter": "Engine Version",
+    "allEngineVersions": "All versions",
+    "unknownEngineVersion": "Unknown version",
+    "filteredCount": "{{count}} / {{total}} projects"
   },
   "settings": {
     "title": "Settings",
@@ -50,8 +54,8 @@
     "projectPaths": "Project Search Paths",
     "addFolder": "Add Folder",
     "noFolders": "No folders added yet.",
-    "engineDesc": "Unreal Engine installations in these folders are automatically scanned.",
-    "projectDesc": "Projects (.uproject) in these folders are automatically scanned.",
+    "engineDesc": "Recursively scans these folders and their subfolders for Unreal Engine installations and source builds.",
+    "projectDesc": "Recursively scans these folders and their subfolders for projects (.uproject).",
     "extraSettings": "Extra Settings",
     "gitIntegration": "Git Integration",
     "gitIntegrationDesc": "Shows Git history button on project cards. (Git must be installed)",
@@ -97,7 +101,11 @@
     "scanning": "Scanning engines...",
     "noEngines": "No Engines Found",
     "noEnginesDesc": "You can add engine installation folders from the Settings page.",
-    "launch": "Launch"
+    "launch": "Launch",
+    "sourceBuilds": "Source Builds",
+    "installedBuilds": "Installed Builds",
+    "noCategoryEngines": "No engines in this category.",
+    "scanError": "Failed to scan engines. Check your search paths and try again."
   },
   "git": {
     "title": "Git History",
@@ -311,5 +319,15 @@
     "filter": "Filter:",
     "cancel": "Cancel",
     "refresh": "Refresh Library"
+  },
+  "scan": {
+    "progress": "Scanning: {{directories}} folders checked, {{found}} items found",
+    "complete": "Scan complete: {{directories}} folders checked, {{found}} items found",
+    "failed": "Scan failed. Check your search paths and folder permissions, then try again.",
+    "scanning": "Scanning",
+    "refresh": "Rescan",
+    "waiting": "Searching — results appear as they are found...",
+    "checkPaths": "Check your search paths and folder permissions in Settings.",
+    "partialError": "Some folders could not be read. Discovered results remain available."
   }
 }

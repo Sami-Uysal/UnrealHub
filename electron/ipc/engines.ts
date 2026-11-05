@@ -1,41 +1,12 @@
 import { ipcMain, dialog } from 'electron';
-import fs from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { loadConfig, saveConfig } from '../services/configStore';
+import { getEngineScan, getEnginesComplete } from '../services/scanCoordinator';
 
 export function registerEngineHandlers() {
-    ipcMain.handle('get-engines', async () => {
-        const config = await loadConfig();
-        const engines: { version: string; path: string }[] = [];
-        const processedPaths = new Set<string>();
-
-        for (const checkPath of config.enginePaths) {
-            if (processedPaths.has(checkPath)) continue;
-            processedPaths.add(checkPath);
-
-            try {
-                if (!existsSync(checkPath)) continue;
-
-                const binaryPath = path.join(checkPath, 'Engine', 'Binaries');
-                if (existsSync(binaryPath)) {
-                    engines.push({ version: path.basename(checkPath).replace('UE_', ''), path: checkPath });
-                    continue;
-                }
-
-                const dirs = await fs.readdir(checkPath);
-                for (const dir of dirs) {
-                    if (dir.startsWith('UE_')) {
-                        engines.push({ version: dir.replace('UE_', ''), path: path.join(checkPath, dir) });
-                    }
-                }
-            } catch (e) {
-                console.error('Error scanning path ' + checkPath, e);
-            }
-        }
-
-        return engines;
-    });
+    ipcMain.handle('get-engines', () => getEnginesComplete());
+    ipcMain.handle('get-engine-scan', (_, refresh?: boolean) => getEngineScan(refresh === true));
 
     ipcMain.handle('add-engine-path', async () => {
         const result = await dialog.showOpenDialog({ properties: ['openDirectory'] });

@@ -9,6 +9,7 @@ export interface Project {
     name: string;
     path: string;
     version: string;
+    engineVersion?: string;
     lastModified: number;
     thumbnail?: string;
     launchProfiles?: LaunchProfile[];
@@ -17,19 +18,30 @@ export interface Project {
 export interface Engine {
     version: string;
     path: string;
+    type: 'source' | 'installed';
     thumbnail?: string;
+}
+
+export interface ScanSnapshot<T> {
+    items: T[];
+    scanning: boolean;
+    directories: number;
+    currentPath: string;
+    error?: string;
 }
 
 declare global {
     interface Window {
         unreal: {
             getProjects: () => Promise<Project[]>;
+            getProjectScan: (refresh?: boolean) => Promise<ScanSnapshot<Project>>;
             saveProject: (project: Project) => Promise<boolean>;
             selectProjectFile: () => Promise<string | null>;
             launchProject: (path: string, args?: string) => Promise<void>;
             showInExplorer: (path: string) => Promise<void>;
             removeProject: (path: string) => Promise<boolean>;
             getEngines: () => Promise<Engine[]>;
+            getEngineScan: (refresh?: boolean) => Promise<ScanSnapshot<Engine>>;
             addEnginePath: () => Promise<boolean>;
             getConfigPaths: () => Promise<{ enginePaths: string[], projectPaths: string[] }>;
             addProjectPath: () => Promise<boolean>;
