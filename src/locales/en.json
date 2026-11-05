@@ -242,7 +242,8 @@
   "common": {
     "chars": "chars",
     "ok": "OK",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "closeToTray": "Close to system tray"
   },
   "marketplace": {
     "title": "MARKETPLACE",

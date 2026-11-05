@@ -1,12 +1,20 @@
 # UnrealHub 中文使用说明
 
-当前版本：**1.6.2-zh.1**。这是 [Sami-Uysal/UnrealHub](https://github.com/Sami-Uysal/UnrealHub) 的修改版；界面截图、功能介绍和下载见 [主页](README.md)，逐版本变更见 [改动日志](CHANGELOG.md)。
+当前版本：**1.6.2-zh.2**。这是 [Sami-Uysal/UnrealHub](https://github.com/Sami-Uysal/UnrealHub) 的修改版；界面截图、功能介绍和下载见 [主页](README.md)，逐版本变更见 [改动日志](CHANGELOG.md)。
+
+## 后台托盘运行
+
+当前版本为 `1.6.2-zh.2`，产物在 `release/1.6.2-zh.2/`。右上角关闭按钮和 Alt+F4 会隐藏主窗口并保留后台任务。点击/双击托盘图标或选择“显示窗口”恢复；右键托盘 → “退出 UnrealHub”才会真正结束进程。重复打开同一配置下的 exe 会唤起原窗口。
+
+托盘图标可能被 Windows 放入任务栏右侧“显示隐藏的图标”区域。普通最小化按钮仍将窗口最小化到任务栏。托盘菜单跟随中/英/土语言选择。
+
+验证命令：`node scripts/check-tray.mjs`。
 
 ## 运行与升级
 
 从 [最新发布](https://github.com/GoldenDragons/UnrealHub/releases/latest) 下载安装版或免安装版。运行 exe 无需 Node.js；使用新版前先关闭旧版即可，已保存的搜索路径和界面设置可继续使用。
 
-本地编译输出：`release/1.6.2-zh.1/`。`win-unpacked/UnrealHub.exe` 必须和整个文件夹一起保留，不能单独复制该 exe。
+本地编译输出：`release/1.6.2-zh.2/`。`win-unpacked/UnrealHub.exe` 必须和整个文件夹一起保留，不能单独复制该 exe。
 
 ## 递归搜索
 

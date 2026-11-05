@@ -4,11 +4,13 @@
 
 This is a public modified fork of [Sami-Uysal/UnrealHub](https://github.com/Sami-Uysal/UnrealHub), based on upstream 1.6.1 and maintained by GoldenDragons. It preserves Sami Uysal's attribution, upstream history and the [MIT license](LICENSE). It is not an official upstream release.
 
-Current version: **1.6.2-zh.1**. [Download Windows x64 installer or portable executable](https://github.com/GoldenDragons/UnrealHub/releases/latest).
+Current version: **1.6.2-zh.2**. [Download Windows x64 installer or portable executable](https://github.com/GoldenDragons/UnrealHub/releases/latest).
 
 ## Changes in this fork
 
-- 301 Simplified Chinese translation strings, persistent language selection, and English/Turkish support.
+- Closing the window hides it to the system tray. Click the tray icon to restore it, or use Quit UnrealHub to exit. Opening the executable again restores the existing instance.
+
+- 302 Simplified Chinese translation strings, persistent language selection, and English/Turkish support.
 - Fix for the whole-window blank screen when opening Marketplace.
 - Recursive engine/project discovery, including search roots and nested folders, with overlapping-path deduplication.
 - Progressive results and visible scan progress, error messages and a rescan button. Large-directory traversal uses bounded breadth-first batches and shares in-flight scan tasks.
@@ -19,7 +21,7 @@ See the [detailed changelog](CHANGELOG.md) for local iteration history, validati
 
 ## Current interface
 
-All images below are from the actual **1.6.2-zh.1 executable**, maximized to 1920×1032, using isolated demo projects. Upstream's old screenshots have been removed.
+All images below are from the actual **1.6.2-zh.2 executable**, maximized to 1920×1032, using isolated demo projects. Upstream's old screenshots have been removed.
 
 ![Projects grouped by UE version](github-assets/projects-all-fullscreen.png)
 
@@ -38,6 +40,6 @@ node scripts/check-marketplace.mjs
 node scripts/capture-screenshots.mjs
 ```
 
-Build output: `release/1.6.2-zh.1/`. Test/screenshot scripts require Node.js 22+. Executables do not require Node.js. Select Simplified Chinese in Settings → Language.
+Build output: `release/1.6.2-zh.2/`. Test/screenshot scripts require Node.js 22+. Executables do not require Node.js. Select Simplified Chinese in Settings → Language.
 
 Existing lint findings have not been cleaned up. Installer installation, Epic login and asset downloads have not been acceptance-tested; previously identified token-storage security weaknesses are not hardened by this release. See the [Chinese guide](README_ZH.md) for scanning rules and operating details.

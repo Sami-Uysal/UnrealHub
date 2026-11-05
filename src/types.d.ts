@@ -82,6 +82,8 @@ declare global {
             minimize: () => Promise<void>;
             maximize: () => Promise<void>;
             close: () => Promise<void>;
+            quit: () => Promise<void>;
+            setTrayLanguage: (language: string) => Promise<void>;
 
             getAppVersion: () => Promise<string>;
             checkForUpdates: () => Promise<{ status: string; message?: string; error?: string }>;

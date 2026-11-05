@@ -242,7 +242,8 @@
   "common": {
     "chars": "karakter",
     "ok": "Tamam",
-    "loading": "Yükleniyor..."
+    "loading": "Yükleniyor...",
+    "closeToTray": "Sistem tepsisine kapat"
   },
   "marketplace": {
     "title": "MAĞAZA",

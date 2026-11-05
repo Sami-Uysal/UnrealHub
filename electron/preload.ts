@@ -50,6 +50,8 @@ contextBridge.exposeInMainWorld('unreal', {
   minimize: () => ipcRenderer.invoke('window-minimize'),
   maximize: () => ipcRenderer.invoke('window-maximize'),
   close: () => ipcRenderer.invoke('window-close'),
+  quit: () => ipcRenderer.invoke('window-quit'),
+  setTrayLanguage: (language: string) => ipcRenderer.invoke('tray-set-language', language),
 
   // Marketplace API
   scanEnginePlugins: (enginePath: string) => ipcRenderer.invoke('scan-engine-plugins', enginePath),

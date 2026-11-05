@@ -133,7 +133,7 @@ try {
 
 } finally {
     if (send && socket?.readyState === WebSocket.OPEN) {
-        await send('Runtime.evaluate', { expression: 'window.unreal.close()' }).catch(() => {});
+        await send('Runtime.evaluate', { expression: 'window.unreal.quit()' }).catch(() => {});
         socket.close();
     } else {
         child.kill();

@@ -1,4 +1,4 @@
-import { ipcMain, BrowserWindow, screen } from 'electron';
+import { app, ipcMain, BrowserWindow, screen } from 'electron';
 
 export function registerWindowHandlers(getWindow: () => BrowserWindow | null) {
     ipcMain.handle('window-minimize', () => {
@@ -40,5 +40,8 @@ export function registerWindowHandlers(getWindow: () => BrowserWindow | null) {
 
     ipcMain.handle('window-close', () => {
         getWindow()?.close();
+    });
+    ipcMain.handle('window-quit', () => {
+        app.quit();
     });
 }

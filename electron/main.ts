@@ -19,8 +19,17 @@ import { registerConfigHandlers } from './ipc/config';
 import { registerWindowHandlers } from './ipc/window';
 import { registerMarketplaceHandlers } from './ipc/marketplace';
 import { registerEpicAuthHandlers } from './ipc/epic-auth';
+import { createTrayController } from './services/tray';
 
-let win: BrowserWindow | null;
+let win: BrowserWindow | null = null;
+let trayController: ReturnType<typeof createTrayController>;
+
+function showMainWindow() {
+    if (!win || win.isDestroyed()) createWindow();
+    if (win!.isMinimized()) win!.restore();
+    win!.show();
+    win!.focus();
+}
 
 function createWindow() {
     const isMac = process.platform === 'darwin';
@@ -41,6 +50,12 @@ function createWindow() {
       },
     });
 
+  trayController.attachWindow(win);
+  const currentWindow = win;
+  currentWindow.on('closed', () => {
+    if (win === currentWindow) win = null;
+  });
+
   win.once('ready-to-show', () => {
     win?.show();
   });
@@ -56,36 +71,41 @@ function createWindow() {
   }
 }
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-    win = null;
-  }
-});
-
-app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
-  }
-});
-
-app.whenReady().then(() => {
-  protocol.registerFileProtocol('local-file', (request, callback) => {
-    let filePath = decodeURIComponent(request.url.replace('local-file://', ''));
-    if (process.platform === 'win32' && filePath.startsWith('/')) {
-      filePath = filePath.slice(1);
-    }
-    callback({ path: filePath });
+if (!app.requestSingleInstanceLock()) {
+  app.quit();
+} else {
+  app.on('second-instance', () => {
+    void app.whenReady().then(showMainWindow);
   });
 
-  registerProjectHandlers();
-  registerEngineHandlers();
-  registerGitHandlers();
-  registerConfigHandlers();
-  registerUpdaterHandlers(() => win);
-  registerWindowHandlers(() => win);
-  registerMarketplaceHandlers();
-  registerEpicAuthHandlers();
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+      app.quit();
+      win = null;
+    }
+  });
 
-  createWindow();
-});
+  app.on('activate', showMainWindow);
+
+  app.whenReady().then(() => {
+    trayController = createTrayController(path.join(process.env.VITE_PUBLIC, 'u.png'), showMainWindow);
+    protocol.registerFileProtocol('local-file', (request, callback) => {
+      let filePath = decodeURIComponent(request.url.replace('local-file://', ''));
+      if (process.platform === 'win32' && filePath.startsWith('/')) {
+        filePath = filePath.slice(1);
+      }
+      callback({ path: filePath });
+    });
+
+    registerProjectHandlers();
+    registerEngineHandlers();
+    registerGitHandlers();
+    registerConfigHandlers();
+    registerUpdaterHandlers(() => win);
+    registerWindowHandlers(() => win);
+    registerMarketplaceHandlers();
+    registerEpicAuthHandlers();
+
+    createWindow();
+  });
+}

@@ -8,6 +8,7 @@ import zhCN from './locales/zh-CN.json';
 
 const updateDocumentLanguage = (language: string) => {
     document.documentElement.lang = language;
+    void window.unreal?.setTrayLanguage(language).catch(error => console.warn('Failed to update tray language:', error));
 };
 
 i18n.on('languageChanged', updateDocumentLanguage);

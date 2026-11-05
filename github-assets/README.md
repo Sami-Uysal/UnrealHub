@@ -1,6 +1,6 @@
 # 新版全屏配图
 
-这些图片由 `node scripts/capture-screenshots.mjs` 从实际 `1.6.2-zh.1` Windows exe 的最大化窗口截取，尺寸均为 1920×1032（1920×1080 屏幕，Windows 任务栏不在应用截图中）。没有缩放旧版小窗口图片。
+这些图片由 `node scripts/capture-screenshots.mjs` 从实际 `1.6.2-zh.2` Windows exe 的最大化窗口截取，尺寸均为 1920×1032（1920×1080 屏幕，Windows 任务栏不在应用截图中）。没有缩放旧版小窗口图片。
 
 截图日期：2026-11-05。全部使用独立生成的演示引擎/项目目录，未使用真实账号或私人项目。
 

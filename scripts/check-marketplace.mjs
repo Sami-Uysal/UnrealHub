@@ -80,7 +80,7 @@ try {
     console.log('PASS: packaged startup and 3 marketplace/settings navigation cycles; no uncaught exceptions; root remains mounted.');
 } finally {
     if (send && socket?.readyState === WebSocket.OPEN) {
-        await send('Runtime.evaluate', { expression: 'window.unreal.close()' }).catch(() => {});
+        await send('Runtime.evaluate', { expression: 'window.unreal.quit()' }).catch(() => {});
         socket.close();
     } else {
         child.kill();

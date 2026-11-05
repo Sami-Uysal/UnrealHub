@@ -242,7 +242,8 @@
   "common": {
     "chars": "字符",
     "ok": "确定",
-    "loading": "正在加载…"
+    "loading": "正在加载…",
+    "closeToTray": "关闭到托盘"
   },
   "marketplace": {
     "title": "资源商城",
