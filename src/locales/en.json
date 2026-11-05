@@ -232,7 +232,9 @@
     "editCard": "Edit Task"
   },
   "common": {
-    "chars": "chars"
+    "chars": "chars",
+    "ok": "OK",
+    "loading": "Loading..."
   },
   "marketplace": {
     "title": "MARKETPLACE",
@@ -304,6 +306,10 @@
     "cancelDownload": "Cancel Download",
     "noCompatibleTargets": "No compatible targets found.",
     "selectTargetPlaceholder": "Select a target...",
-    "installIntoBtn": "Install"
+    "installIntoBtn": "Install",
+    "sort": "Sort:",
+    "filter": "Filter:",
+    "cancel": "Cancel",
+    "refresh": "Refresh Library"
   }
 }

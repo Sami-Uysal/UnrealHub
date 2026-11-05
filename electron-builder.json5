@@ -7,7 +7,7 @@
   "publish": [
     {
       "provider": "github",
-      "owner": "Sami-Uysal",
+      "owner": "GoldenDragons",
       "repo": "UnrealHub"
     }
   ],
@@ -25,12 +25,17 @@
     "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
   },
   "win": {
+    "icon": "public/u.png",
     "target": [
       {
         "target": "nsis",
         "arch": [
           "x64"
         ]
+      },
+      {
+        "target": "portable",
+        "arch": ["x64"]
       }
     ],
     "artifactName": "${productName}-Windows-${version}-Setup.${ext}"
@@ -39,7 +44,12 @@
     "oneClick": false,
     "perMachine": false,
     "allowToChangeInstallationDirectory": true,
-    "deleteAppDataOnUninstall": false
+    "deleteAppDataOnUninstall": false,
+    "installerLanguages": ["zh_CN", "en_US", "tr_TR"],
+    "displayLanguageSelector": true
+  },
+  "portable": {
+    "artifactName": "${productName}-Windows-${version}-zh-CN-Portable.${ext}"
   },
   "linux": {
     "target": [

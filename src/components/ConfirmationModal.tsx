@@ -65,7 +65,7 @@ export const ConfirmationModal: React.FC<{ config: DialogConfig }> = ({ config }
                                         : 'bg-[var(--accent-color)] text-white hover:brightness-110 border-white/10 shadow-[var(--accent-color)]/20 shadow-lg'}`}
                             autoFocus={config.type === 'alert'}
                         >
-                            {config.confirmText || (config.type === 'alert' ? 'OK' : t('config.save'))}
+                            {config.confirmText || (config.type === 'alert' ? t('common.ok') : t('config.save'))}
                         </button>
                     </div>
                 </div>

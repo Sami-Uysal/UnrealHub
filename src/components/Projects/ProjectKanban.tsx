@@ -523,7 +523,7 @@ export const ProjectKanban: React.FC<KanbanProps> = ({ projectPath, onClose }) =
         sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: '0.4' } } }),
     };
 
-    if (!board) return <div className="p-4 text-slate-400">Loading Kanban...</div>;
+    if (!board) return <div className="p-4 text-slate-400">{t('common.loading')}</div>;
 
     return (
         <div className="h-full flex flex-col p-4">

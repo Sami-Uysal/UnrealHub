@@ -232,7 +232,9 @@
     "editCard": "Görevi Düzenle"
   },
   "common": {
-    "chars": "karakter"
+    "chars": "karakter",
+    "ok": "Tamam",
+    "loading": "Yükleniyor..."
   },
   "marketplace": {
     "title": "MAĞAZA",
@@ -304,6 +306,10 @@
     "cancelDownload": "İndirmeyi İptal Et",
     "noCompatibleTargets": "Uyumlu hedef bulunamadı.",
     "selectTargetPlaceholder": "Bir hedef seçin...",
-    "installIntoBtn": "Kur"
+    "installIntoBtn": "Kur",
+    "sort": "Sırala:",
+    "filter": "Filtre:",
+    "cancel": "İptal",
+    "refresh": "Kütüphaneyi Yenile"
   }
 }

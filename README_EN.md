@@ -1,7 +1,9 @@
 # UnrealHub
+
+> This is a modified fork of [Sami-Uysal/UnrealHub](https://github.com/Sami-Uysal/UnrealHub). It adds Simplified Chinese support and fixes the whole-window blank screen when opening Marketplace. [Download this fork](https://github.com/GoldenDragons/UnrealHub/releases/latest).
 **The Lightweight, Open-Source Alternative to Epic Games Launcher for Unreal Engine Developers.**
 
-[TR](README.md) | **EN** | 🌐 **[Website](https://unrealhub.samiuysal.me)**
+[简体中文](README.md) | [TR](README_TR.md) | **EN** | 🌐 **[Website](https://unrealhub.samiuysal.me)**
 
 Tired of waiting for the Epic Games Launcher to open just to start your project? **UnrealHub** is a lightning-fast, bloat-free desktop application designed specifically to manage your Unreal Engine projects and engines seamlessly.
 

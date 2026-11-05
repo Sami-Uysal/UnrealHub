@@ -279,8 +279,9 @@ export const SettingsPage: React.FC = () => {
                             options={[
                                 { key: 'tr', label: 'Türkçe' },
                                 { key: 'en', label: 'English' },
+                                { key: 'zh-CN', label: '简体中文' },
                             ]}
-                            value={i18n.language}
+                            value={i18n.resolvedLanguage || i18n.language}
                             onChange={changeLanguage}
                         />
                     </SettingRow>

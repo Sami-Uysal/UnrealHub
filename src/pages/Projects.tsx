@@ -529,8 +529,8 @@ export const ProjectsPage: React.FC<ProjectsPageProps> = ({ onOpenGit, onOpenCon
 
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-                <div className="flex items-center space-x-4">
-                    <h2 className="text-3xl font-black text-white tracking-tight">
+                <div className="flex shrink-0 items-center space-x-4">
+                    <h2 className="whitespace-nowrap text-3xl font-black text-white tracking-tight">
                         {t('projects.title').toUpperCase()}
                     </h2>
                 </div>
